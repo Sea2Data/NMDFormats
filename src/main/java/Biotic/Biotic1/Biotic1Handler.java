@@ -5,7 +5,7 @@
  */
 package Biotic.Biotic1;
 
-import Biotic.BioticHandler;
+import XMLHandling.NamespaceVersionHandler;
 import BioticTypes.v1_4.MissionsType;
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,10 +20,10 @@ import org.xml.sax.SAXException;
  *
  * @author Edvin Fuglebakk edvin.fuglebakk@imr.no
  */
-public class Biotic1Handler extends BioticHandler<MissionsType> {
+public class Biotic1Handler extends NamespaceVersionHandler<MissionsType> {
 
     public Biotic1Handler() {
-        this.latestBioticNamespace = "http://www.imr.no/formats/nmdbiotic/v1.4";
+        this.latestNamespace = "http://www.imr.no/formats/nmdbiotic/v1.4";
         this.latestBioticClass = MissionsType.class;
         this.compatibleNamespaces = new HashSet<>();
         this.compatibleNamespaces.add("http://www.imr.no/formats/nmdbiotic/v1.3");
@@ -33,13 +33,13 @@ public class Biotic1Handler extends BioticHandler<MissionsType> {
     }
     
     @Override
-    public MissionsType readBiotic(InputStream xml) throws JAXBException, XMLStreamException, ParserConfigurationException, SAXException, IOException{
-        return super.readBiotic(xml);
+    public MissionsType read(InputStream xml) throws JAXBException, XMLStreamException, ParserConfigurationException, SAXException, IOException{
+        return super.read(xml);
     }
     
     
     @Override
-    public void saveBiotic(OutputStream xml, MissionsType data) throws JAXBException{
-        super.saveBiotic(xml, data);
+    public void save(OutputStream xml, MissionsType data) throws JAXBException{
+        super.save(xml, data);
     }
 }

@@ -45,14 +45,14 @@ public class Biotic1HandlerTest {
     @Test
     public void testRead() throws Exception {
         Biotic1Handler r = new Biotic1Handler();
-        MissionsType m = r.readBiotic(Biotic1HandlerTest.class.getClassLoader().getResourceAsStream("test.xml"));
+        MissionsType m = r.read(Biotic1HandlerTest.class.getClassLoader().getResourceAsStream("test.xml"));
         assertTrue(m.getMission().get(0).getFishstation().size() > 0);
     }
 
     @Test
     public void testReadComp() throws Exception {
         Biotic1Handler r = new Biotic1Handler();
-        MissionsType m = r.readBiotic(Biotic1HandlerTest.class.getClassLoader().getResourceAsStream("test_v1.xml"));
+        MissionsType m = r.read(Biotic1HandlerTest.class.getClassLoader().getResourceAsStream("test_v1.xml"));
         assertTrue(m.getMission().get(0).getFishstation().size() > 0);
     }
 
@@ -60,7 +60,7 @@ public class Biotic1HandlerTest {
     public void testReadGarbage() {
         try {
             Biotic1Handler r = new Biotic1Handler();
-            MissionsType m = r.readBiotic(Biotic1HandlerTest.class.getClassLoader().getResourceAsStream("biotic1_4.xsd.xml"));
+            MissionsType m = r.read(Biotic1HandlerTest.class.getClassLoader().getResourceAsStream("biotic1_4.xsd.xml"));
             fail("Exceptione expected!");
         } catch (Exception e) {
 
@@ -74,7 +74,7 @@ public class Biotic1HandlerTest {
 
         File temp = File.createTempFile("biotic_example", ".tmp");
         temp.deleteOnExit();
-        r.saveBiotic(new FileOutputStream(temp), f.createMissionsType());
+        r.save(new FileOutputStream(temp), f.createMissionsType());
 
     }
 

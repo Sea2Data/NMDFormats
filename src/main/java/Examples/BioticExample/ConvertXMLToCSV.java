@@ -47,7 +47,7 @@ public class ConvertXMLToCSV {
         tablemaker.setNamingConvention(new Biotic1NamingConvention(ConvertXMLToCSV.class.getClassLoader().getResourceAsStream("bioticv1_4.xsd")));
 
         Biotic1Handler handler = new Biotic1Handler();
-        HierarchicalData missions = handler.readBiotic(new FileInputStream(filename));
+        HierarchicalData missions = handler.read(new FileInputStream(filename));
         Map<String, List<List<String>>> tables = tablemaker.getAllTables(missions);
         tables.remove("Missions");
         writer.writeDelimitedFiles(tables, new File(targetDir), tablemaker.getNamingConvention().getDescription());

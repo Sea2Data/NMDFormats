@@ -6,8 +6,7 @@
 package Biotic.Biotic3;
 
 import Biotic.Biotic1.Biotic1Handler;
-import Biotic.BioticConversionException;
-import Biotic.BioticHandler;
+import XMLHandling.NamespaceVersionHandler;
 import BioticTypes.v3_beta.PreyType;
 import BioticTypes.v3_beta.AgedeterminationType;
 import BioticTypes.v3_beta.CatchsampleType;
@@ -43,23 +42,23 @@ import org.xml.sax.SAXException;
  *
  * @author Edvin Fuglebakk edvin.fuglebakk@imr.no
  */
-public class Biotic3Handler extends BioticHandler<MissionsType> {
+public class Biotic3Handler extends NamespaceVersionHandler<MissionsType> {
 
     private ObjectFactory biotic3factory;
 
     public Biotic3Handler() {
-        this.latestBioticNamespace = "http://www.imr.no/formats/nmdbiotic/v3_beta";
+        this.latestNamespace = "http://www.imr.no/formats/nmdbiotic/v3_beta";
         this.latestBioticClass = MissionsType.class;
         this.compatibleNamespaces = null;
     }
 
     @Override
-    public MissionsType readBiotic(InputStream xml) throws JAXBException, XMLStreamException, ParserConfigurationException, SAXException, IOException {
-        return super.readBiotic(xml);
+    public MissionsType read(InputStream xml) throws JAXBException, XMLStreamException, ParserConfigurationException, SAXException, IOException {
+        return super.read(xml);
     }
 
     /**
-     * As readBiotic, but converts from biotic 1, if acceptBiotic1 is true
+     * As read, but converts from biotic 1, if acceptBiotic1 is true
      *
      * @param xml
      * @return
@@ -68,7 +67,7 @@ public class Biotic3Handler extends BioticHandler<MissionsType> {
      */
     public MissionsType readOldBiotic(InputStream xml) throws JAXBException, XMLStreamException, ParserConfigurationException, SAXException, IOException, BioticConversionException {
 
-        BioticTypes.v1_4.MissionsType missions = (new Biotic1Handler()).readBiotic(xml);
+        BioticTypes.v1_4.MissionsType missions = (new Biotic1Handler()).read(xml);
         return this.convertBiotic1(missions);
 
     }
@@ -77,14 +76,14 @@ public class Biotic3Handler extends BioticHandler<MissionsType> {
     /**
      * Reads biotic from file. Converts data if precious version of biotic is detected.
      */
-    public MissionsType readBiotic(File xml) throws JAXBException, XMLStreamException, FileNotFoundException, ParserConfigurationException, SAXException, IOException{
+    public MissionsType read(File xml) throws JAXBException, XMLStreamException, FileNotFoundException, ParserConfigurationException, SAXException, IOException{
         MissionsType result;
         try (InputStream is = new FileInputStream(xml)) {
-            result = this.readBiotic(is);
+            result = this.read(is);
         } catch (javax.xml.bind.UnmarshalException e){
             Biotic1Handler h = new Biotic1Handler();
             try {
-                result = this.convertBiotic1(h.readBiotic(xml));
+                result = this.convertBiotic1(h.read(xml));
             } catch (BioticConversionException ex) {
                 throw new IOException("Error in conversion from biotic 1" + ex.getMessage());
             }
@@ -93,8 +92,8 @@ public class Biotic3Handler extends BioticHandler<MissionsType> {
     }
 
     @Override
-    public void saveBiotic(OutputStream xml, MissionsType data) throws JAXBException {
-        super.saveBiotic(xml, data);
+    public void save(OutputStream xml, MissionsType data) throws JAXBException {
+        super.save(xml, data);
     }
 
     /**

@@ -6,7 +6,6 @@
 package Biotic.Biotic3;
 
 import Biotic.Biotic1.Biotic1Handler;
-import Biotic.BioticConversionException;
 import BioticTypes.v3_beta.AgedeterminationType;
 import BioticTypes.v3_beta.CatchsampleType;
 import BioticTypes.v3_beta.FishstationType;
@@ -58,7 +57,7 @@ public class Biotic3HandlerTest {
     }
 
     /**
-     * Test of readBiotic method, of class Biotic3Handler.
+     * Test of read method, of class Biotic3Handler.
      */
     //@Test 
     public void testReadBiotic_InputStream() throws Exception {
@@ -66,26 +65,26 @@ public class Biotic3HandlerTest {
         InputStream xml = null;
         Biotic3Handler instance = new Biotic3Handler();
         MissionsType expResult = null;
-        MissionsType result = instance.readBiotic(xml);
+        MissionsType result = instance.read(xml);
         assertEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
     }
 
     /**
-     * Test of readBiotic method, of class Biotic3Handler.
+     * Test of read method, of class Biotic3Handler.
      */
     @Test
     public void testReadBiotic_File_OldBiotic() throws Exception {
         System.out.println("readBiotic file old format");
         File xml = new File(Biotic3HandlerTest.class.getClassLoader().getResource("test.xml").toURI());
         Biotic3Handler instance = new Biotic3Handler();
-        MissionsType result = instance.readBiotic(xml);
+        MissionsType result = instance.read(xml);
         assertTrue(result.getMission().get(0).getFishstation().size() > 0);
     }
 
     /**
-     * Test of readBiotic method, of class Biotic3Handler.
+     * Test of read method, of class Biotic3Handler.
      */
     @Test
     public void testReadOldBiotic() throws Exception {
@@ -99,7 +98,7 @@ public class Biotic3HandlerTest {
     }
 
     /**
-     * Test of saveBiotic method, of class Biotic3Handler.
+     * Test of save method, of class Biotic3Handler.
      */
     @Test
     public void testSaveBiotic() throws Exception {
@@ -113,10 +112,10 @@ public class Biotic3HandlerTest {
 
         File temp = File.createTempFile("biotic_example", ".tmp");
         temp.deleteOnExit();
-        instance.saveBiotic(new FileOutputStream(temp), result);
+        instance.save(new FileOutputStream(temp), result);
 
         InputStream re = new FileInputStream(temp);
-        MissionsType result_re = instance.readBiotic(re);
+        MissionsType result_re = instance.read(re);
 
         assertEquals(result.getMission().get(0).getFishstation().size(), result_re.getMission().get(0).getFishstation().size());
     }
@@ -198,7 +197,7 @@ public class Biotic3HandlerTest {
     public void testConvertBiotic1ConservedFields() throws Exception {
         System.out.println("convertBiotic1 complete");
         Biotic1Handler b1handler = new Biotic1Handler();
-        BioticTypes.v1_4.MissionsType missionsBiotic1 = b1handler.readBiotic(Biotic3HandlerTest.class.getClassLoader().getResourceAsStream("ecosurvey.xml"));
+        BioticTypes.v1_4.MissionsType missionsBiotic1 = b1handler.read(Biotic3HandlerTest.class.getClassLoader().getResourceAsStream("ecosurvey.xml"));
         Biotic3Handler instance = new Biotic3Handler();
         MissionsType result = instance.convertBiotic1(missionsBiotic1);
 
@@ -246,7 +245,7 @@ public class Biotic3HandlerTest {
         //ref changes_3.txt
 
         Biotic1Handler b1handler = new Biotic1Handler();
-        BioticTypes.v1_4.MissionsType missionsBiotic1 = b1handler.readBiotic(Biotic3HandlerTest.class.getClassLoader().getResourceAsStream("test.xml"));
+        BioticTypes.v1_4.MissionsType missionsBiotic1 = b1handler.read(Biotic3HandlerTest.class.getClassLoader().getResourceAsStream("test.xml"));
         Biotic3Handler instance = new Biotic3Handler();
         MissionsType result = instance.convertBiotic1(missionsBiotic1);
 
@@ -371,7 +370,7 @@ public class Biotic3HandlerTest {
      */
     public void testPreyConversionAllThere() throws Exception {
         Biotic1Handler b1handler = new Biotic1Handler();
-        BioticTypes.v1_4.MissionsType missionsBiotic1 = b1handler.readBiotic(Biotic3HandlerTest.class.getClassLoader().getResourceAsStream("ecosurvey.xml"));
+        BioticTypes.v1_4.MissionsType missionsBiotic1 = b1handler.read(Biotic3HandlerTest.class.getClassLoader().getResourceAsStream("ecosurvey.xml"));
         Biotic3Handler instance = new Biotic3Handler();
         MissionsType result = instance.convertBiotic1(missionsBiotic1);
 
@@ -403,7 +402,7 @@ public class Biotic3HandlerTest {
     @Test
     public void testPreyConversionCorrectlyMapped() throws Exception {
         Biotic1Handler b1handler = new Biotic1Handler();
-        BioticTypes.v1_4.MissionsType missionsBiotic1 = b1handler.readBiotic(Biotic3HandlerTest.class.getClassLoader().getResourceAsStream("ecosurvey.xml"));
+        BioticTypes.v1_4.MissionsType missionsBiotic1 = b1handler.read(Biotic3HandlerTest.class.getClassLoader().getResourceAsStream("ecosurvey.xml"));
         Biotic3Handler instance = new Biotic3Handler();
         MissionsType result = instance.convertBiotic1(missionsBiotic1);
 
@@ -448,7 +447,7 @@ public class Biotic3HandlerTest {
     @Test
     public void testPreyConversionMissingIndividuals() throws Exception {
         Biotic1Handler b1handler = new Biotic1Handler();
-        BioticTypes.v1_4.MissionsType missionsBiotic1 = b1handler.readBiotic(Biotic3HandlerTest.class.getClassLoader().getResourceAsStream("dummy_bad_ind_key.xml"));
+        BioticTypes.v1_4.MissionsType missionsBiotic1 = b1handler.read(Biotic3HandlerTest.class.getClassLoader().getResourceAsStream("dummy_bad_ind_key.xml"));
         Biotic3Handler instance = new Biotic3Handler();
         try {
             instance.convertBiotic1(missionsBiotic1);
