@@ -36,7 +36,7 @@ public class MergedTableMaker extends TableMaker {
         }
         List<String> parentColumNames = this.getParentColumnNames(parent.getParent());
 
-        String typeName = parent.getClass().getSimpleName();
+        String typeName = this.javaToXmlTypeMap.get(parent.getClass().getSimpleName());
         for (SchemaReader.SchemaNode node : this.leafNodes.get(typeName)) {
             parentColumNames.add(this.namingConvention.getColumnName(typeName, node.getName()));
         }
@@ -50,7 +50,7 @@ public class MergedTableMaker extends TableMaker {
         }
         List<String> keyValues = this.getParentColumnValues(parent.getParent());
 
-        String typeName = parent.getClass().getSimpleName();
+        String typeName = this.javaToXmlTypeMap.get(parent.getClass().getSimpleName());
 
         for (SchemaReader.SchemaNode node : this.leafNodes.get(typeName)) {
             String methodname = NameConversions.getter(node.getName());
@@ -71,7 +71,7 @@ public class MergedTableMaker extends TableMaker {
      */
     @Override
     public List<String> getHeaders(HierarchicalData data) throws ITableMakerNamingConvention.NamingException {
-        String typeName = data.getClass().getSimpleName();
+        String typeName = this.javaToXmlTypeMap.get(data.getClass().getSimpleName());
         List<String> headers = this.getParentColumnNames(data.getParent());
         for (SchemaReader.SchemaNode node : this.leafNodes.get(typeName)) {
             headers.add(this.namingConvention.getColumnName(typeName, node.getName()));
@@ -94,7 +94,7 @@ public class MergedTableMaker extends TableMaker {
      */
     @Override
     public List<String> getRow(HierarchicalData data) throws ITableMakerNamingConvention.NamingException, NoSuchMethodException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-        String typeName = data.getClass().getSimpleName();
+        String typeName = this.javaToXmlTypeMap.get(data.getClass().getSimpleName());
         List<String> values = this.getParentColumnValues(data.getParent());
         for (SchemaReader.SchemaNode node : this.leafNodes.get(typeName)) {
             String methodname = NameConversions.getter(node.getName());

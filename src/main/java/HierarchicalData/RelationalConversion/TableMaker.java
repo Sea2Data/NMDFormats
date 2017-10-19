@@ -14,14 +14,13 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Handles conversion to untyped relational data model.
@@ -37,7 +36,7 @@ import java.util.logging.Logger;
  *
  * Assumes that each data type occurs either as leaf nodes only, or always at
  * the same depth and lateral position in the tree. Assumes each complex type in
- * the xsd-schema is represented by a class with the same name. And that getters
+ * the xsd-schema is represented by a class with the same name (except that first letter may be upper case). And that getters
  * exists for all non-leaf levels, such that the getter for a node "nodename" is
  * named getNodename (note capitalization of first character).
  *
@@ -57,6 +56,9 @@ public class TableMaker {
     protected ITableMakerNamingConvention namingConvention;
     protected Map<String, List<SchemaReader.SchemaNode>> tree; // encodes the hiearchy of complex types. Maps name of compex type to complex type children.
 
+    protected Map<String, String> xmlToJavaTypeMap;
+    protected Map<String, String> javaToXmlTypeMap;
+    
     /**
      * creates TableMaker from XSD.
      *
@@ -69,7 +71,16 @@ public class TableMaker {
         this.namingConvention = new DoNothingNamingConvention();
         this.leafNodeHandler = leafNodeHandler;
 
+        this.xmlToJavaTypeMap = new HashMap<>();
+        this.javaToXmlTypeMap = new HashMap();
+        
         List<String> complexTypes = schemaReader.getComplextypes();
+        for (String xmlType: complexTypes){
+            String javaType = xmlType.substring(0, 1).toUpperCase() + xmlType.substring(1);
+            xmlToJavaTypeMap.put(xmlType, javaType);
+            javaToXmlTypeMap.put(javaType, xmlType);
+        }
+        
         for (String type : leafNodeHandler.getLeafNodeComplexTypes()) {
             if (complexTypes.contains(type)) {
                 complexTypes.remove(type);
@@ -129,12 +140,16 @@ public class TableMaker {
     }
 
     /**
-     * @return A set of type names in the hieararchical model (corresponding to
+     * @return A set of java type names in the hieararchical model (corresponding to
      * complex types in the xsd schema) for which this TableMaker can construct
      * tables.
      */
     public Set<String> getTypes() {
-        return leafNodes.keySet();
+        Set<String> javaTypes = new HashSet<>();
+        for (String s: leafNodes.keySet()){
+            javaTypes.add(this.xmlToJavaTypeMap.get(s));
+        }
+        return javaTypes;
     }
 
     /**
@@ -147,7 +162,7 @@ public class TableMaker {
      * HierarchicalData.RelationalConversion.NamingConventions.ITableMakerNamingConvention.NamingException
      */
     public List<String> getHeaders(HierarchicalData data) throws ITableMakerNamingConvention.NamingException, RelationalConvertionException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-        String typeName = data.getClass().getSimpleName();
+        String typeName = this.javaToXmlTypeMap.get(data.getClass().getSimpleName());
         List<String> headers = this.getParentKeyNames(data.getParent());
         for (SchemaReader.SchemaNode node : this.leafNodes.get(typeName)) {
             headers.add(this.namingConvention.getColumnName(typeName, node.getName()));
@@ -161,7 +176,7 @@ public class TableMaker {
             return new ArrayList<>();
         }
         List<String> keys = this.getParentKeyNames(parent.getParent());
-        String typeName = parent.getClass().getSimpleName();
+        String typeName = this.javaToXmlTypeMap.get(parent.getClass().getSimpleName());
         for (String key : this.keys.get(typeName)) {
             keys.add(this.namingConvention.getColumnName(typeName, key));
         }
@@ -175,7 +190,7 @@ public class TableMaker {
         }
         List<String> keyValues = this.getParentKeyValues(parent.getParent());
 
-        String typeName = parent.getClass().getSimpleName();
+        String typeName = this.javaToXmlTypeMap.get(parent.getClass().getSimpleName());
 
         for (String key : this.keys.get(typeName)) {
             String methodname = NameConversions.getter(key);
@@ -199,7 +214,8 @@ public class TableMaker {
      * @throws InvocationTargetException
      */
     public List<String> getRow(HierarchicalData data) throws ITableMakerNamingConvention.NamingException, NoSuchMethodException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, RelationalConvertionException {
-        String typeName = data.getClass().getSimpleName();
+        String typeName = this.javaToXmlTypeMap.get(data.getClass().getSimpleName());
+        
         List<String> values = this.getParentKeyValues(data.getParent());
         for (SchemaReader.SchemaNode node : this.leafNodes.get(typeName)) {
             String methodname = NameConversions.getter(node.getName());
@@ -232,15 +248,16 @@ public class TableMaker {
     protected Map<String, List<HierarchicalData>> getAllData(HierarchicalData data, Map<String, List<HierarchicalData>> mapping) throws RelationalConvertionException {
 
         String className = data.getClass().getSimpleName();
-        if (!mapping.containsKey(className)) {
+        String ctname = this.javaToXmlTypeMap.get(className);
+        if (!mapping.containsKey(ctname)) {
             if (!this.getTypes().contains(className)) {
                 throw new RelationalConvertionException("Can not deal with Data of type: " + className);
             }
             List<HierarchicalData> list = new LinkedList<>();
-            mapping.put(className, list);
+            mapping.put(ctname, list);
         }
 
-        mapping.get(className).add(data);
+        mapping.get(ctname).add(data);
 
         List<HierarchicalData> children = data.getChildren();
         if (children == null) {
@@ -328,6 +345,7 @@ public class TableMaker {
             try {
                 return this.owner.getRow(it.next());
             } catch (Exception ex) {
+                ex.printStackTrace();
                 throw new NoSuchElementException();
             }
         }

@@ -79,6 +79,7 @@
                         <manifest>
                             <mainClass>
                                 Examples.BioticExample.ConvertXMLToCSV
+                                <!-- Examples.EchosounderExample.ConvertXMLToCSV -->
                             </mainClass>
                         </manifest>
                     </archive>

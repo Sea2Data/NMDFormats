@@ -855,7 +855,7 @@ See Norwegian documentation for additional details.</imrd:description>
           </xs:documentation>
         </xs:annotation>
       </xs:element>
-      <xs:element maxOccurs="unbounded" minOccurs="0" name="catchsample" type="CatchsampleType">
+      <xs:element maxOccurs="unbounded" minOccurs="0" name="catchsample" type="catchsampleType">
         <xs:annotation>
           <xs:documentation>
             <imrd:imrDoc>
@@ -885,7 +885,7 @@ Henviser ellers til dokument &#8221;historiske koder&#8221; for serienr. brukt i
       </xs:annotation>
     </xs:attribute>
   </xs:complexType>
-  <xs:complexType name="CatchsampleType">
+  <xs:complexType name="catchsampleType">
     <xs:sequence>
       <xs:element minOccurs="0" name="sampletype" type="StringDescriptionType">
         <xs:annotation>
@@ -1263,8 +1263,8 @@ Henviser ellers til dokument &#8221;historiske koder&#8221; for serienr. brukt i
           <xs:documentation>
             <imrd:imrDoc>
               <!--Annotation generated: 2017/05/12 11:32:15-->
-              <imrd:description lang="no">Lengde (m). Som angitt i &lt;CatchsampleType/lengthmeasurement&gt;. Presisjon i måling er gitt ved &lt;lengthunit/&gt;. Merk at data kan være ført inn med høyere oppløsning enn det som er angitt i &lt;lenghtunit/&gt;, grunnet elektronsik innlesing fra målebrett og lignende. &lt;lengthunit/&gt; angir likevel den presisjonen som er tilsiktet av prøvetaker, og lengdemålet bør behandles deretter.</imrd:description>
-              <imrd:description lang="en">Length (m). Measured to the precision specified by &lt;lenghtunit/&gt;. As specified in &lt;CatchsampleType/lengthmeasurement&gt;. Electronic registration from measuring devices may provide data that seem to be of higher resolution, but the resolution provided in &lt;lengthunit/&gt; still reflects the intended precision of the person measuring.</imrd:description>
+              <imrd:description lang="no">Lengde (m). Som angitt i &lt;catchsampleType/lengthmeasurement&gt;. Presisjon i måling er gitt ved &lt;lengthunit/&gt;. Merk at data kan være ført inn med høyere oppløsning enn det som er angitt i &lt;lenghtunit/&gt;, grunnet elektronsik innlesing fra målebrett og lignende. &lt;lengthunit/&gt; angir likevel den presisjonen som er tilsiktet av prøvetaker, og lengdemålet bør behandles deretter.</imrd:description>
+              <imrd:description lang="en">Length (m). Measured to the precision specified by &lt;lenghtunit/&gt;. As specified in &lt;catchsampleType/lengthmeasurement&gt;. Electronic registration from measuring devices may provide data that seem to be of higher resolution, but the resolution provided in &lt;lengthunit/&gt; still reflects the intended precision of the person measuring.</imrd:description>
             </imrd:imrDoc>
           </xs:documentation>
         </xs:annotation>
@@ -1545,8 +1545,8 @@ kjønn er bestemt (gjelder ikke dypvannsreke og sjøkreps).</imrd:description>
           <xs:documentation>
             <imrd:imrDoc>
               <!--Annotation generated: 2017/05/12 11:32:15-->
-              <imrd:description lang="no">Diameter (m). Kun brukt om dette er målt i tillegg til hovedlengdemål (&lt;CatchsampleType/lengthmeasurement&gt;).</imrd:description>
-              <imrd:description lang="en">Diameter (m). Only specified if this is measured in addition to main length measurement (&lt;CatchsampleType/lengthmeasurement&gt;).</imrd:description>
+              <imrd:description lang="no">Diameter (m). Kun brukt om dette er målt i tillegg til hovedlengdemål (&lt;catchsampleType/lengthmeasurement&gt;).</imrd:description>
+              <imrd:description lang="en">Diameter (m). Only specified if this is measured in addition to main length measurement (&lt;catchsampleType/lengthmeasurement&gt;).</imrd:description>
             </imrd:imrDoc>
           </xs:documentation>
         </xs:annotation>
@@ -1556,8 +1556,8 @@ kjønn er bestemt (gjelder ikke dypvannsreke og sjøkreps).</imrd:description>
           <xs:documentation>
             <imrd:imrDoc>
               <!--Annotation generated: 2017/05/12 11:32:15-->
-              <imrd:description lang="no">Kappelengde (m). Kun brukt om dette er målt i tillegg til hovedlengdemål (&lt;CatchsampleType/lengthmeasurement&gt;).</imrd:description>
-              <imrd:description lang="en">Mantle length (m). Only specified if this is measured in addition to main length measurement (&lt;CatchsampleType/lengthmeasurement&gt;).</imrd:description>
+              <imrd:description lang="no">Kappelengde (m). Kun brukt om dette er målt i tillegg til hovedlengdemål (&lt;catchsampleType/lengthmeasurement&gt;).</imrd:description>
+              <imrd:description lang="en">Mantle length (m). Only specified if this is measured in addition to main length measurement (&lt;catchsampleType/lengthmeasurement&gt;).</imrd:description>
             </imrd:imrDoc>
           </xs:documentation>
         </xs:annotation>
@@ -1567,8 +1567,8 @@ kjønn er bestemt (gjelder ikke dypvannsreke og sjøkreps).</imrd:description>
           <xs:documentation>
             <imrd:imrDoc>
               <!--Annotation generated: 2017/05/12 11:32:15-->
-              <imrd:description lang="no">Carapax lengde (m). Kun brukt om dette er målt i tillegg til hovedlengdemål (&lt;CatchsampleType/lengthmeasurement&gt;).</imrd:description>
-              <imrd:description lang="en">Carapace length (m). Only specified if this is measured in addition to main length measurement (&lt;CatchsampleType/lengthmeasurement&gt;).</imrd:description>
+              <imrd:description lang="no">Carapax lengde (m). Kun brukt om dette er målt i tillegg til hovedlengdemål (&lt;catchsampleType/lengthmeasurement&gt;).</imrd:description>
+              <imrd:description lang="en">Carapace length (m). Only specified if this is measured in addition to main length measurement (&lt;catchsampleType/lengthmeasurement&gt;).</imrd:description>
             </imrd:imrDoc>
           </xs:documentation>
         </xs:annotation>
@@ -1578,8 +1578,8 @@ kjønn er bestemt (gjelder ikke dypvannsreke og sjøkreps).</imrd:description>
           <xs:documentation>
             <imrd:imrDoc>
               <!--Annotation generated: 2017/05/12 11:32:15-->
-              <imrd:description lang="no">Hodelengde (m). Kun brukt om dette er målt i tillegg til hovedlengdemål (&lt;CatchsampleType/lengthmeasurement&gt;).</imrd:description>
-              <imrd:description lang="en">Head length (m). Only specified if this is measured in addition to main length measurement (&lt;CatchsampleType/lengthmeasurement&gt;).</imrd:description>
+              <imrd:description lang="no">Hodelengde (m). Kun brukt om dette er målt i tillegg til hovedlengdemål (&lt;catchsampleType/lengthmeasurement&gt;).</imrd:description>
+              <imrd:description lang="en">Head length (m). Only specified if this is measured in addition to main length measurement (&lt;catchsampleType/lengthmeasurement&gt;).</imrd:description>
             </imrd:imrDoc>
           </xs:documentation>
         </xs:annotation>
@@ -1589,8 +1589,8 @@ kjønn er bestemt (gjelder ikke dypvannsreke og sjøkreps).</imrd:description>
           <xs:documentation>
             <imrd:imrDoc>
               <!--Annotation generated: 2017/05/12 11:32:15-->
-              <imrd:description lang="no">Snute til ende av sporen (m). Kun brukt om dette er målt i tillegg til hovedlengdemål (&lt;CatchsampleType/lengthmeasurement&gt;).</imrd:description>
-              <imrd:description lang="en">Snout to end of tail (m). Only specified if this is measured in addition to main length measurement (&lt;CatchsampleType/lengthmeasurement&gt;).</imrd:description>
+              <imrd:description lang="no">Snute til ende av sporen (m). Kun brukt om dette er målt i tillegg til hovedlengdemål (&lt;catchsampleType/lengthmeasurement&gt;).</imrd:description>
+              <imrd:description lang="en">Snout to end of tail (m). Only specified if this is measured in addition to main length measurement (&lt;catchsampleType/lengthmeasurement&gt;).</imrd:description>
             </imrd:imrDoc>
           </xs:documentation>
         </xs:annotation>
@@ -1600,8 +1600,8 @@ kjønn er bestemt (gjelder ikke dypvannsreke og sjøkreps).</imrd:description>
           <xs:documentation>
             <imrd:imrDoc>
               <!--Annotation generated: 2017/05/12 11:32:15-->
-              <imrd:description lang="no">Snute til ende sammenkneppet spor (m). Kun brukt om dette er målt i tillegg til hovedlengdemål (&lt;CatchsampleType/lengthmeasurement&gt;).</imrd:description>
-              <imrd:description lang="en">Snout to end of tail squeezed (m). Only specified if this is measured in addition to main length measurement (&lt;CatchsampleType/lengthmeasurement&gt;).</imrd:description>
+              <imrd:description lang="no">Snute til ende sammenkneppet spor (m). Kun brukt om dette er målt i tillegg til hovedlengdemål (&lt;catchsampleType/lengthmeasurement&gt;).</imrd:description>
+              <imrd:description lang="en">Snout to end of tail squeezed (m). Only specified if this is measured in addition to main length measurement (&lt;catchsampleType/lengthmeasurement&gt;).</imrd:description>
             </imrd:imrDoc>
           </xs:documentation>
         </xs:annotation>
@@ -1611,8 +1611,8 @@ kjønn er bestemt (gjelder ikke dypvannsreke og sjøkreps).</imrd:description>
           <xs:documentation>
             <imrd:imrDoc>
               <!--Annotation generated: 2017/05/12 11:32:15-->
-              <imrd:description lang="no">Snute til forkant av gattfinne (m). Kun brukt om dette er målt i tillegg til hovedlengdemål (&lt;CatchsampleType/lengthmeasurement&gt;).</imrd:description>
-              <imrd:description lang="en">Snout to anal fin (m). Only specified if this is measured in addition to main length measurement (&lt;CatchsampleType/lengthmeasurement&gt;).</imrd:description>
+              <imrd:description lang="no">Snute til forkant av gattfinne (m). Kun brukt om dette er målt i tillegg til hovedlengdemål (&lt;catchsampleType/lengthmeasurement&gt;).</imrd:description>
+              <imrd:description lang="en">Snout to anal fin (m). Only specified if this is measured in addition to main length measurement (&lt;catchsampleType/lengthmeasurement&gt;).</imrd:description>
             </imrd:imrDoc>
           </xs:documentation>
         </xs:annotation>
@@ -1622,8 +1622,8 @@ kjønn er bestemt (gjelder ikke dypvannsreke og sjøkreps).</imrd:description>
           <xs:documentation>
             <imrd:imrDoc>
               <!--Annotation generated: 2017/05/12 11:32:15-->
-              <imrd:description lang="no">Snute til akternende av ryggfinne (m). Kun brukt om dette er målt i tillegg til hovedlengdemål (&lt;CatchsampleType/lengthmeasurement&gt;).</imrd:description>
-              <imrd:description lang="en">Snout to dorsal fin (m). Only specified if this is measured in addition to main length measurement (&lt;CatchsampleType/lengthmeasurement&gt;).</imrd:description>
+              <imrd:description lang="no">Snute til akternende av ryggfinne (m). Kun brukt om dette er målt i tillegg til hovedlengdemål (&lt;catchsampleType/lengthmeasurement&gt;).</imrd:description>
+              <imrd:description lang="en">Snout to dorsal fin (m). Only specified if this is measured in addition to main length measurement (&lt;catchsampleType/lengthmeasurement&gt;).</imrd:description>
             </imrd:imrDoc>
           </xs:documentation>
         </xs:annotation>
@@ -1633,8 +1633,8 @@ kjønn er bestemt (gjelder ikke dypvannsreke og sjøkreps).</imrd:description>
           <xs:documentation>
             <imrd:imrDoc>
               <!--Annotation generated: 2017/05/12 11:32:15-->
-              <imrd:description lang="no">Snute til innerst i sporen (Gaffellengde, m). Kun brukt om dette er målt i tillegg til hovedlengdemål (&lt;CatchsampleType/lengthmeasurement&gt;).</imrd:description>
-              <imrd:description lang="en">Snout to fork in tail (Fork length, m). Only specified if this is measured in addition to main length measurement (&lt;CatchsampleType/lengthmeasurement&gt;).</imrd:description>
+              <imrd:description lang="no">Snute til innerst i sporen (Gaffellengde, m). Kun brukt om dette er målt i tillegg til hovedlengdemål (&lt;catchsampleType/lengthmeasurement&gt;).</imrd:description>
+              <imrd:description lang="en">Snout to fork in tail (Fork length, m). Only specified if this is measured in addition to main length measurement (&lt;catchsampleType/lengthmeasurement&gt;).</imrd:description>
             </imrd:imrDoc>
           </xs:documentation>
         </xs:annotation>
@@ -1644,8 +1644,8 @@ kjønn er bestemt (gjelder ikke dypvannsreke og sjøkreps).</imrd:description>
           <xs:documentation>
             <imrd:imrDoc>
               <!--Annotation generated: 2017/05/12 11:32:15-->
-              <imrd:description lang="no">Snute til beinknute i haleroten (m). Kun brukt om dette er målt i tillegg til hovedlengdemål (&lt;CatchsampleType/lengthmeasurement&gt;).</imrd:description>
-              <imrd:description lang="en">Snout to bone knob (m). Only specified if this is measured in addition to main length measurement (&lt;CatchsampleType/lengthmeasurement&gt;).</imrd:description>
+              <imrd:description lang="no">Snute til beinknute i haleroten (m). Kun brukt om dette er målt i tillegg til hovedlengdemål (&lt;catchsampleType/lengthmeasurement&gt;).</imrd:description>
+              <imrd:description lang="en">Snout to bone knob (m). Only specified if this is measured in addition to main length measurement (&lt;catchsampleType/lengthmeasurement&gt;).</imrd:description>
             </imrd:imrDoc>
           </xs:documentation>
         </xs:annotation>
@@ -1655,8 +1655,8 @@ kjønn er bestemt (gjelder ikke dypvannsreke og sjøkreps).</imrd:description>
           <xs:documentation>
             <imrd:imrDoc>
               <!--Annotation generated: 2017/05/12 11:32:15-->
-              <imrd:description lang="no">Hodekappet lengde (m). Kun brukt om dette er målt i tillegg til hovedlengdemål (&lt;CatchsampleType/lengthmeasurement&gt;).</imrd:description>
-              <imrd:description lang="en">Length without head (m). Only specified if this is measured in addition to main length measurement (&lt;CatchsampleType/lengthmeasurement&gt;).</imrd:description>
+              <imrd:description lang="no">Hodekappet lengde (m). Kun brukt om dette er målt i tillegg til hovedlengdemål (&lt;catchsampleType/lengthmeasurement&gt;).</imrd:description>
+              <imrd:description lang="en">Length without head (m). Only specified if this is measured in addition to main length measurement (&lt;catchsampleType/lengthmeasurement&gt;).</imrd:description>
             </imrd:imrDoc>
           </xs:documentation>
         </xs:annotation>
@@ -1666,8 +1666,8 @@ kjønn er bestemt (gjelder ikke dypvannsreke og sjøkreps).</imrd:description>
           <xs:documentation>
             <imrd:imrDoc>
               <!--Annotation generated: 2017/05/12 11:32:15-->
-              <imrd:description lang="no">Carapax bredde (m). Kun brukt om dette er målt i tillegg til hovedlengdemål (&lt;CatchsampleType/lengthmeasurement&gt;).</imrd:description>
-              <imrd:description lang="en">Carapace width (m). Only specified if this is measured in addition to main length measurement (&lt;CatchsampleType/lengthmeasurement&gt;).</imrd:description>
+              <imrd:description lang="no">Carapax bredde (m). Kun brukt om dette er målt i tillegg til hovedlengdemål (&lt;catchsampleType/lengthmeasurement&gt;).</imrd:description>
+              <imrd:description lang="en">Carapace width (m). Only specified if this is measured in addition to main length measurement (&lt;catchsampleType/lengthmeasurement&gt;).</imrd:description>
             </imrd:imrDoc>
           </xs:documentation>
         </xs:annotation>
@@ -1677,8 +1677,8 @@ kjønn er bestemt (gjelder ikke dypvannsreke og sjøkreps).</imrd:description>
           <xs:documentation>
             <imrd:imrDoc>
               <!--Annotation generated: 2017/05/12 11:32:15-->
-              <imrd:description lang="no">Høyre klo bredde (m). Kun brukt om dette er målt i tillegg til hovedlengdemål (&lt;CatchsampleType/lengthmeasurement&gt;).</imrd:description>
-              <imrd:description lang="en">Width of right claw (m). Only specified if this is measured in addition to main length measurement (&lt;CatchsampleType/lengthmeasurement&gt;).</imrd:description>
+              <imrd:description lang="no">Høyre klo bredde (m). Kun brukt om dette er målt i tillegg til hovedlengdemål (&lt;catchsampleType/lengthmeasurement&gt;).</imrd:description>
+              <imrd:description lang="en">Width of right claw (m). Only specified if this is measured in addition to main length measurement (&lt;catchsampleType/lengthmeasurement&gt;).</imrd:description>
             </imrd:imrDoc>
           </xs:documentation>
         </xs:annotation>
@@ -1688,8 +1688,8 @@ kjønn er bestemt (gjelder ikke dypvannsreke og sjøkreps).</imrd:description>
           <xs:documentation>
             <imrd:imrDoc>
               <!--Annotation generated: 2017/05/12 11:32:15-->
-              <imrd:description lang="no">Høyre klo lengde (m). Kun brukt om dette er målt i tillegg til hovedlengdemål (&lt;CatchsampleType/lengthmeasurement&gt;).</imrd:description>
-              <imrd:description lang="en">Length of right claw (m). Only specified if this is measured in addition to main length measurement (&lt;CatchsampleType/lengthmeasurement&gt;).</imrd:description>
+              <imrd:description lang="no">Høyre klo lengde (m). Kun brukt om dette er målt i tillegg til hovedlengdemål (&lt;catchsampleType/lengthmeasurement&gt;).</imrd:description>
+              <imrd:description lang="en">Length of right claw (m). Only specified if this is measured in addition to main length measurement (&lt;catchsampleType/lengthmeasurement&gt;).</imrd:description>
             </imrd:imrDoc>
           </xs:documentation>
         </xs:annotation>
@@ -1699,8 +1699,8 @@ kjønn er bestemt (gjelder ikke dypvannsreke og sjøkreps).</imrd:description>
           <xs:documentation>
             <imrd:imrDoc>
               <!--Annotation generated: 2017/05/12 11:32:15-->
-              <imrd:description lang="no">Bredde 3dje fot merus (m). Kun brukt om dette er målt i tillegg til hovedlengdemål (&lt;CatchsampleType/lengthmeasurement&gt;).</imrd:description>
-              <imrd:description lang="en">Width of third foot meros (m). Only specified if this is measured in addition to main length measurement (&lt;CatchsampleType/lengthmeasurement&gt;).</imrd:description>
+              <imrd:description lang="no">Bredde 3dje fot merus (m). Kun brukt om dette er målt i tillegg til hovedlengdemål (&lt;catchsampleType/lengthmeasurement&gt;).</imrd:description>
+              <imrd:description lang="en">Width of third foot meros (m). Only specified if this is measured in addition to main length measurement (&lt;catchsampleType/lengthmeasurement&gt;).</imrd:description>
             </imrd:imrDoc>
           </xs:documentation>
         </xs:annotation>
@@ -1710,8 +1710,8 @@ kjønn er bestemt (gjelder ikke dypvannsreke og sjøkreps).</imrd:description>
           <xs:documentation>
             <imrd:imrDoc>
               <!--Annotation generated: 2017/05/12 11:32:15-->
-              <imrd:description lang="no">Lengde 3dje fot merus (m). Kun brukt om dette er målt i tillegg til hovedlengdemål (&lt;CatchsampleType/lengthmeasurement&gt;).</imrd:description>
-              <imrd:description lang="en">Length of third foot meros (m). Only specified if this is measured in addition to main length measurement (&lt;CatchsampleType/lengthmeasurement&gt;).</imrd:description>
+              <imrd:description lang="no">Lengde 3dje fot merus (m). Kun brukt om dette er målt i tillegg til hovedlengdemål (&lt;catchsampleType/lengthmeasurement&gt;).</imrd:description>
+              <imrd:description lang="en">Length of third foot meros (m). Only specified if this is measured in addition to main length measurement (&lt;catchsampleType/lengthmeasurement&gt;).</imrd:description>
             </imrd:imrDoc>
           </xs:documentation>
         </xs:annotation>
@@ -1721,8 +1721,8 @@ kjønn er bestemt (gjelder ikke dypvannsreke og sjøkreps).</imrd:description>
           <xs:documentation>
             <imrd:imrDoc>
               <!--Annotation generated: 2017/05/12 11:32:15-->
-              <imrd:description lang="no">Japankutt (m). Kun brukt om dette er målt i tillegg til hovedlengdemål (&lt;CatchsampleType/lengthmeasurement&gt;).</imrd:description>
-              <imrd:description lang="en">Japanese cut (m). Only specified if this is measured in addition to main length measurement (&lt;CatchsampleType/lengthmeasurement&gt;).</imrd:description>
+              <imrd:description lang="no">Japankutt (m). Kun brukt om dette er målt i tillegg til hovedlengdemål (&lt;catchsampleType/lengthmeasurement&gt;).</imrd:description>
+              <imrd:description lang="en">Japanese cut (m). Only specified if this is measured in addition to main length measurement (&lt;catchsampleType/lengthmeasurement&gt;).</imrd:description>
             </imrd:imrDoc>
           </xs:documentation>
         </xs:annotation>
@@ -1776,8 +1776,8 @@ kjønn er bestemt (gjelder ikke dypvannsreke og sjøkreps).</imrd:description>
           <xs:documentation>
             <imrd:imrDoc>
               <!--Annotation generated: 2017/05/12 11:32:15-->
-              <imrd:description lang="no">Abdomen vidde (m). Kun brukt om dette er målt i tillegg til hovedlengdemål (&lt;CatchsampleType/lengthmeasurement&gt;).</imrd:description>
-              <imrd:description lang="en">Abdomen width (m). Only specified if this is measured in addition to main length measurement (&lt;CatchsampleType/lengthmeasurement&gt;).</imrd:description>
+              <imrd:description lang="no">Abdomen vidde (m). Kun brukt om dette er målt i tillegg til hovedlengdemål (&lt;catchsampleType/lengthmeasurement&gt;).</imrd:description>
+              <imrd:description lang="en">Abdomen width (m). Only specified if this is measured in addition to main length measurement (&lt;catchsampleType/lengthmeasurement&gt;).</imrd:description>
             </imrd:imrDoc>
           </xs:documentation>
         </xs:annotation>
