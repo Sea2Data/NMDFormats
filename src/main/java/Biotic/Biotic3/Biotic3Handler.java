@@ -24,6 +24,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -190,7 +191,7 @@ public class Biotic3Handler extends NamespaceVersionHandler<MissionsType> {
         fishstation.setWeather(createStringFromBiotic1(f.getWeather()));
         fishstation.setWinddirection(f.getWinddirection());
         fishstation.setWindspeed(f.getWindspeed());
-        fishstation.setWirelength(f.getWirelength());
+        fishstation.setWirelength(this.convertIntegerToDecimal(f.getWirelength()));
 
         for (BioticTypes.v1_4.CatchsampleType c : f.getCatchsample()) {
             fishstation.getCatchsample().add(this.createCatchsampleFromBiotic1(c));
@@ -347,8 +348,10 @@ public class Biotic3Handler extends NamespaceVersionHandler<MissionsType> {
         prey.setTotalweight(p.getTotalweight());
         prey.setWeightresolution(this.createStringFromBiotic1(p.getWeightresolution()));
 
+        int linennumber = 1;
         for (BioticTypes.v1_4.PreylengthType pl : p.getPreylength()) {
-            prey.getPreylength().add(this.convertPreyLengthFromBiotic1(pl));
+            prey.getPreylength().add(this.convertPreyLengthFromBiotic1(pl, linennumber));
+            linennumber++;
         }
 
         for (BioticTypes.v1_4.CopepodedevstageType co : p.getCopepodedevstage()) {
@@ -366,8 +369,9 @@ public class Biotic3Handler extends NamespaceVersionHandler<MissionsType> {
         return tag;
     }
 
-    private PreylengthType convertPreyLengthFromBiotic1(BioticTypes.v1_4.PreylengthType pl) {
+    private PreylengthType convertPreyLengthFromBiotic1(BioticTypes.v1_4.PreylengthType pl, int linenumber) {
         PreylengthType preylength = this.biotic3factory.createPreylengthType();
+        preylength.setNo(new BigInteger(""+linenumber));
         preylength.setCount(pl.getCount());
         preylength.setLength(pl.getLength());
 
@@ -450,6 +454,15 @@ public class Biotic3Handler extends NamespaceVersionHandler<MissionsType> {
             return newTime;
         } catch (DatatypeConfigurationException ex) {
             throw new BioticConversionException("Malformed date: " + starttime);
+        }
+    }
+
+    private BigDecimal convertIntegerToDecimal(BigInteger integer) {
+        if (integer == null){
+            return null;
+        }
+        else{
+            return new BigDecimal(integer);
         }
     }
 

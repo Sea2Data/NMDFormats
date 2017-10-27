@@ -13,12 +13,15 @@ import BioticTypes.v3_beta.IndividualType;
 import BioticTypes.v3_beta.MissionType;
 import BioticTypes.v3_beta.MissionsType;
 import BioticTypes.v3_beta.PreyType;
+import BioticTypes.v3_beta.PreylengthType;
 import HierarchicalData.HierarchicalData;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.lang.reflect.Method;
+import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -176,8 +179,7 @@ public class Biotic3HandlerTest {
                     System.out.println(getter);
                     assertEquals(newResult, oldResult);
                 }
-            }
-            else if (!exceptions.contains(getter)){
+            } else if (!exceptions.contains(getter)) {
                 fail("Getter " + getter + " not in new format, and not listed in the exceptions.");
             }
         }
@@ -206,7 +208,7 @@ public class Biotic3HandlerTest {
         for (Method method : objectmethods) {
             exceptions.add(method.getName());
         }
-        
+
         // manually check that these cases are handled in other tests. Compare number in comments with matching number in testConvertBiotic1ChangedFields()
         // note that some getters occur on several levels. Also mentioned in comments below.
         exceptions.add("getChildren"); // not part of format
@@ -216,7 +218,7 @@ public class Biotic3HandlerTest {
         exceptions.add("getFlowcount"); //field removed
         exceptions.add("getFishno"); //field removed
         exceptions.add("getDevelopmentalstage"); //field removed
-        
+
         exceptions.add("getPrey"); //moved. Tested in: testPreyConversionAllThere()
 
         exceptions.add("getStartdate"); //1 mission and fishstation
@@ -233,13 +235,16 @@ public class Biotic3HandlerTest {
         exceptions.add("getGeneticsnumber"); //12
         exceptions.add("getLengthunit"); //13
         exceptions.add("getStage"); //14
+        exceptions.add("getWirelength"); //15
 
         this.compareSameName(missionsBiotic1, result, exceptions);
     }
 
     @Test
     /**
-     * Tests fields that have changed name of format. Note that level is not checked so all getters that apply to any level have to be checked if in the exceptions to testConvertBiotic1ConservedFields
+     * Tests fields that have changed name of format. Note that level is not
+     * checked so all getters that apply to any level have to be checked if in
+     * the exceptions to testConvertBiotic1ConservedFields
      */
     public void testConvertBiotic1ChangedFields() throws Exception {
         //ref changes_3.txt
@@ -298,7 +303,7 @@ public class Biotic3HandlerTest {
                 } else {
                     assertEquals(newStation.getStarttime(), oldStation.getStarttime() + "Z");
                 }
-                
+
                 //4
                 if (newStation.getStoptime() == null) {
                     assertNull(oldStation.getStoptime());
@@ -316,6 +321,13 @@ public class Biotic3HandlerTest {
                 assertEquals(newStation.getVerticaltrawlopening(), oldStation.getTrawlopening());
                 //9
                 assertEquals(newStation.getVerticaltrawlopeningsd(), oldStation.getTrawlopeningsd());
+
+                //15
+                if (newStation.getWirelength() == null) {
+                    assertNull(oldStation.getWirelength());
+                } else {
+                    assertTrue(Math.abs(newStation.getWirelength().doubleValue() - oldStation.getWirelength().doubleValue()) < 10e-10);
+                }
 
                 List<CatchsampleType> newcatches = newStation.getCatchsample();
                 List<BioticTypes.v1_4.CatchsampleType> oldcatches = oldStation.getCatchsample();
@@ -442,6 +454,57 @@ public class Biotic3HandlerTest {
             }
         }
         assertTrue(checkedPrey);
+    }
+
+    public void testPreyLength() throws Exception {
+        Biotic1Handler b1handler = new Biotic1Handler();
+        BioticTypes.v1_4.MissionsType missionsBiotic1 = b1handler.read(Biotic3HandlerTest.class.getClassLoader().getResourceAsStream("ecosurvey.xml"));
+        Biotic3Handler instance = new Biotic3Handler();
+        MissionsType result = instance.convertBiotic1(missionsBiotic1);
+
+        boolean checkedPreyLength = false;
+        List<MissionType> newMissions = result.getMission();
+        List<BioticTypes.v1_4.MissionType> oldMissions = missionsBiotic1.getMission();
+        for (int i = 0; i < newMissions.size(); i++) {
+            MissionType newMission = newMissions.get(i);
+            BioticTypes.v1_4.MissionType oldMission = oldMissions.get(i);
+
+            List<FishstationType> newStations = newMission.getFishstation();
+            List<BioticTypes.v1_4.FishstationType> oldStations = oldMission.getFishstation();
+            for (int j = 0; j < newStations.size(); j++) {
+                FishstationType newStation = newStations.get(j);
+                BioticTypes.v1_4.FishstationType oldStation = oldStations.get(j);
+
+                List<CatchsampleType> newcatches = newStation.getCatchsample();
+                List<BioticTypes.v1_4.CatchsampleType> oldcatches = oldStation.getCatchsample();
+                for (int k = 0; k < newcatches.size(); k++) {
+                    CatchsampleType newCatch = newcatches.get(k);
+                    BioticTypes.v1_4.CatchsampleType oldCatch = oldcatches.get(k);
+
+                    for (IndividualType newInd : newCatch.getIndividual()) {
+                        for (PreyType newPrey : newInd.getPrey()) {
+                            BioticTypes.v1_4.PreyType oldPrey = null;
+                            for (BioticTypes.v1_4.PreyType oldPreyC : oldCatch.getPrey()) {
+                                if (oldPreyC.getFishno().equals(newInd.getSpecimenno()) && oldPreyC.getPartno().equals(newPrey.getPartno())) {
+                                    oldPrey = oldPreyC;
+                                }
+                            }
+                            assertFalse(oldPrey == null);
+                            assertEquals(oldPrey.getPreylength().size(), newPrey.getPreylength().size());
+
+                            List<BigInteger> numbers = new ArrayList<>();
+                            for (PreylengthType preyLength : newPrey.getPreylength()) {
+                                checkedPreyLength = true;
+                                assertFalse(numbers.contains(preyLength.getNo()));
+                                numbers.add(preyLength.getNo());
+                                assertTrue(numbers.contains(preyLength.getNo()));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        assertTrue(checkedPreyLength);
     }
 
     @Test
