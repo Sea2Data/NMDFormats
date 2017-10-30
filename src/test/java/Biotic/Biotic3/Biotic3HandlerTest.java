@@ -8,12 +8,14 @@ package Biotic.Biotic3;
 import Biotic.Biotic1.Biotic1Handler;
 import BioticTypes.v3_beta.AgedeterminationType;
 import BioticTypes.v3_beta.CatchsampleType;
+import BioticTypes.v3_beta.CopepodedevstageType;
 import BioticTypes.v3_beta.FishstationType;
 import BioticTypes.v3_beta.IndividualType;
 import BioticTypes.v3_beta.MissionType;
 import BioticTypes.v3_beta.MissionsType;
 import BioticTypes.v3_beta.PreyType;
 import BioticTypes.v3_beta.PreylengthType;
+import BioticTypes.v3_beta.TagType;
 import HierarchicalData.HierarchicalData;
 import java.io.File;
 import java.io.FileInputStream;
@@ -505,6 +507,104 @@ public class Biotic3HandlerTest {
             }
         }
         assertTrue(checkedPreyLength);
+    }
+
+    @Test
+    public void testKeys() throws Exception {
+        Biotic1Handler b1handler = new Biotic1Handler();
+        BioticTypes.v1_4.MissionsType missionsBiotic1 = b1handler.read(Biotic3HandlerTest.class.getClassLoader().getResourceAsStream("ecosurvey.xml"));
+        Biotic3Handler instance = new Biotic3Handler();
+        MissionsType result = instance.convertBiotic1(missionsBiotic1);
+
+        Set<String> missionKeys = new HashSet<>();
+        
+        for (MissionType m : result.getMission()){
+            assertNotNull(m.getMissiontype());
+            assertNotNull(m.getStartyear());
+            assertNotNull(m.getPlatform());
+            assertNotNull(m.getMissionnumber());
+            
+            String missionkeystring = m.getMissiontype() + "/" + m.getStartyear() +  "/" + m.getPlatform() + "/" + m.getMissionnumber();
+            assertFalse(missionKeys.contains(missionkeystring));
+            missionKeys.add(missionkeystring);
+            
+            Set<String> stationKeys = new HashSet<>();
+            for (FishstationType f: m.getFishstation()){
+                assertNotNull(f.getYear());
+                assertNotNull(f.getSerialno());
+                
+                String stationkeystring = f.getYear() + "/" + f.getSerialno();
+                assertFalse(stationKeys.contains(stationkeystring));
+                stationKeys.add(stationkeystring);
+                
+                Set<String> catchKeys = new HashSet<>();
+                for (CatchsampleType c: f.getCatchsample()){
+                    assertNotNull(c.getSpecies());
+                    assertNotNull(c.getSamplenumber());
+                    
+                    String catchkeystring = c.getSpecies() + "/" + c.getSamplenumber();
+                    assertFalse(catchKeys.contains(catchkeystring));
+                    catchKeys.add(catchkeystring);
+                    
+                    Set<String> individualKeys = new HashSet<>();
+                    for (IndividualType i: c.getIndividual()){
+                        assertNotNull(i.getSpecimenno());
+                        
+                        String individualkeystring = "" + i.getSpecimenno();
+                        assertFalse(individualKeys.contains(individualkeystring));
+                        individualKeys.add(individualkeystring);
+                        
+                        Set<String> ageKeys = new HashSet<>();
+                        for (AgedeterminationType a: i.getAgedetermination()){
+                            assertNotNull(a.getNo());
+                            
+                            String agekeystring = "" + a.getNo();
+                            assertFalse(ageKeys.contains(agekeystring));
+                            ageKeys.add(agekeystring);
+                        }
+                        
+                        Set<String> tagKeys = new HashSet<>();
+                        for (TagType t: i.getTag()){
+                            assertNotNull(t.getTagno());
+                            
+                            String tagKeyString = "" + t.getTagno();
+                            assertFalse(tagKeys.contains(tagKeyString));
+                            tagKeys.add(tagKeyString);
+                        }
+                        
+                        Set<String> preyKeys = new HashSet<>();
+                        for (PreyType p: i.getPrey()){
+                            assertNotNull(p.getSpecies());
+                            assertNotNull(p.getPartno());
+                            
+                            String preyKeyString = p.getSpecies() + "/" + p.getPartno();
+                            assertFalse(preyKeys.contains(preyKeyString));
+                            preyKeys.add(preyKeyString);
+                            
+                            
+                            Set<String> preylengthKeys = new HashSet<>();
+                            for (PreylengthType pl: p.getPreylength()){
+                                assertNotNull(pl.getNo());
+                                
+                                String plkeystring = "" + pl.getNo();
+                                assertFalse(preylengthKeys.contains(plkeystring));
+                                preylengthKeys.add(plkeystring);
+                            }
+                            
+                            Set<String> ccpKeys = new HashSet<>();
+                            for (CopepodedevstageType cp: p.getCopepodedevstage()){
+                                assertNotNull(cp.getCopepodedevstage());
+                                
+                                String cpkeystring = "" + cp.getCopepodedevstage();
+                                assertFalse(ccpKeys.contains(cpkeystring));
+                                ccpKeys.add(cpkeystring);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
     }
 
     @Test

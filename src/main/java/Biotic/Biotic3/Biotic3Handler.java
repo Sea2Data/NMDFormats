@@ -135,6 +135,8 @@ public class Biotic3Handler extends NamespaceVersionHandler<MissionsType> {
 
     private FishstationType createFishstationFromBiotic1(BioticTypes.v1_4.FishstationType f) throws BioticConversionException {
         FishstationType fishstation = this.biotic3factory.createFishstationType();
+        
+        fishstation.setYear(((BioticTypes.v1_4.MissionType)f.getParent()).getYear());
         fishstation.setArea(f.getArea());
         fishstation.setBottomdepthstart(f.getBottomdepthstart());
         fishstation.setBottomdepthstop(f.getBottomdepthstop());
