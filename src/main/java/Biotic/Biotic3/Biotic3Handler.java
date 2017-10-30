@@ -162,7 +162,7 @@ public class Biotic3Handler extends NamespaceVersionHandler<MissionsType> {
         fishstation.setGearcondition(createStringFromBiotic1(f.getGearcondition()));
         fishstation.setGearcount(f.getGearcount());
         fishstation.setGearno(f.getGearno());
-        fishstation.setGearspeed(f.getGearspeed());
+        fishstation.setGearflow(f.getGearspeed());
         fishstation.setHaulvalidity(createStringFromBiotic1(f.getHaulvalidity()));
         fishstation.setLandingsite(createStringFromBiotic1(f.getLandingsite()));
         fishstation.setLatitudeend(f.getLatitudeend());

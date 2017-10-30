@@ -238,6 +238,7 @@ public class Biotic3HandlerTest {
         exceptions.add("getLengthunit"); //13
         exceptions.add("getStage"); //14
         exceptions.add("getWirelength"); //15
+        exceptions.add("getGearspeed"); //16
 
         this.compareSameName(missionsBiotic1, result, exceptions);
     }
@@ -329,6 +330,13 @@ public class Biotic3HandlerTest {
                     assertNull(oldStation.getWirelength());
                 } else {
                     assertTrue(Math.abs(newStation.getWirelength().doubleValue() - oldStation.getWirelength().doubleValue()) < 10e-10);
+                }
+                
+                //16
+                if (newStation.getGearflow() == null){
+                    assertNull(oldStation.getGearspeed());
+                } else{
+                    assertEquals(newStation.getGearflow(), oldStation.getGearspeed());
                 }
 
                 List<CatchsampleType> newcatches = newStation.getCatchsample();
