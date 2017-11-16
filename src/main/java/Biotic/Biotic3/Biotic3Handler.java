@@ -5,6 +5,7 @@
  */
 package Biotic.Biotic3;
 
+import Biotic.BioticConversionException;
 import Biotic.Biotic1.Biotic1Handler;
 import XMLHandling.NamespaceVersionHandler;
 import BioticTypes.v3_beta.PreyType;
@@ -98,7 +99,7 @@ public class Biotic3Handler extends NamespaceVersionHandler<MissionsType> {
     }
 
     /**
-     * @param missionsBiotic1 data to be converted
+     * @param missionsBiotic1 data to be conver?ted
      * @return converted data
      * @throws Biotic.BioticConversionException
      */
@@ -311,9 +312,6 @@ public class Biotic3Handler extends NamespaceVersionHandler<MissionsType> {
     private AgedeterminationType createAgedeterminationFromBiotic1(BioticTypes.v1_4.AgedeterminationType a) {
         AgedeterminationType age = this.biotic3factory.createAgedeterminationType();
         age.setAge(a.getAge());
-
-        BioticTypes.v1_4.CatchsampleType catchsample = (BioticTypes.v1_4.CatchsampleType) a.getParent().getParent();
-
         age.setCalibration(a.getCalibration());
         age.setCoastalannuli(a.getCoastalannuli());
         age.setGrowthzone1(a.getGrowthzone1());

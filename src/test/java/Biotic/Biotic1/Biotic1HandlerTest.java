@@ -5,9 +5,10 @@
  */
 package Biotic.Biotic1;
 
-import Biotic.Biotic1.Biotic1Handler;
+import Biotic.Biotic3.Biotic3Handler;
 import BioticTypes.v1_4.MissionsType;
 import BioticTypes.v1_4.ObjectFactory;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import org.junit.After;
@@ -76,6 +77,32 @@ public class Biotic1HandlerTest {
         temp.deleteOnExit();
         r.save(new FileOutputStream(temp), f.createMissionsType());
 
+    }
+
+    @Test
+    public void testConvertBiotic3() throws Exception {
+    System.out.println("test convert back and forth");
+        // read biotic as 1
+        Biotic1Handler r = new Biotic1Handler();
+        MissionsType m = r.read(Biotic1HandlerTest.class.getClassLoader().getResourceAsStream("test.xml"));
+
+        // save to temp
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        r.save(baos, m);
+        String m1 = baos.toString();
+
+        //read as 3
+        Biotic3Handler r3 = new Biotic3Handler();
+        BioticTypes.v3_beta.MissionsType b3 = r3.readOldBiotic(Biotic1HandlerTest.class.getClassLoader().getResourceAsStream("test.xml"));
+
+        // convert back
+        MissionsType mConverted = r.convertBiotic3(b3);
+        ByteArrayOutputStream baos3 = new ByteArrayOutputStream();
+        r.save(baos3, mConverted);
+        String m3 = baos3.toString();
+
+        //check equality
+        assertEquals(m1, m3);
     }
 
 }

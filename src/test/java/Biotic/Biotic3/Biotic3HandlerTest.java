@@ -5,6 +5,7 @@
  */
 package Biotic.Biotic3;
 
+import Biotic.BioticConversionException;
 import Biotic.Biotic1.Biotic1Handler;
 import BioticTypes.v3_beta.AgedeterminationType;
 import BioticTypes.v3_beta.CatchsampleType;
