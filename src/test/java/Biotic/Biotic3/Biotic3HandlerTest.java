@@ -628,5 +628,34 @@ public class Biotic3HandlerTest {
 
         }
     }
+    
+    @Test
+    public void testKeyCheckNull() throws Exception{
+        Biotic1Handler b1handler = new Biotic1Handler();
+        BioticTypes.v1_4.MissionsType missionsBiotic1 = b1handler.read(Biotic3HandlerTest.class.getClassLoader().getResourceAsStream("test.xml"));
+        Biotic3Handler instance = new Biotic3Handler();
+        MissionsType m = instance.convertBiotic1(missionsBiotic1);
+        m.getMission().get(0).setStartyear(null);
+        try{
+            instance.checkKeys(m);
+            fail("Exception expected");
+        }catch (BioticConversionException bce){
+            
+        }
+    }
 
+    @Test
+    public void testKeyCheckDupl() throws Exception{
+        Biotic1Handler b1handler = new Biotic1Handler();
+        BioticTypes.v1_4.MissionsType missionsBiotic1 = b1handler.read(Biotic3HandlerTest.class.getClassLoader().getResourceAsStream("test.xml"));
+        Biotic3Handler instance = new Biotic3Handler();
+        MissionsType m = instance.convertBiotic1(missionsBiotic1);
+        m.getMission().get(0).getFishstation().get(1).setSerialno(m.getMission().get(0).getFishstation().get(0).getSerialno());
+        try{
+            instance.checkKeys(m);
+            fail("Exception expected");
+        }catch (BioticConversionException bce){
+            
+        }
+    }
 }

@@ -99,7 +99,7 @@ public class Biotic3Handler extends NamespaceVersionHandler<MissionsType> {
     }
 
     /**
-     * @param missionsBiotic1 data to be conver?ted
+     * @param missionsBiotic1 data to be converted
      * @return converted data
      * @throws Biotic.BioticConversionException
      */
@@ -110,7 +110,116 @@ public class Biotic3Handler extends NamespaceVersionHandler<MissionsType> {
             MissionType mission = createMissionFromBiotic1(m);
             missions.getMission().add(mission);
         }
+        checkKeys(missions);
         return missions;
+    }
+    
+    private void checkKeyNotNull(Object o) throws BioticConversionException{
+        if (o == null){
+            throw new BioticConversionException("Key fields can not be null");
+        }
+    }
+    
+    private void checkKeyNotDuplicated(String key, Set<String> otherKeys) throws BioticConversionException{
+        if (otherKeys.contains(key)){
+            throw new BioticConversionException("Keys can not be duplicated");
+        }
+    }
+    
+    /**
+     * Flags a conversion exception if key structure is not OK.
+     * @param missions
+     * @throws BioticConversionException 
+     */
+    protected void checkKeys(MissionsType missions) throws BioticConversionException{
+               Set<String> missionKeys = new HashSet<>();
+        
+        for (MissionType m : missions.getMission()){
+            checkKeyNotNull(m.getMissiontype());
+            checkKeyNotNull(m.getStartyear());
+            checkKeyNotNull(m.getPlatform());
+            checkKeyNotNull(m.getMissionnumber());
+            
+            String missionkeystring = m.getMissiontype() + "/" + m.getStartyear() +  "/" + m.getPlatform() + "/" + m.getMissionnumber();
+            checkKeyNotDuplicated(missionkeystring, missionKeys);
+            missionKeys.add(missionkeystring);
+            
+            Set<String> stationKeys = new HashSet<>();
+            for (FishstationType f: m.getFishstation()){
+                checkKeyNotNull(f.getYear());
+                checkKeyNotNull(f.getSerialno());
+                
+                String stationkeystring = f.getYear() + "/" + f.getSerialno();
+                checkKeyNotDuplicated(stationkeystring, stationKeys);
+                stationKeys.add(stationkeystring);
+                
+                Set<String> catchKeys = new HashSet<>();
+                for (CatchsampleType c: f.getCatchsample()){
+                    checkKeyNotNull(c.getSpecies());
+                    checkKeyNotNull(c.getSamplenumber());
+                    
+                    String catchkeystring = c.getSpecies() + "/" + c.getSamplenumber();
+                    checkKeyNotDuplicated(catchkeystring, catchKeys);
+                    catchKeys.add(catchkeystring);
+                    
+                    Set<String> individualKeys = new HashSet<>();
+                    for (IndividualType i: c.getIndividual()){
+                        checkKeyNotNull(i.getSpecimenno());
+                        
+                        String individualkeystring = "" + i.getSpecimenno();
+                        checkKeyNotDuplicated(individualkeystring, individualKeys);
+                        individualKeys.add(individualkeystring);
+                        
+                        Set<String> ageKeys = new HashSet<>();
+                        for (AgedeterminationType a: i.getAgedetermination()){
+                            checkKeyNotNull(a.getNo());
+                            
+                            String agekeystring = "" + a.getNo();
+                            checkKeyNotDuplicated(agekeystring, ageKeys);
+                            ageKeys.add(agekeystring);
+                        }
+                        
+                        Set<String> tagKeys = new HashSet<>();
+                        for (TagType t: i.getTag()){
+                            checkKeyNotNull(t.getTagno());
+                            
+                            String tagKeyString = "" + t.getTagno();
+                            checkKeyNotDuplicated(tagKeyString, tagKeys);
+                            tagKeys.add(tagKeyString);
+                        }
+                        
+                        Set<String> preyKeys = new HashSet<>();
+                        for (PreyType p: i.getPrey()){
+                            checkKeyNotNull(p.getSpecies());
+                            checkKeyNotNull(p.getPartno());
+                            
+                            String preyKeyString = p.getSpecies() + "/" + p.getPartno();
+                            checkKeyNotNull(preyKeys.contains(preyKeyString));
+                            preyKeys.add(preyKeyString);
+                            
+                            
+                            Set<String> preylengthKeys = new HashSet<>();
+                            for (PreylengthType pl: p.getPreylength()){
+                                checkKeyNotNull(pl.getNo());
+                                
+                                String plkeystring = "" + pl.getNo();
+                                checkKeyNotDuplicated(plkeystring, preylengthKeys);
+                                preylengthKeys.add(plkeystring);
+                            }
+                            
+                            Set<String> ccpKeys = new HashSet<>();
+                            for (CopepodedevstageType cp: p.getCopepodedevstage()){
+                                checkKeyNotNull(cp.getCopepodedevstage());
+                                
+                                String cpkeystring = "" + cp.getCopepodedevstage();
+                                checkKeyNotDuplicated(cpkeystring, ccpKeys);
+                                ccpKeys.add(cpkeystring);
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private MissionType createMissionFromBiotic1(BioticTypes.v1_4.MissionType m) throws BioticConversionException {
