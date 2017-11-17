@@ -223,10 +223,9 @@ public class Biotic1Handler extends NamespaceVersionHandler<MissionsType> {
             throw new BioticConversionException("Missions can not cross years in Biotic v1.4");
         }
         
-        //keep this ?
-        //if (!(f.getFishingdepthcount() == null || f.getFishingdepthcount().intValue() == 1)) {
-        //    throw new BioticConversionException("Multiple trawling depths are not handled in Biotic v1.4 conversion");
-        //}
+        if (!(f.getFishingdepthcount() == null || f.getFishingdepthcount().intValue() == 1)) {
+            throw new BioticConversionException("Multiple trawling depths are not handled in Biotic v1.4 conversion");
+        }
         
         fishstation.setArea(f.getArea());
         fishstation.setBottomdepthstart(f.getBottomdepthstart());
