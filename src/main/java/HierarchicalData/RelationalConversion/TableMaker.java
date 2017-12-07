@@ -240,6 +240,12 @@ public class TableMaker {
         return table;
     }
 
+    /**
+     * Creates an iterator to extract a row for each object in data
+     * @param <T>
+     * @param data
+     * @return 
+     */
     public <T extends HierarchicalData> Iterator<List<String>> getTableContentIterator(List<T> data) {
         return new TableContentIterator(this, data);
     }
