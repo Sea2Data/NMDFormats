@@ -155,10 +155,10 @@ public class Biotic3Handler extends NamespaceVersionHandler<MissionsType> {
                 
                 Set<String> catchKeys = new HashSet<>();
                 for (CatchsampleType c: f.getCatchsample()){
-                    checkKeyNotNull(c.getSpecies());
+                    checkKeyNotNull(c.getCatchspecies());
                     checkKeyNotNull(c.getSamplenumber());
                     
-                    String catchkeystring = c.getSpecies() + "/" + c.getSamplenumber();
+                    String catchkeystring = c.getCatchspecies() + "/" + c.getSamplenumber();
                     checkKeyNotDuplicated(catchkeystring, catchKeys);
                     catchKeys.add(catchkeystring);
                     
@@ -172,43 +172,43 @@ public class Biotic3Handler extends NamespaceVersionHandler<MissionsType> {
                         
                         Set<String> ageKeys = new HashSet<>();
                         for (AgedeterminationType a: i.getAgedetermination()){
-                            checkKeyNotNull(a.getNo());
+                            checkKeyNotNull(a.getAgedeterminationid());
                             
-                            String agekeystring = "" + a.getNo();
+                            String agekeystring = "" + a.getAgedeterminationid();
                             checkKeyNotDuplicated(agekeystring, ageKeys);
                             ageKeys.add(agekeystring);
                         }
                         
                         Set<String> tagKeys = new HashSet<>();
                         for (TagType t: i.getTag()){
-                            checkKeyNotNull(t.getTagno());
+                            checkKeyNotNull(t.getTagid());
                             
-                            String tagKeyString = "" + t.getTagno();
+                            String tagKeyString = "" + t.getTagid();
                             checkKeyNotDuplicated(tagKeyString, tagKeys);
                             tagKeys.add(tagKeyString);
                         }
                         
                         Set<String> preyKeys = new HashSet<>();
                         for (PreyType p: i.getPrey()){
-                            checkKeyNotNull(p.getSpecies());
+                            checkKeyNotNull(p.getPreyspecies());
                             checkKeyNotNull(p.getPartno());
                             
-                            String preyKeyString = p.getSpecies() + "/" + p.getPartno();
+                            String preyKeyString = p.getPreyspecies()+ "/" + p.getPartno();
                             checkKeyNotNull(preyKeys.contains(preyKeyString));
                             preyKeys.add(preyKeyString);
                             
                             
                             Set<String> preylengthKeys = new HashSet<>();
-                            for (PreylengthType pl: p.getPreylength()){
-                                checkKeyNotNull(pl.getNo());
+                            for (PreylengthType pl: p.getPreylengthfrequencytable()){
+                                checkKeyNotNull(pl.getPreylengthid());
                                 
-                                String plkeystring = "" + pl.getNo();
+                                String plkeystring = "" + pl.getPreylengthid();
                                 checkKeyNotDuplicated(plkeystring, preylengthKeys);
                                 preylengthKeys.add(plkeystring);
                             }
                             
                             Set<String> ccpKeys = new HashSet<>();
-                            for (CopepodedevstageType cp: p.getCopepodedevstage()){
+                            for (CopepodedevstageType cp: p.getCopepodedevstagefrequencytable()){
                                 checkKeyNotNull(cp.getCopepodedevstage());
                                 
                                 String cpkeystring = "" + cp.getCopepodedevstage();
@@ -232,8 +232,8 @@ public class Biotic3Handler extends NamespaceVersionHandler<MissionsType> {
         mission.setPlatformname(m.getPlatformname());
         mission.setPurpose(m.getPurpose());
         mission.setPlatform(m.getPlatform());
-        mission.setStartdate(this.convertDateFromBiotic1(m.getStartdate()));
-        mission.setStopdate(this.convertDateFromBiotic1(m.getStopdate()));
+        mission.setMissionstartdate(this.convertDateFromBiotic1(m.getStartdate()));
+        mission.setMissionstopdate(this.convertDateFromBiotic1(m.getStopdate()));
         mission.setStartyear(m.getYear());
 
         for (BioticTypes.v1_4.FishstationType f : m.getFishstation()) {
@@ -247,12 +247,12 @@ public class Biotic3Handler extends NamespaceVersionHandler<MissionsType> {
         FishstationType fishstation = this.biotic3factory.createFishstationType();
         
         fishstation.setYear(((BioticTypes.v1_4.MissionType)f.getParent()).getYear());
-        fishstation.setArea(f.getArea());
+        fishstation.setArea(f.getArea().toString());
         fishstation.setBottomdepthstart(f.getBottomdepthstart());
         fishstation.setBottomdepthstop(f.getBottomdepthstop());
         fishstation.setCatchplatform(createStringFromBiotic1(f.getPlatform()));
         fishstation.setClouds(createStringFromBiotic1(f.getClouds()));
-        fishstation.setComment(f.getComment());
+        fishstation.setStationcomment(f.getComment());
         fishstation.setCountofvessels(f.getCountofvessels());
         fishstation.setDataquality(createStringFromBiotic1(f.getDataquality()));
         fishstation.setDirection(f.getDirection());
@@ -285,15 +285,15 @@ public class Biotic3Handler extends NamespaceVersionHandler<MissionsType> {
         fishstation.setSea(createStringFromBiotic1(f.getSea()));
         fishstation.setSerialno(f.getSerialno());
         fishstation.setSoaktime(f.getSoaktime());
-        fishstation.setStartdate(this.convertDateFromBiotic1(f.getStartdate()));
+        fishstation.setStationstartdate(this.convertDateFromBiotic1(f.getStartdate()));
         fishstation.setStartlog(f.getStartlog());
         fishstation.setStarttime(this.convertTimeBiotic1(f.getStarttime()));
         fishstation.setStation(f.getStation());
         fishstation.setStationtype(createStringFromBiotic1(f.getStationtype()));
-        fishstation.setStopdate(this.convertDateFromBiotic1(f.getStopdate()));
+        fishstation.setStationstopdate(this.convertDateFromBiotic1(f.getStopdate()));
         fishstation.setStoplog(f.getStoplog());
         fishstation.setStoptime(this.convertTimeBiotic1(f.getStoptime()));
-        fishstation.setSystem(f.getSystem());
+        fishstation.setSystem(f.getSystem().toString());
         fishstation.setVerticaltrawlopening(f.getTrawlopening());
         fishstation.setVerticaltrawlopeningsd(f.getTrawlopeningsd());
         fishstation.setTripno(f.getTripno());
@@ -318,9 +318,9 @@ public class Biotic3Handler extends NamespaceVersionHandler<MissionsType> {
         CatchsampleType catchsample = this.biotic3factory.createCatchsampleType();
         catchsample.setAbundancecategory(this.createStringFromBiotic1(c.getAbundancecategory()));
         catchsample.setAphia(c.getAphia());
-        catchsample.setComment(c.getComment());
+        catchsample.setCatchcomment(c.getComment());
         catchsample.setConservation(this.createStringFromBiotic1(c.getConservation()));
-        catchsample.setCount(c.getCount());
+        catchsample.setCatchcount(c.getCount());
         catchsample.setForeignobject(this.createStringFromBiotic1(c.getForeignobject()));
         catchsample.setTissuesample(this.createStringFromBiotic1(c.getGenetics()));
         catchsample.setGroup(this.createStringFromBiotic1(c.getGroup()));
@@ -329,19 +329,19 @@ public class Biotic3Handler extends NamespaceVersionHandler<MissionsType> {
         catchsample.setLengthsamplecount(c.getLengthsamplecount());
         catchsample.setLengthsamplevolume(c.getLengthsamplevolume());
         catchsample.setLengthsampleweight(c.getLengthsampleweight());
-        catchsample.setNorwegianname(c.getNoname());
+        catchsample.setCommonname(c.getNoname());
         catchsample.setParasite(this.createStringFromBiotic1(c.getParasite()));
-        catchsample.setProducttype(this.createStringFromBiotic1((c.getProducttype())));
+        catchsample.setCatchproducttype(this.createStringFromBiotic1((c.getProducttype())));
         catchsample.setRaisingfactor(c.getRaisingfactor());
         catchsample.setSampleproducttype(this.createStringFromBiotic1((c.getSampleproducttype())));
         catchsample.setSamplenumber(c.getSamplenumber());
         catchsample.setSampletype(this.createStringFromBiotic1(c.getSampletype()));
 
-        catchsample.setSpecies(c.getSpecies());
+        catchsample.setCatchspecies(c.getSpecies());
         catchsample.setSpecimensamplecount(c.getSpecimensamplecount());
         catchsample.setStomach(this.createStringFromBiotic1(c.getStomach()));
-        catchsample.setVolume(c.getVolume());
-        catchsample.setWeight(c.getWeight());
+        catchsample.setCatchvolume(c.getVolume());
+        catchsample.setCatchweight(c.getWeight());
 
         for (BioticTypes.v1_4.IndividualType i : c.getIndividual()) {
             catchsample.getIndividual().add(this.createIndividualFromBiotic1(i));
@@ -356,7 +356,7 @@ public class Biotic3Handler extends NamespaceVersionHandler<MissionsType> {
         individual.setBlackspot(this.createStringFromBiotic1(i.getBlackspot()));
         individual.setCarapacelength(i.getCarapacelength());
         individual.setCarapacewidth(i.getCarapacewidth());
-        individual.setComment(i.getComment());
+        individual.setIndividualcomment(i.getComment());
         individual.setDiameter(i.getDiameter());
         individual.setDigestion(this.createStringFromBiotic1(i.getDigestion()));
         individual.setEggstage(this.createStringFromBiotic1(i.getEggstage()));
@@ -381,7 +381,7 @@ public class Biotic3Handler extends NamespaceVersionHandler<MissionsType> {
         individual.setMeroslength(i.getMeroslength());
         individual.setMeroswidth(i.getMeroswidth());
         individual.setMoultingstage(this.createStringFromBiotic1(i.getMoultingstage()));
-        individual.setProducttype(this.createStringFromBiotic1(i.getProducttype()));
+        individual.setIndividualproducttype(this.createStringFromBiotic1(i.getProducttype()));
         individual.setRightclawlength(i.getRightclawlength());
         individual.setRightclawwidth(i.getRightclawwidth());
         individual.setSex(this.createStringFromBiotic1(i.getSex()));
@@ -399,8 +399,8 @@ public class Biotic3Handler extends NamespaceVersionHandler<MissionsType> {
         individual.setStomachweight(i.getStomachweight());
         individual.setSwollengills(this.createStringFromBiotic1(i.getSwollengills()));
         individual.setVertebrae(i.getVertebrae());
-        individual.setVolume(i.getVolume());
-        individual.setWeight(i.getWeight());
+        individual.setIndividualvolume(i.getVolume());
+        individual.setIndividualweight(i.getWeight());
 
         for (BioticTypes.v1_4.AgedeterminationType a : i.getAgedetermination()) {
             individual.getAgedetermination().add(this.createAgedeterminationFromBiotic1(a));
@@ -433,7 +433,7 @@ public class Biotic3Handler extends NamespaceVersionHandler<MissionsType> {
         age.setGrowthzone8(a.getGrowthzone8());
         age.setGrowthzone9(a.getGrowthzone9());
         age.setGrowthzonestotal(a.getGrowthzonestotal());
-        age.setNo(a.getNo());
+        age.setAgedeterminationid(a.getNo());
         age.setOceanicannuli(a.getCoastalannuli());
         age.setOtolithcentre(this.createStringFromBiotic1(a.getOtolithcentre()));
         age.setOtolithedge(this.createStringFromBiotic1(a.getOtolithedge()));
@@ -448,23 +448,23 @@ public class Biotic3Handler extends NamespaceVersionHandler<MissionsType> {
     private PreyType createPreyFromBiotic1(BioticTypes.v1_4.PreyType p) {
         PreyType prey = this.biotic3factory.createPreyType();
         prey.setDevstage(this.createStringFromBiotic1(p.getDevstage()));
-        prey.setDigestion(this.createStringFromBiotic1(p.getDigestion()));
+        prey.setPreydigestion(this.createStringFromBiotic1(p.getDigestion()));
         prey.setInterval(this.createStringFromBiotic1(p.getInterval()));
-        prey.setLengthmeasurement(this.createStringFromBiotic1(p.getLengthmeasurement()));
+        prey.setPreylengthmeasurement(this.createStringFromBiotic1(p.getLengthmeasurement()));
         prey.setPartno(p.getPartno());
-        prey.setSpecies(p.getSpecies());
+        prey.setPreyspecies(p.getSpecies());
         prey.setTotalcount(p.getTotalcount());
         prey.setTotalweight(p.getTotalweight());
         prey.setWeightresolution(this.createStringFromBiotic1(p.getWeightresolution()));
 
         int linennumber = 1;
         for (BioticTypes.v1_4.PreylengthType pl : p.getPreylength()) {
-            prey.getPreylength().add(this.convertPreyLengthFromBiotic1(pl, linennumber));
+            prey.getPreylengthfrequencytable().add(this.convertPreyLengthFromBiotic1(pl, linennumber));
             linennumber++;
         }
 
         for (BioticTypes.v1_4.CopepodedevstageType co : p.getCopepodedevstage()) {
-            prey.getCopepodedevstage().add(this.convertCopepodedevstageFromBiotic1(co));
+            prey.getCopepodedevstagefrequencytable().add(this.convertCopepodedevstageFromBiotic1(co));
         }
 
         return prey;
@@ -472,7 +472,7 @@ public class Biotic3Handler extends NamespaceVersionHandler<MissionsType> {
 
     private TagType createTagFromBiotic1(BioticTypes.v1_4.TagType t) {
         TagType tag = this.biotic3factory.createTagType();
-        tag.setTagno(t.getTagno());
+        tag.setTagid(t.getTagno());
         tag.setTagtype(this.createStringFromBiotic1(t.getTagtype()));
 
         return tag;
@@ -480,9 +480,9 @@ public class Biotic3Handler extends NamespaceVersionHandler<MissionsType> {
 
     private PreylengthType convertPreyLengthFromBiotic1(BioticTypes.v1_4.PreylengthType pl, int linenumber) {
         PreylengthType preylength = this.biotic3factory.createPreylengthType();
-        preylength.setNo(new BigInteger(""+linenumber));
-        preylength.setCount(pl.getCount());
-        preylength.setLength(pl.getLength());
+        preylength.setPreylengthid(new BigInteger(""+linenumber));
+        preylength.setLengthintervalcount(pl.getCount());
+        preylength.setLengthintervalstart(pl.getLength());
 
         return preylength;
     }
@@ -490,7 +490,7 @@ public class Biotic3Handler extends NamespaceVersionHandler<MissionsType> {
     private CopepodedevstageType convertCopepodedevstageFromBiotic1(BioticTypes.v1_4.CopepodedevstageType co) {
         CopepodedevstageType cop = this.biotic3factory.createCopepodedevstageType();
         cop.setCopepodedevstage(co.getCopepodedevstage());
-        cop.setCount(co.getCount());
+        cop.setDevstagecount(co.getCount());
 
         return cop;
     }

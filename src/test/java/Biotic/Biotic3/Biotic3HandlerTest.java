@@ -221,9 +221,7 @@ public class Biotic3HandlerTest {
         exceptions.add("getFlowcount"); //field removed
         exceptions.add("getFishno"); //field removed
         exceptions.add("getDevelopmentalstage"); //field removed
-
         exceptions.add("getPrey"); //moved. Tested in: testPreyConversionAllThere()
-
         exceptions.add("getStartdate"); //1 mission and fishstation
         exceptions.add("getStarttime"); //2
         exceptions.add("getStoptime"); //3
@@ -240,6 +238,23 @@ public class Biotic3HandlerTest {
         exceptions.add("getStage"); //14
         exceptions.add("getWirelength"); //15
         exceptions.add("getGearspeed"); //16
+        exceptions.add("getSpecies"); //17 catch and prey
+        exceptions.add("getProducttype"); //18 catch and individual
+        exceptions.add("getWeight"); //19 catch and individual
+        exceptions.add("getVolume"); //20 catch and individual
+        exceptions.add("getCount"); // 21 catch, preylength and copepepodedevstage
+        exceptions.add("getComment"); //22 station, catch and individual
+        exceptions.add("getCopepodedevstage"); //21
+        exceptions.add("getPreylength"); //21
+        exceptions.add("getDigestion"); //23 prey
+        exceptions.add("getLengthmeasurement"); //24 prey
+        exceptions.add("getLength");//21
+        exceptions.add("getNo"); //25
+        exceptions.add("getTagno"); //26
+
+        exceptions.add("getSystem"); //27
+        exceptions.add("getArea"); //28
+        exceptions.add("getLocation"); //29
 
         this.compareSameName(missionsBiotic1, result, exceptions);
     }
@@ -270,11 +285,11 @@ public class Biotic3HandlerTest {
 
             //1
             String[] date = oldMission.getStartdate().split("/");
-            assertEquals(newMission.getStartdate().toString(), date[2] + "-" + date[1] + "-" + date[0] + "Z");
+            assertEquals(newMission.getMissionstartdate().toString(), date[2] + "-" + date[1] + "-" + date[0] + "Z");
 
             //3
             date = oldMission.getStopdate().split("/");
-            assertEquals(newMission.getStopdate().toString(), date[2] + "-" + date[1] + "-" + date[0] + "Z");
+            assertEquals(newMission.getMissionstopdate().toString(), date[2] + "-" + date[1] + "-" + date[0] + "Z");
 
             //7
             assertEquals(newMission.getPlatform(), oldMission.getPlatform());
@@ -287,18 +302,18 @@ public class Biotic3HandlerTest {
 
                 //1
                 if (oldStation.getStartdate() == null) {
-                    assertNull(newStation.getStartdate());
+                    assertNull(newStation.getStationstartdate());
                 } else {
                     date = oldStation.getStartdate().split("/");
-                    assertEquals(newStation.getStartdate().toString(), date[2] + "-" + date[1] + "-" + date[0] + "Z");
+                    assertEquals(newStation.getStationstartdate().toString(), date[2] + "-" + date[1] + "-" + date[0] + "Z");
                 }
 
                 //3
                 if (oldStation.getStopdate() == null) {
-                    assertNull(newStation.getStopdate());
+                    assertNull(newStation.getStationstopdate());
                 } else {
                     date = oldStation.getStopdate().split("/");
-                    assertEquals(newStation.getStopdate().toString(), date[2] + "-" + date[1] + "-" + date[0] + "Z");
+                    assertEquals(newStation.getStationstopdate().toString(), date[2] + "-" + date[1] + "-" + date[0] + "Z");
                 }
 
                 //2
@@ -332,13 +347,23 @@ public class Biotic3HandlerTest {
                 } else {
                     assertTrue(Math.abs(newStation.getWirelength().doubleValue() - oldStation.getWirelength().doubleValue()) < 10e-10);
                 }
-                
+
                 //16
-                if (newStation.getGearflow() == null){
+                if (newStation.getGearflow() == null) {
                     assertNull(oldStation.getGearspeed());
-                } else{
+                } else {
                     assertEquals(newStation.getGearflow(), oldStation.getGearspeed());
                 }
+
+                //22
+                assertEquals(newStation.getStationcomment(), oldStation.getComment());
+
+                //27
+                assertEquals(newStation.getSystem(), oldStation.getSystem().toString());
+                //28
+                assertEquals(newStation.getArea(), oldStation.getArea().toString());
+                //29
+                assertEquals(newStation.getLocation(), oldStation.getLocation());
 
                 List<CatchsampleType> newcatches = newStation.getCatchsample();
                 List<BioticTypes.v1_4.CatchsampleType> oldcatches = oldStation.getCatchsample();
@@ -346,8 +371,26 @@ public class Biotic3HandlerTest {
                     CatchsampleType newCatch = newcatches.get(k);
                     BioticTypes.v1_4.CatchsampleType oldCatch = oldcatches.get(k);
 
+                    //17
+                    assertEquals(newCatch.getCatchspecies(), oldCatch.getSpecies());
+
+                    //18
+                    assertEquals(newCatch.getCatchproducttype(), oldCatch.getProducttype().getValue());
+
+                    //19
+                    assertEquals(newCatch.getCatchweight(), oldCatch.getWeight());
+
+                    //20
+                    assertEquals(newCatch.getCatchvolume(), oldCatch.getVolume());
+
+                    //21
+                    assertEquals(newCatch.getCatchcount(), oldCatch.getCount());
+
+                    //22
+                    assertEquals(newCatch.getCatchcomment(), oldCatch.getComment());
+
                     //10
-                    assertEquals(newCatch.getNorwegianname(), oldCatch.getNoname());
+                    assertEquals(newCatch.getCommonname(), oldCatch.getNoname());
                     //11
                     if (oldCatch.getGenetics() == null) {
                         assertEquals(null, newCatch.getTissuesample());
@@ -365,6 +408,22 @@ public class Biotic3HandlerTest {
                         //13
                         assertEquals(newInd.getLengthresolution(), oldInd.getLengthunit().getValue());
 
+                        //18
+                        if (newInd.getIndividualproducttype() == null) {
+                            assertEquals(oldInd.getProducttype(), null);
+                        } else {
+                            assertEquals(newInd.getIndividualproducttype(), oldInd.getProducttype().getValue());
+                        }
+
+                        //19
+                        assertEquals(newInd.getIndividualweight(), oldInd.getWeight());
+
+                        //20
+                        assertEquals(newInd.getIndividualvolume(), oldInd.getVolume());
+
+                        //22
+                        assertEquals(newInd.getIndividualcomment(), oldInd.getComment());
+
                         //14
                         if (oldInd.getStage() == null) {
                             assertEquals(newInd.getMaturationstage(), null);
@@ -377,8 +436,24 @@ public class Biotic3HandlerTest {
 
                         if (!newInd.getAgedetermination().isEmpty()) {
                             AgedeterminationType newAge = newInd.getAgedetermination().get(0);
+
                             checkedAge = true;
                         }
+
+                        for (int a = 0; a < newInd.getAgedetermination().size(); a++) {
+                            AgedeterminationType newAge = newInd.getAgedetermination().get(a);
+                            BioticTypes.v1_4.AgedeterminationType oldAge = oldInd.getAgedetermination().get(a);
+                            //25
+                            assertEquals(oldAge.getNo(), newAge.getAgedeterminationid());
+                        }
+
+                        for (int a = 0; a < newInd.getTag().size(); a++) {
+                            TagType newAge = newInd.getTag().get(a);
+                            BioticTypes.v1_4.TagType oldAge = oldInd.getTag().get(a);
+                            //25
+                            assertEquals(oldAge.getTagno(), newAge.getTagid());
+                        }
+
                     }
                 }
             }
@@ -453,8 +528,8 @@ public class Biotic3HandlerTest {
                             checkedPrey = true;
                             //find matching prey in old:
                             boolean found = false;
-                            for (BioticTypes.v1_4.PreyType oldPrey : oldCatch.getPrey()) {
-                                if (oldPrey.getFishno().equals(newInd.getSpecimenno()) && oldPrey.getPartno().equals(newPrey.getPartno())) {
+                            for (BioticTypes.v1_4.PreyType oldPrey : oldCatch.getPrey()) { //17
+                                if (oldPrey.getSpecies().equals(newPrey.getPreyspecies()) && oldPrey.getFishno().equals(newInd.getSpecimenno()) && oldPrey.getPartno().equals(newPrey.getPartno())) {
                                     found = true;
                                 }
                             }
@@ -501,15 +576,32 @@ public class Biotic3HandlerTest {
                                 }
                             }
                             assertFalse(oldPrey == null);
-                            assertEquals(oldPrey.getPreylength().size(), newPrey.getPreylength().size());
+                            assertEquals(oldPrey.getPreylength().size(), newPrey.getPreylengthfrequencytable().size());
 
                             List<BigInteger> numbers = new ArrayList<>();
-                            for (PreylengthType preyLength : newPrey.getPreylength()) {
+                            for (PreylengthType preyLength : newPrey.getPreylengthfrequencytable()) {
                                 checkedPreyLength = true;
-                                assertFalse(numbers.contains(preyLength.getNo()));
-                                numbers.add(preyLength.getNo());
-                                assertTrue(numbers.contains(preyLength.getNo()));
+                                assertFalse(numbers.contains(preyLength.getPreylengthid()));
+                                numbers.add(preyLength.getPreylengthid());
+                                assertTrue(numbers.contains(preyLength.getPreylengthid()));
                             }
+
+                            //21
+                            for (int preyindex = 0; i < newPrey.getPreylengthfrequencytable().size(); i++) {
+                                assertEquals(newPrey.getPreylengthfrequencytable().get(preyindex).getLengthintervalcount(), oldPrey.getPreylength().get(preyindex).getCount());
+                                assertEquals(newPrey.getPreylengthfrequencytable().get(preyindex).getLengthintervalstart(), oldPrey.getPreylength().get(preyindex).getLength());
+                            }
+
+                            //21
+                            for (int preyindex = 0; i < newPrey.getCopepodedevstagefrequencytable().size(); i++) {
+                                assertEquals(newPrey.getCopepodedevstagefrequencytable().get(preyindex).getDevstagecount(), oldPrey.getCopepodedevstage().get(preyindex).getCount());
+                                assertEquals(newPrey.getCopepodedevstagefrequencytable().get(preyindex).getCopepodedevstage(), oldPrey.getCopepodedevstage().get(preyindex).getCopepodedevstage());
+                            }
+
+                            //23
+                            assertEquals(newPrey.getPreydigestion(), oldPrey.getDigestion().getValue());
+                            //24
+                            assertEquals(newPrey.getPreylengthmeasurement(), oldPrey.getLengthmeasurement().getValue());
                         }
                     }
                 }
@@ -526,84 +618,83 @@ public class Biotic3HandlerTest {
         MissionsType result = instance.convertBiotic1(missionsBiotic1);
 
         Set<String> missionKeys = new HashSet<>();
-        
-        for (MissionType m : result.getMission()){
+
+        for (MissionType m : result.getMission()) {
             assertNotNull(m.getMissiontype());
             assertNotNull(m.getStartyear());
             assertNotNull(m.getPlatform());
             assertNotNull(m.getMissionnumber());
-            
-            String missionkeystring = m.getMissiontype() + "/" + m.getStartyear() +  "/" + m.getPlatform() + "/" + m.getMissionnumber();
+
+            String missionkeystring = m.getMissiontype() + "/" + m.getStartyear() + "/" + m.getPlatform() + "/" + m.getMissionnumber();
             assertFalse(missionKeys.contains(missionkeystring));
             missionKeys.add(missionkeystring);
-            
+
             Set<String> stationKeys = new HashSet<>();
-            for (FishstationType f: m.getFishstation()){
+            for (FishstationType f : m.getFishstation()) {
                 assertNotNull(f.getYear());
                 assertNotNull(f.getSerialno());
-                
+
                 String stationkeystring = f.getYear() + "/" + f.getSerialno();
                 assertFalse(stationKeys.contains(stationkeystring));
                 stationKeys.add(stationkeystring);
-                
+
                 Set<String> catchKeys = new HashSet<>();
-                for (CatchsampleType c: f.getCatchsample()){
-                    assertNotNull(c.getSpecies());
+                for (CatchsampleType c : f.getCatchsample()) {
+                    assertNotNull(c.getCatchspecies());
                     assertNotNull(c.getSamplenumber());
-                    
-                    String catchkeystring = c.getSpecies() + "/" + c.getSamplenumber();
+
+                    String catchkeystring = c.getCatchspecies() + "/" + c.getSamplenumber();
                     assertFalse(catchKeys.contains(catchkeystring));
                     catchKeys.add(catchkeystring);
-                    
+
                     Set<String> individualKeys = new HashSet<>();
-                    for (IndividualType i: c.getIndividual()){
+                    for (IndividualType i : c.getIndividual()) {
                         assertNotNull(i.getSpecimenno());
-                        
+
                         String individualkeystring = "" + i.getSpecimenno();
                         assertFalse(individualKeys.contains(individualkeystring));
                         individualKeys.add(individualkeystring);
-                        
+
                         Set<String> ageKeys = new HashSet<>();
-                        for (AgedeterminationType a: i.getAgedetermination()){
-                            assertNotNull(a.getNo());
-                            
-                            String agekeystring = "" + a.getNo();
+                        for (AgedeterminationType a : i.getAgedetermination()) {
+                            assertNotNull(a.getAgedeterminationid());
+
+                            String agekeystring = "" + a.getAgedeterminationid();
                             assertFalse(ageKeys.contains(agekeystring));
                             ageKeys.add(agekeystring);
                         }
-                        
+
                         Set<String> tagKeys = new HashSet<>();
-                        for (TagType t: i.getTag()){
-                            assertNotNull(t.getTagno());
-                            
-                            String tagKeyString = "" + t.getTagno();
+                        for (TagType t : i.getTag()) {
+                            assertNotNull(t.getTagid());
+
+                            String tagKeyString = "" + t.getTagid();
                             assertFalse(tagKeys.contains(tagKeyString));
                             tagKeys.add(tagKeyString);
                         }
-                        
+
                         Set<String> preyKeys = new HashSet<>();
-                        for (PreyType p: i.getPrey()){
-                            assertNotNull(p.getSpecies());
+                        for (PreyType p : i.getPrey()) {
+                            assertNotNull(p.getPreyspecies());
                             assertNotNull(p.getPartno());
-                            
-                            String preyKeyString = p.getSpecies() + "/" + p.getPartno();
+
+                            String preyKeyString = p.getPreyspecies() + "/" + p.getPartno();
                             assertFalse(preyKeys.contains(preyKeyString));
                             preyKeys.add(preyKeyString);
-                            
-                            
+
                             Set<String> preylengthKeys = new HashSet<>();
-                            for (PreylengthType pl: p.getPreylength()){
-                                assertNotNull(pl.getNo());
-                                
-                                String plkeystring = "" + pl.getNo();
+                            for (PreylengthType pl : p.getPreylengthfrequencytable()) {
+                                assertNotNull(pl.getPreylengthid());
+
+                                String plkeystring = "" + pl.getPreylengthid();
                                 assertFalse(preylengthKeys.contains(plkeystring));
                                 preylengthKeys.add(plkeystring);
                             }
-                            
+
                             Set<String> ccpKeys = new HashSet<>();
-                            for (CopepodedevstageType cp: p.getCopepodedevstage()){
+                            for (CopepodedevstageType cp : p.getCopepodedevstagefrequencytable()) {
                                 assertNotNull(cp.getCopepodedevstage());
-                                
+
                                 String cpkeystring = "" + cp.getCopepodedevstage();
                                 assertFalse(ccpKeys.contains(cpkeystring));
                                 ccpKeys.add(cpkeystring);
@@ -613,7 +704,7 @@ public class Biotic3HandlerTest {
                 }
             }
         }
-        
+
     }
 
     @Test
@@ -628,34 +719,34 @@ public class Biotic3HandlerTest {
 
         }
     }
-    
+
     @Test
-    public void testKeyCheckNull() throws Exception{
+    public void testKeyCheckNull() throws Exception {
         Biotic1Handler b1handler = new Biotic1Handler();
         BioticTypes.v1_4.MissionsType missionsBiotic1 = b1handler.read(Biotic3HandlerTest.class.getClassLoader().getResourceAsStream("test.xml"));
         Biotic3Handler instance = new Biotic3Handler();
         MissionsType m = instance.convertBiotic1(missionsBiotic1);
         m.getMission().get(0).setStartyear(null);
-        try{
+        try {
             instance.checkKeys(m);
             fail("Exception expected");
-        }catch (BioticConversionException bce){
-            
+        } catch (BioticConversionException bce) {
+
         }
     }
 
     @Test
-    public void testKeyCheckDupl() throws Exception{
+    public void testKeyCheckDupl() throws Exception {
         Biotic1Handler b1handler = new Biotic1Handler();
         BioticTypes.v1_4.MissionsType missionsBiotic1 = b1handler.read(Biotic3HandlerTest.class.getClassLoader().getResourceAsStream("test.xml"));
         Biotic3Handler instance = new Biotic3Handler();
         MissionsType m = instance.convertBiotic1(missionsBiotic1);
         m.getMission().get(0).getFishstation().get(1).setSerialno(m.getMission().get(0).getFishstation().get(0).getSerialno());
-        try{
+        try {
             instance.checkKeys(m);
             fail("Exception expected");
-        }catch (BioticConversionException bce){
-            
+        } catch (BioticConversionException bce) {
+
         }
     }
 }

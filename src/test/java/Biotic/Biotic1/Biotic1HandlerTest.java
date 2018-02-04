@@ -117,10 +117,10 @@ public class Biotic1HandlerTest {
         //read as 3
         Biotic3Handler r3 = new Biotic3Handler();
         BioticTypes.v3_beta.MissionsType b3 = r3.readOldBiotic(Biotic1HandlerTest.class.getClassLoader().getResourceAsStream("test.xml"));
-        int year = b3.getMission().get(0).getStopdate().getYear();
-        XMLGregorianCalendar stopdate = b3.getMission().get(0).getStopdate();
+        int year = b3.getMission().get(0).getMissionstopdate().getYear();
+        XMLGregorianCalendar stopdate = b3.getMission().get(0).getMissionstopdate();
         stopdate.setYear(year+1);
-        b3.getMission().get(0).setStopdate(stopdate);
+        b3.getMission().get(0).setMissionstopdate(stopdate);
         
         try{
             MissionsType mConverted = r.convertBiotic3(b3);
