@@ -255,6 +255,16 @@ public class Biotic3HandlerTest {
         exceptions.add("getSystem"); //27
         exceptions.add("getArea"); //28
         exceptions.add("getLocation"); //29
+        
+        exceptions.add("getStoplog"); //30
+        exceptions.add("getStartlog"); //31
+        
+        exceptions.add("getDoorspread"); //32
+        exceptions.add("getDoorspreadsd"); //33
+        
+        exceptions.add("getCountofvessels"); //34
+        
+        exceptions.add("getVertebrae"); //35
 
         this.compareSameName(missionsBiotic1, result, exceptions);
     }
@@ -317,17 +327,17 @@ public class Biotic3HandlerTest {
                 }
 
                 //2
-                if (newStation.getStarttime() == null) {
+                if (newStation.getStationstarttime() == null) {
                     assertNull(oldStation.getStarttime());
                 } else {
-                    assertEquals(newStation.getStarttime(), oldStation.getStarttime() + "Z");
+                    assertEquals(newStation.getStationstarttime(), oldStation.getStarttime() + "Z");
                 }
 
                 //4
-                if (newStation.getStoptime() == null) {
+                if (newStation.getStationstoptime() == null) {
                     assertNull(oldStation.getStoptime());
                 } else {
-                    assertEquals(newStation.getStoptime(), oldStation.getStoptime() + "Z");
+                    assertEquals(newStation.getStationstoptime(), oldStation.getStoptime() + "Z");
                 }
 
                 //7
@@ -364,7 +374,22 @@ public class Biotic3HandlerTest {
                 assertEquals(newStation.getArea(), oldStation.getArea().toString());
                 //29
                 assertEquals(newStation.getLocation(), oldStation.getLocation());
+                
+                //30
+                assertEquals(newStation.getLogstop(), oldStation.getStoplog());
+                
+                //31
+                assertEquals(newStation.getLogstart(), oldStation.getStartlog());
 
+                //32
+                assertEquals(newStation.getTrawldoorspread(), oldStation.getDoorspread());
+                
+                //33
+                assertEquals(newStation.getTrawldoorspreadsd(), oldStation.getDoorspreadsd());
+                
+                //34
+                assertEquals(newStation.getVesselcount(), oldStation.getCountofvessels());
+                
                 List<CatchsampleType> newcatches = newStation.getCatchsample();
                 List<BioticTypes.v1_4.CatchsampleType> oldcatches = oldStation.getCatchsample();
                 for (int k = 0; k < newcatches.size(); k++) {
@@ -372,7 +397,7 @@ public class Biotic3HandlerTest {
                     BioticTypes.v1_4.CatchsampleType oldCatch = oldcatches.get(k);
 
                     //17
-                    assertEquals(newCatch.getCatchspecies(), oldCatch.getSpecies());
+                    assertEquals(newCatch.getCatchcategory(), oldCatch.getSpecies());
 
                     //18
                     assertEquals(newCatch.getCatchproducttype(), oldCatch.getProducttype().getValue());
@@ -433,6 +458,9 @@ public class Biotic3HandlerTest {
 
                         //11
                         assertEquals(newInd.getTissuesamplenumber(), oldInd.getGeneticsnumber());
+                        
+                        //35
+                        assertEquals(newInd.getVertebraecount(), oldInd.getVertebrae());
 
                         if (!newInd.getAgedetermination().isEmpty()) {
                             AgedeterminationType newAge = newInd.getAgedetermination().get(0);
@@ -529,7 +557,7 @@ public class Biotic3HandlerTest {
                             //find matching prey in old:
                             boolean found = false;
                             for (BioticTypes.v1_4.PreyType oldPrey : oldCatch.getPrey()) { //17
-                                if (oldPrey.getSpecies().equals(newPrey.getPreyspecies()) && oldPrey.getFishno().equals(newInd.getSpecimenno()) && oldPrey.getPartno().equals(newPrey.getPartno())) {
+                                if (oldPrey.getSpecies().equals(newPrey.getPreycategory()) && oldPrey.getFishno().equals(newInd.getSpecimenno()) && oldPrey.getPartno().equals(newPrey.getPreysamplenumber())) {
                                     found = true;
                                 }
                             }
@@ -571,7 +599,7 @@ public class Biotic3HandlerTest {
                         for (PreyType newPrey : newInd.getPrey()) {
                             BioticTypes.v1_4.PreyType oldPrey = null;
                             for (BioticTypes.v1_4.PreyType oldPreyC : oldCatch.getPrey()) {
-                                if (oldPreyC.getFishno().equals(newInd.getSpecimenno()) && oldPreyC.getPartno().equals(newPrey.getPartno())) {
+                                if (oldPreyC.getFishno().equals(newInd.getSpecimenno()) && oldPreyC.getPartno().equals(newPrey.getPreysamplenumber())) {
                                     oldPrey = oldPreyC;
                                 }
                             }
@@ -631,19 +659,19 @@ public class Biotic3HandlerTest {
 
             Set<String> stationKeys = new HashSet<>();
             for (FishstationType f : m.getFishstation()) {
-                assertNotNull(f.getYear());
+                assertNotNull(f.getStationyear());
                 assertNotNull(f.getSerialno());
 
-                String stationkeystring = f.getYear() + "/" + f.getSerialno();
+                String stationkeystring = f.getStationyear() + "/" + f.getSerialno();
                 assertFalse(stationKeys.contains(stationkeystring));
                 stationKeys.add(stationkeystring);
 
                 Set<String> catchKeys = new HashSet<>();
                 for (CatchsampleType c : f.getCatchsample()) {
-                    assertNotNull(c.getCatchspecies());
+                    assertNotNull(c.getCatchcategory());
                     assertNotNull(c.getSamplenumber());
 
-                    String catchkeystring = c.getCatchspecies() + "/" + c.getSamplenumber();
+                    String catchkeystring = c.getCatchcategory() + "/" + c.getSamplenumber();
                     assertFalse(catchKeys.contains(catchkeystring));
                     catchKeys.add(catchkeystring);
 
@@ -675,10 +703,10 @@ public class Biotic3HandlerTest {
 
                         Set<String> preyKeys = new HashSet<>();
                         for (PreyType p : i.getPrey()) {
-                            assertNotNull(p.getPreyspecies());
-                            assertNotNull(p.getPartno());
+                            assertNotNull(p.getPreycategory());
+                            assertNotNull(p.getPreysamplenumber());
 
-                            String preyKeyString = p.getPreyspecies() + "/" + p.getPartno();
+                            String preyKeyString = p.getPreycategory() + "/" + p.getPreysamplenumber();
                             assertFalse(preyKeys.contains(preyKeyString));
                             preyKeys.add(preyKeyString);
 

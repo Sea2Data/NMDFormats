@@ -250,7 +250,7 @@
         </xs:annotation>
         <!-- startdate in biotic 1.4 -->
       </xs:element>
-      <xs:element minOccurs="0" name="starttime" type="xs:time">
+      <xs:element minOccurs="0" name="stationstarttime" type="xs:time">
         <xs:annotation>
           <xs:documentation>
             <imrd:imrDoc>
@@ -273,7 +273,7 @@
         </xs:annotation>
         <!-- stopdate in biotic 1.4 -->
       </xs:element>
-      <xs:element minOccurs="0" name="stoptime" type="xs:time">
+      <xs:element minOccurs="0" name="stationstoptime" type="xs:time">
         <xs:annotation>
           <xs:documentation>
             <imrd:imrDoc>
@@ -412,7 +412,7 @@ See Norwegian documentation for additional details.</imrd:description>
           </xs:documentation>
         </xs:annotation>
       </xs:element>
-      <xs:element minOccurs="0" name="meanbottomdepth" type="xs:decimal">
+      <xs:element minOccurs="0" name="bottomdepthmean" type="xs:decimal">
         <xs:annotation>
           <xs:documentation>
             <imrd:imrDoc>
@@ -469,7 +469,7 @@ See Norwegian documentation for additional details.</imrd:description>
           </xs:documentation>
         </xs:annotation>
       </xs:element>
-      <xs:element minOccurs="0" name="temperaturefishingdepth" type="xs:decimal">
+      <xs:element minOccurs="0" name="fishingdepthtemperature" type="xs:decimal">
         <xs:annotation>
           <xs:documentation>
             <imrd:imrDoc>
@@ -549,7 +549,7 @@ See Norwegian documentation for additional details.</imrd:description>
           </xs:documentation>
         </xs:annotation>
       </xs:element>
-      <xs:element minOccurs="0" name="speedvessel" type="xs:decimal">
+      <xs:element minOccurs="0" name="vesselspeed" type="xs:decimal">
         <xs:annotation>
           <xs:documentation>
             <imrd:imrDoc>
@@ -561,7 +561,7 @@ See Norwegian documentation for additional details.</imrd:description>
         </xs:annotation>
         <!-- New field biotic v 3 -->
       </xs:element>
-      <xs:element minOccurs="0" name="startlog" type="xs:decimal">
+      <xs:element minOccurs="0" name="logstart" type="xs:decimal">
         <xs:annotation>
           <xs:documentation>
             <imrd:imrDoc>
@@ -572,7 +572,7 @@ See Norwegian documentation for additional details.</imrd:description>
           </xs:documentation>
         </xs:annotation>
       </xs:element>
-      <xs:element minOccurs="0" name="stoplog" type="xs:decimal">
+      <xs:element minOccurs="0" name="logstop" type="xs:decimal">
         <xs:annotation>
           <xs:documentation>
             <imrd:imrDoc>
@@ -676,7 +676,7 @@ See Norwegian documentation for additional details.</imrd:description>
         </xs:annotation>
         <!-- New field biotic v 3 -->
       </xs:element>
-      <xs:element minOccurs="0" name="doorspread" type="xs:decimal">
+      <xs:element minOccurs="0" name="trawldoorspread" type="xs:decimal">
         <xs:annotation>
           <xs:documentation>
             <imrd:imrDoc>
@@ -687,7 +687,7 @@ See Norwegian documentation for additional details.</imrd:description>
           </xs:documentation>
         </xs:annotation>
       </xs:element>
-      <xs:element minOccurs="0" name="doorspreadsd" type="xs:decimal">
+      <xs:element minOccurs="0" name="trawldoorspreadsd" type="xs:decimal">
         <xs:annotation>
           <xs:documentation>
             <imrd:imrDoc>
@@ -827,7 +827,7 @@ See Norwegian documentation for additional details.</imrd:description>
           </xs:documentation>
         </xs:annotation>
       </xs:element>
-      <xs:element minOccurs="0" name="countofvessels" type="xs:integer">
+      <xs:element minOccurs="0" name="vesselcount" type="xs:integer">
         <xs:annotation>
           <xs:documentation>
             <imrd:imrDoc>
@@ -991,7 +991,7 @@ See Norwegian documentation for additional details.</imrd:description>
         </xs:annotation>
       </xs:element>
     </xs:sequence>
-    <xs:attribute name="year" type="xs:integer" use="required">
+    <xs:attribute name="stationyear" type="xs:integer" use="required">
       <xs:annotation>
         <xs:documentation>
           <imrd:imrDoc>
@@ -1372,7 +1372,7 @@ Henviser ellers til dokument &#8221;historiske koder&#8221; for serienr. brukt i
         </xs:annotation>
       </xs:element>
     </xs:sequence>
-    <xs:attribute name="catchspecies" type="KeyType" use="required">
+    <xs:attribute name="catchcategory" type="KeyType" use="required">
       <xs:annotation>
         <xs:documentation>
           <imrd:imrDoc>
@@ -1699,7 +1699,7 @@ kjønn er bestemt (gjelder ikke dypvannsreke og sjøkreps). Referansetabell er org
           </xs:documentation>
         </xs:annotation>
       </xs:element>
-      <xs:element minOccurs="0" name="vertebrae" type="xs:integer">
+      <xs:element minOccurs="0" name="vertebraecount" type="xs:integer">
         <xs:annotation>
           <xs:documentation>
             <imrd:imrDoc>
@@ -2559,7 +2559,7 @@ kjønn er bestemt (gjelder ikke dypvannsreke og sjøkreps). Referansetabell er org
         <!-- copepodedevstage in biotic 1.4 -->
       </xs:element>
     </xs:sequence>
-    <xs:attribute name="partno" type="xs:integer" use="required">
+    <xs:attribute name="preysamplenumber" type="xs:integer" use="required">
       <xs:annotation>
         <xs:documentation>
           <imrd:imrDoc>
@@ -2575,7 +2575,7 @@ kjønn er bestemt (gjelder ikke dypvannsreke og sjøkreps). Referansetabell er org
         </xs:appinfo>
       </xs:annotation>
     </xs:attribute>
-    <xs:attribute name="preyspecies" type="KeyType" use="required">
+    <xs:attribute name="preycategory" type="KeyType" use="required">
       <xs:annotation>
         <xs:documentation>
           <imrd:imrDoc>
