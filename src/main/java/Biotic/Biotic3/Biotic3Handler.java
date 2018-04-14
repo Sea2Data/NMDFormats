@@ -8,17 +8,17 @@ package Biotic.Biotic3;
 import Biotic.BioticConversionException;
 import Biotic.Biotic1.Biotic1Handler;
 import XMLHandling.NamespaceVersionHandler;
-import BioticTypes.v3_beta.PreyType;
-import BioticTypes.v3_beta.AgedeterminationType;
-import BioticTypes.v3_beta.CatchsampleType;
-import BioticTypes.v3_beta.CopepodedevstageType;
-import BioticTypes.v3_beta.FishstationType;
-import BioticTypes.v3_beta.IndividualType;
-import BioticTypes.v3_beta.MissionType;
-import BioticTypes.v3_beta.MissionsType;
-import BioticTypes.v3_beta.ObjectFactory;
-import BioticTypes.v3_beta.PreylengthType;
-import BioticTypes.v3_beta.TagType;
+import BioticTypes.v3.PreyType;
+import BioticTypes.v3.AgedeterminationType;
+import BioticTypes.v3.CatchsampleType;
+import BioticTypes.v3.CopepodedevstageType;
+import BioticTypes.v3.FishstationType;
+import BioticTypes.v3.IndividualType;
+import BioticTypes.v3.MissionType;
+import BioticTypes.v3.MissionsType;
+import BioticTypes.v3.ObjectFactory;
+import BioticTypes.v3.PreylengthType;
+import BioticTypes.v3.TagType;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -147,26 +147,26 @@ public class Biotic3Handler extends NamespaceVersionHandler<MissionsType> {
             Set<String> stationKeys = new HashSet<>();
             for (FishstationType f: m.getFishstation()){
                 checkKeyNotNull(f.getStationyear());
-                checkKeyNotNull(f.getSerialno());
+                checkKeyNotNull(f.getSerialnumber());
                 
-                String stationkeystring = f.getStationyear() + "/" + f.getSerialno();
+                String stationkeystring = f.getStationyear() + "/" + f.getSerialnumber();
                 checkKeyNotDuplicated(stationkeystring, stationKeys);
                 stationKeys.add(stationkeystring);
                 
                 Set<String> catchKeys = new HashSet<>();
                 for (CatchsampleType c: f.getCatchsample()){
                     checkKeyNotNull(c.getCatchcategory());
-                    checkKeyNotNull(c.getSamplenumber());
+                    checkKeyNotNull(c.getCatchpartnumber());
                     
-                    String catchkeystring = c.getCatchcategory() + "/" + c.getSamplenumber();
+                    String catchkeystring = c.getCatchcategory() + "/" + c.getCatchpartnumber();
                     checkKeyNotDuplicated(catchkeystring, catchKeys);
                     catchKeys.add(catchkeystring);
                     
                     Set<String> individualKeys = new HashSet<>();
                     for (IndividualType i: c.getIndividual()){
-                        checkKeyNotNull(i.getSpecimenno());
+                        checkKeyNotNull(i.getSpecimenid());
                         
-                        String individualkeystring = "" + i.getSpecimenno();
+                        String individualkeystring = "" + i.getSpecimenid();
                         checkKeyNotDuplicated(individualkeystring, individualKeys);
                         individualKeys.add(individualkeystring);
                         
@@ -191,9 +191,9 @@ public class Biotic3Handler extends NamespaceVersionHandler<MissionsType> {
                         Set<String> preyKeys = new HashSet<>();
                         for (PreyType p: i.getPrey()){
                             checkKeyNotNull(p.getPreycategory());
-                            checkKeyNotNull(p.getPreysamplenumber());
+                            checkKeyNotNull(p.getPreypartnumber());
                             
-                            String preyKeyString = p.getPreycategory()+ "/" + p.getPreysamplenumber();
+                            String preyKeyString = p.getPreycategory()+ "/" + p.getPreypartnumber();
                             checkKeyNotNull(preyKeys.contains(preyKeyString));
                             preyKeys.add(preyKeyString);
                             
@@ -283,7 +283,7 @@ public class Biotic3Handler extends NamespaceVersionHandler<MissionsType> {
         fishstation.setNation(createStringFromBiotic1(f.getNation()));
         fishstation.setSamplequality(createStringFromBiotic1(f.getTrawlquality()));
         fishstation.setSea(createStringFromBiotic1(f.getSea()));
-        fishstation.setSerialno(f.getSerialno());
+        fishstation.setSerialnumber(f.getSerialno());
         fishstation.setSoaktime(f.getSoaktime());
         fishstation.setStationstartdate(this.convertDateFromBiotic1(f.getStartdate()));
         fishstation.setLogstart(f.getStartlog());
@@ -314,7 +314,10 @@ public class Biotic3Handler extends NamespaceVersionHandler<MissionsType> {
 
     private CatchsampleType createCatchsampleFromBiotic1(BioticTypes.v1_4.CatchsampleType c) throws BioticConversionException {
         checkIndividualKeyingBiotic1(c);
-
+        
+        //introduce catchcamplenumbers as function of species and partno if possible
+        assert false: "Introduce new keys";
+        
         CatchsampleType catchsample = this.biotic3factory.createCatchsampleType();
         catchsample.setAbundancecategory(this.createStringFromBiotic1(c.getAbundancecategory()));
         catchsample.setAphia(c.getAphia());
@@ -334,7 +337,7 @@ public class Biotic3Handler extends NamespaceVersionHandler<MissionsType> {
         catchsample.setCatchproducttype(this.createStringFromBiotic1((c.getProducttype())));
         catchsample.setRaisingfactor(c.getRaisingfactor());
         catchsample.setSampleproducttype(this.createStringFromBiotic1((c.getSampleproducttype())));
-        catchsample.setSamplenumber(c.getSamplenumber());
+        catchsample.setCatchpartnumber(c.getSamplenumber());
         catchsample.setSampletype(this.createStringFromBiotic1(c.getSampletype()));
 
         catchsample.setCatchcategory(c.getSpecies());
@@ -392,7 +395,7 @@ public class Biotic3Handler extends NamespaceVersionHandler<MissionsType> {
         individual.setSnouttoendsqueezed(i.getSnouttoendsqueezed());
 
         individual.setSpecialstage(this.createStringFromBiotic1(i.getSpecialstage()));
-        individual.setSpecimenno(i.getSpecimenno());
+        individual.setSpecimenid(i.getSpecimenno());
         individual.setMaturationstage(this.createStringFromBiotic1(i.getStage()));
         individual.setStomachfillfield(this.createStringFromBiotic1(i.getStomachfillfield()));
         individual.setStomachfilllab(this.createStringFromBiotic1(i.getStomachfilllab()));
@@ -446,12 +449,16 @@ public class Biotic3Handler extends NamespaceVersionHandler<MissionsType> {
     }
 
     private PreyType createPreyFromBiotic1(BioticTypes.v1_4.PreyType p) {
+        
+        //introduce key as function of old keys (species and partno) if possible
+        assert false: "introduce keys";
+        
         PreyType prey = this.biotic3factory.createPreyType();
         prey.setDevstage(this.createStringFromBiotic1(p.getDevstage()));
         prey.setPreydigestion(this.createStringFromBiotic1(p.getDigestion()));
         prey.setInterval(this.createStringFromBiotic1(p.getInterval()));
         prey.setPreylengthmeasurement(this.createStringFromBiotic1(p.getLengthmeasurement()));
-        prey.setPreysamplenumber(p.getPartno());
+        prey.setPreypartnumber(p.getPartno());
         prey.setPreycategory(p.getSpecies());
         prey.setTotalcount(p.getTotalcount());
         prey.setTotalweight(p.getTotalweight());

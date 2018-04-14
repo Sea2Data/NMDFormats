@@ -61,7 +61,7 @@ public class Biotic1Handler extends NamespaceVersionHandler<MissionsType> {
     }
 
     /**
-     * Converts BioticTypes.v3_beta.MissionsType to
+     * Converts BioticTypes.v3.MissionsType to
      * BioticTypes.v1_4.MissionsType Silently ignores fields that are new in
      * biotic v3, but throws exception if data that has been restructured in
      * biotic v3 can not be converted to biotic v 1.4. Conversion from decimal
@@ -72,10 +72,10 @@ public class Biotic1Handler extends NamespaceVersionHandler<MissionsType> {
      * @return
      * @throws BioticConversionException
      */
-    public MissionsType convertBiotic3(BioticTypes.v3_beta.MissionsType missionsBiotic3) throws BioticConversionException {
+    public MissionsType convertBiotic3(BioticTypes.v3.MissionsType missionsBiotic3) throws BioticConversionException {
         this.biotic1factory = new ObjectFactory();
         MissionsType ms = this.biotic1factory.createMissionsType();
-        for (BioticTypes.v3_beta.MissionType m : missionsBiotic3.getMission()) {
+        for (BioticTypes.v3.MissionType m : missionsBiotic3.getMission()) {
             ms.getMission().add(this.convertMissionFromBiotic3(m));
         }
         checkKeys(ms);
@@ -189,7 +189,7 @@ public class Biotic1Handler extends NamespaceVersionHandler<MissionsType> {
         }
     }
     
-    private MissionType convertMissionFromBiotic3(BioticTypes.v3_beta.MissionType missionBiotic3) throws BioticConversionException {
+    private MissionType convertMissionFromBiotic3(BioticTypes.v3.MissionType missionBiotic3) throws BioticConversionException {
         
         int stopYear;
         stopYear = Integer.parseInt(missionBiotic3.getMissionstopdate().toString().split("-")[0]);
@@ -210,14 +210,14 @@ public class Biotic1Handler extends NamespaceVersionHandler<MissionsType> {
         m.setStopdate(this.convertDateFromBiotic3(missionBiotic3.getMissionstopdate()));
         m.setYear(missionBiotic3.getStartyear());
         
-        for (BioticTypes.v3_beta.FishstationType fs : missionBiotic3.getFishstation()) {
+        for (BioticTypes.v3.FishstationType fs : missionBiotic3.getFishstation()) {
             m.getFishstation().add(this.convertFishstationFromBiotic3(fs, stopYear));
         }
         
         return m;
     }
     
-    private FishstationType convertFishstationFromBiotic3(BioticTypes.v3_beta.FishstationType f, int year) throws BioticConversionException {
+    private FishstationType convertFishstationFromBiotic3(BioticTypes.v3.FishstationType f, int year) throws BioticConversionException {
         FishstationType fishstation = this.biotic1factory.createFishstationType();
         
         if (f.getStationyear().intValue() != year) {
@@ -264,7 +264,7 @@ public class Biotic1Handler extends NamespaceVersionHandler<MissionsType> {
         fishstation.setNation(createStringDescriptionTypeFromBiotic3(f.getNation()));
         fishstation.setTrawlquality(createStringDescriptionTypeFromBiotic3(f.getSamplequality()));
         fishstation.setSea(createStringDescriptionTypeFromBiotic3(f.getSea()));
-        fishstation.setSerialno(f.getSerialno());
+        fishstation.setSerialno(f.getSerialnumber());
         fishstation.setSoaktime(f.getSoaktime());
         fishstation.setStartdate(this.convertDateFromBiotic3(f.getStationstartdate()));
         fishstation.setStartlog(f.getLogstart());
@@ -290,7 +290,7 @@ public class Biotic1Handler extends NamespaceVersionHandler<MissionsType> {
             fishstation.setWirelength(null);
         }
         
-        for (BioticTypes.v3_beta.CatchsampleType c : f.getCatchsample()) {
+        for (BioticTypes.v3.CatchsampleType c : f.getCatchsample()) {
             fishstation.getCatchsample().add(convertCatchsampleFromBiotic3(c));
         }
         
@@ -307,8 +307,11 @@ public class Biotic1Handler extends NamespaceVersionHandler<MissionsType> {
         return sd;
     }
     
-    private CatchsampleType convertCatchsampleFromBiotic3(BioticTypes.v3_beta.CatchsampleType c) throws BioticConversionException {
+    private CatchsampleType convertCatchsampleFromBiotic3(BioticTypes.v3.CatchsampleType c) throws BioticConversionException {
         CatchsampleType catchsample = this.biotic1factory.createCatchsampleType();
+        
+        //check that old key system is unqiue (species + partno)
+        assert false: "Handle if key fields are not unique";
         
         catchsample.setAbundancecategory(this.createStringDescriptionTypeFromBiotic3(c.getAbundancecategory()));
         catchsample.setAphia(c.getAphia());
@@ -328,7 +331,7 @@ public class Biotic1Handler extends NamespaceVersionHandler<MissionsType> {
         catchsample.setProducttype(this.createStringDescriptionTypeFromBiotic3((c.getCatchproducttype())));
         catchsample.setRaisingfactor(c.getRaisingfactor());
         catchsample.setSampleproducttype(this.createStringDescriptionTypeFromBiotic3((c.getSampleproducttype())));
-        catchsample.setSamplenumber(c.getSamplenumber());
+        catchsample.setSamplenumber(c.getCatchpartnumber());
         catchsample.setSampletype(this.createStringDescriptionTypeFromBiotic3(c.getSampletype()));
         
         catchsample.setSpecies(c.getCatchcategory());
@@ -338,15 +341,15 @@ public class Biotic1Handler extends NamespaceVersionHandler<MissionsType> {
         catchsample.setWeight(c.getCatchweight());
 
         //get individuals
-        for (BioticTypes.v3_beta.IndividualType i : c.getIndividual()) {
+        for (BioticTypes.v3.IndividualType i : c.getIndividual()) {
             catchsample.getIndividual().add(this.convertIndividualFromBiotic3(i));
         }
 
         // get prey
-        for (BioticTypes.v3_beta.IndividualType i : c.getIndividual()) {
-            for (BioticTypes.v3_beta.PreyType p3 : i.getPrey()) {
+        for (BioticTypes.v3.IndividualType i : c.getIndividual()) {
+            for (BioticTypes.v3.PreyType p3 : i.getPrey()) {
                 PreyType p = this.convertPreyFromBiotic3(p3);
-                p.setFishno(i.getSpecimenno());
+                p.setFishno(i.getSpecimenid());
                 catchsample.getPrey().add(p);
             }
         }
@@ -354,20 +357,24 @@ public class Biotic1Handler extends NamespaceVersionHandler<MissionsType> {
         return catchsample;
     }
     
-    private PreyType convertPreyFromBiotic3(BioticTypes.v3_beta.PreyType p) throws BioticConversionException {
+    private PreyType convertPreyFromBiotic3(BioticTypes.v3.PreyType p) throws BioticConversionException {
+        
+        //check that old keys are unique (species and partno)
+        assert false: "handle if keys are not unique";
+        
         PreyType prey = this.biotic1factory.createPreyType();
         prey.setDevstage(this.createStringDescriptionTypeFromBiotic3(p.getDevstage()));
         prey.setDigestion(this.createStringDescriptionTypeFromBiotic3(p.getPreydigestion()));
         prey.setInterval(this.createStringDescriptionTypeFromBiotic3((p.getInterval())));
         prey.setLengthmeasurement(this.createStringDescriptionTypeFromBiotic3(p.getPreylengthmeasurement()));
-        prey.setPartno(p.getPreysamplenumber());
+        prey.setPartno(p.getPreypartnumber());
         prey.setSpecies(p.getPreycategory());
         prey.setTotalcount(p.getTotalcount());
         prey.setTotalweight(p.getTotalweight());
         prey.setWeightresolution(this.createStringDescriptionTypeFromBiotic3(p.getWeightresolution()));
         
         Set<BigDecimal> lengths = new HashSet<>();
-        for (BioticTypes.v3_beta.PreylengthType pl : p.getPreylengthfrequencytable()) {
+        for (BioticTypes.v3.PreylengthType pl : p.getPreylengthfrequencytable()) {
             prey.getPreylength().add(this.convertPreyLengthFromBiotic3(pl));
             
             if (lengths.contains(pl.getLengthintervalstart())) {
@@ -376,14 +383,14 @@ public class Biotic1Handler extends NamespaceVersionHandler<MissionsType> {
             lengths.add(pl.getLengthintervalstart());
         }
         
-        for (BioticTypes.v3_beta.CopepodedevstageType cds : p.getCopepodedevstagefrequencytable()) {
+        for (BioticTypes.v3.CopepodedevstageType cds : p.getCopepodedevstagefrequencytable()) {
             prey.getCopepodedevstage().add(this.convertCopepodedevstageFromBiotic3(cds));
         }
         
         return prey;
     }
     
-    private IndividualType convertIndividualFromBiotic3(BioticTypes.v3_beta.IndividualType i) {
+    private IndividualType convertIndividualFromBiotic3(BioticTypes.v3.IndividualType i) {
         IndividualType individual = this.biotic1factory.createIndividualType();
         individual.setAbdomenwidth(i.getAbdomenwidth());
         individual.setBlackspot(this.createStringDescriptionTypeFromBiotic3(i.getBlackspot()));
@@ -424,7 +431,7 @@ public class Biotic1Handler extends NamespaceVersionHandler<MissionsType> {
         individual.setSnouttoendoftail(i.getSnouttoendoftail());
         individual.setSnouttoendsqueezed(i.getSnouttoendsqueezed());
         individual.setSpecialstage(this.createStringDescriptionTypeFromBiotic3(i.getSpecialstage()));
-        individual.setSpecimenno(i.getSpecimenno());
+        individual.setSpecimenno(i.getSpecimenid());
         individual.setStage(this.createStringDescriptionTypeFromBiotic3(i.getMaturationstage()));
         individual.setStomachfillfield(this.createStringDescriptionTypeFromBiotic3(i.getStomachfillfield()));
         individual.setStomachfilllab(this.createStringDescriptionTypeFromBiotic3(i.getStomachfilllab()));
@@ -434,18 +441,18 @@ public class Biotic1Handler extends NamespaceVersionHandler<MissionsType> {
         individual.setVolume(i.getIndividualvolume());
         individual.setWeight(i.getIndividualweight());
         
-        for (BioticTypes.v3_beta.AgedeterminationType a : i.getAgedetermination()) {
+        for (BioticTypes.v3.AgedeterminationType a : i.getAgedetermination()) {
             individual.getAgedetermination().add(this.convertAgedeterminationFromBiotic3(a));
         }
         
-        for (BioticTypes.v3_beta.TagType t : i.getTag()) {
+        for (BioticTypes.v3.TagType t : i.getTag()) {
             individual.getTag().add(this.convertTagFromBiotic3(t));
         }
         
         return individual;
     }
     
-    private PreylengthType convertPreyLengthFromBiotic3(BioticTypes.v3_beta.PreylengthType pl) {
+    private PreylengthType convertPreyLengthFromBiotic3(BioticTypes.v3.PreylengthType pl) {
         PreylengthType preylength = this.biotic1factory.createPreylengthType();
         preylength.setCount(pl.getLengthintervalcount());
         preylength.setLength(pl.getLengthintervalstart());
@@ -453,14 +460,14 @@ public class Biotic1Handler extends NamespaceVersionHandler<MissionsType> {
         return preylength;
     }
     
-    private CopepodedevstageType convertCopepodedevstageFromBiotic3(BioticTypes.v3_beta.CopepodedevstageType co) {
+    private CopepodedevstageType convertCopepodedevstageFromBiotic3(BioticTypes.v3.CopepodedevstageType co) {
         CopepodedevstageType cop = this.biotic1factory.createCopepodedevstageType();
         cop.setCopepodedevstage(co.getCopepodedevstage());
         cop.setCount(co.getDevstagecount());
         return cop;
     }
     
-    private AgedeterminationType convertAgedeterminationFromBiotic3(BioticTypes.v3_beta.AgedeterminationType a) {
+    private AgedeterminationType convertAgedeterminationFromBiotic3(BioticTypes.v3.AgedeterminationType a) {
         AgedeterminationType age = this.biotic1factory.createAgedeterminationType();
         age.setAge(a.getAge());
         age.setCalibration(a.getCalibration());
@@ -487,7 +494,7 @@ public class Biotic1Handler extends NamespaceVersionHandler<MissionsType> {
         return age;
     }
     
-    private TagType convertTagFromBiotic3(BioticTypes.v3_beta.TagType t) {
+    private TagType convertTagFromBiotic3(BioticTypes.v3.TagType t) {
         TagType tag = this.biotic1factory.createTagType();
         tag.setTagno(t.getTagid());
         tag.setTagtype(this.createStringDescriptionTypeFromBiotic3(t.getTagtype()));

@@ -7,16 +7,16 @@ package Biotic.Biotic3;
 
 import Biotic.BioticConversionException;
 import Biotic.Biotic1.Biotic1Handler;
-import BioticTypes.v3_beta.AgedeterminationType;
-import BioticTypes.v3_beta.CatchsampleType;
-import BioticTypes.v3_beta.CopepodedevstageType;
-import BioticTypes.v3_beta.FishstationType;
-import BioticTypes.v3_beta.IndividualType;
-import BioticTypes.v3_beta.MissionType;
-import BioticTypes.v3_beta.MissionsType;
-import BioticTypes.v3_beta.PreyType;
-import BioticTypes.v3_beta.PreylengthType;
-import BioticTypes.v3_beta.TagType;
+import BioticTypes.v3.AgedeterminationType;
+import BioticTypes.v3.CatchsampleType;
+import BioticTypes.v3.CopepodedevstageType;
+import BioticTypes.v3.FishstationType;
+import BioticTypes.v3.IndividualType;
+import BioticTypes.v3.MissionType;
+import BioticTypes.v3.MissionsType;
+import BioticTypes.v3.PreyType;
+import BioticTypes.v3.PreylengthType;
+import BioticTypes.v3.TagType;
 import HierarchicalData.HierarchicalData;
 import java.io.File;
 import java.io.FileInputStream;
@@ -265,6 +265,11 @@ public class Biotic3HandlerTest {
         exceptions.add("getCountofvessels"); //34
         
         exceptions.add("getVertebrae"); //35
+        
+        exceptions.add("getSpecimenno"); //36
+        
+        exceptions.add("getSamplenumber"); //37
+        exceptions.add("getSerialno"); //38
 
         this.compareSameName(missionsBiotic1, result, exceptions);
     }
@@ -310,6 +315,9 @@ public class Biotic3HandlerTest {
                 FishstationType newStation = newStations.get(j);
                 BioticTypes.v1_4.FishstationType oldStation = oldStations.get(j);
 
+                //38
+                assertEquals(newStation.getSerialnumber(), oldStation.getSerialno());
+                
                 //1
                 if (oldStation.getStartdate() == null) {
                     assertNull(newStation.getStationstartdate());
@@ -396,6 +404,9 @@ public class Biotic3HandlerTest {
                     CatchsampleType newCatch = newcatches.get(k);
                     BioticTypes.v1_4.CatchsampleType oldCatch = oldcatches.get(k);
 
+                    //37
+                    assertEquals(newCatch.getCatchpartnumber(), oldCatch.getSamplenumber());
+                    
                     //17
                     assertEquals(newCatch.getCatchcategory(), oldCatch.getSpecies());
 
@@ -429,6 +440,9 @@ public class Biotic3HandlerTest {
                     for (int l = 0; l < newIndividuals.size(); l++) {
                         IndividualType newInd = newIndividuals.get(l);
                         BioticTypes.v1_4.IndividualType oldInd = oldIndividuals.get(l);
+                        
+                        //36
+                        assertEquals(newInd.getSpecimenid(), oldInd.getSpecimenno());
 
                         //13
                         assertEquals(newInd.getLengthresolution(), oldInd.getLengthunit().getValue());
@@ -557,7 +571,7 @@ public class Biotic3HandlerTest {
                             //find matching prey in old:
                             boolean found = false;
                             for (BioticTypes.v1_4.PreyType oldPrey : oldCatch.getPrey()) { //17
-                                if (oldPrey.getSpecies().equals(newPrey.getPreycategory()) && oldPrey.getFishno().equals(newInd.getSpecimenno()) && oldPrey.getPartno().equals(newPrey.getPreysamplenumber())) {
+                                if (oldPrey.getSpecies().equals(newPrey.getPreycategory()) && oldPrey.getFishno().equals(newInd.getSpecimenid()) && oldPrey.getPartno().equals(newPrey.getPreypartnumber())) {
                                     found = true;
                                 }
                             }
@@ -599,7 +613,7 @@ public class Biotic3HandlerTest {
                         for (PreyType newPrey : newInd.getPrey()) {
                             BioticTypes.v1_4.PreyType oldPrey = null;
                             for (BioticTypes.v1_4.PreyType oldPreyC : oldCatch.getPrey()) {
-                                if (oldPreyC.getFishno().equals(newInd.getSpecimenno()) && oldPreyC.getPartno().equals(newPrey.getPreysamplenumber())) {
+                                if (oldPreyC.getFishno().equals(newInd.getSpecimenid()) && oldPreyC.getPartno().equals(newPrey.getPreypartnumber())) {
                                     oldPrey = oldPreyC;
                                 }
                             }
@@ -660,26 +674,25 @@ public class Biotic3HandlerTest {
             Set<String> stationKeys = new HashSet<>();
             for (FishstationType f : m.getFishstation()) {
                 assertNotNull(f.getStationyear());
-                assertNotNull(f.getSerialno());
+                assertNotNull(f.getSerialnumber());
 
-                String stationkeystring = f.getStationyear() + "/" + f.getSerialno();
+                String stationkeystring = f.getStationyear() + "/" + f.getSerialnumber();
                 assertFalse(stationKeys.contains(stationkeystring));
                 stationKeys.add(stationkeystring);
 
                 Set<String> catchKeys = new HashSet<>();
                 for (CatchsampleType c : f.getCatchsample()) {
-                    assertNotNull(c.getCatchcategory());
-                    assertNotNull(c.getSamplenumber());
+                    assertNotNull(c.getCatchsampleid());
 
-                    String catchkeystring = c.getCatchcategory() + "/" + c.getSamplenumber();
+                    String catchkeystring = c.getCatchcategory() + "/" + c.getCatchpartnumber();
                     assertFalse(catchKeys.contains(catchkeystring));
                     catchKeys.add(catchkeystring);
 
                     Set<String> individualKeys = new HashSet<>();
                     for (IndividualType i : c.getIndividual()) {
-                        assertNotNull(i.getSpecimenno());
+                        assertNotNull(i.getSpecimenid());
 
-                        String individualkeystring = "" + i.getSpecimenno();
+                        String individualkeystring = "" + i.getSpecimenid();
                         assertFalse(individualKeys.contains(individualkeystring));
                         individualKeys.add(individualkeystring);
 
@@ -703,10 +716,9 @@ public class Biotic3HandlerTest {
 
                         Set<String> preyKeys = new HashSet<>();
                         for (PreyType p : i.getPrey()) {
-                            assertNotNull(p.getPreycategory());
-                            assertNotNull(p.getPreysamplenumber());
+                            assertNotNull(p.getPreysampleid());
 
-                            String preyKeyString = p.getPreycategory() + "/" + p.getPreysamplenumber();
+                            String preyKeyString = p.getPreycategory() + "/" + p.getPreypartnumber();
                             assertFalse(preyKeys.contains(preyKeyString));
                             preyKeys.add(preyKeyString);
 
@@ -769,7 +781,7 @@ public class Biotic3HandlerTest {
         BioticTypes.v1_4.MissionsType missionsBiotic1 = b1handler.read(Biotic3HandlerTest.class.getClassLoader().getResourceAsStream("test.xml"));
         Biotic3Handler instance = new Biotic3Handler();
         MissionsType m = instance.convertBiotic1(missionsBiotic1);
-        m.getMission().get(0).getFishstation().get(1).setSerialno(m.getMission().get(0).getFishstation().get(0).getSerialno());
+        m.getMission().get(0).getFishstation().get(1).setSerialnumber(m.getMission().get(0).getFishstation().get(0).getSerialnumber());
         try {
             instance.checkKeys(m);
             fail("Exception expected");

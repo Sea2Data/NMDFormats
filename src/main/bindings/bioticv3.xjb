@@ -13,9 +13,9 @@
     The following has been added. -->
 
         
-    <jxb:bindings schemaLocation="../resources/bioticv3_beta.xsd" node="/xs:schema">
+    <jxb:bindings schemaLocation="../resources/bioticv3.xsd" node="/xs:schema">
         <jxb:schemaBindings>
-            <jxb:package name="BioticTypes.v3_beta" />
+            <jxb:package name="BioticTypes.v3" />
         </jxb:schemaBindings>
         <jxb:bindings>
             <namespace:prefix name="" />
