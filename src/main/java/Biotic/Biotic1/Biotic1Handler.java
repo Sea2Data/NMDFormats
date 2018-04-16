@@ -24,7 +24,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import javax.xml.bind.JAXBException;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -290,8 +292,16 @@ public class Biotic1Handler extends NamespaceVersionHandler<MissionsType> {
             fishstation.setWirelength(null);
         }
         
+        Set<String> catchKeys = new HashSet<>();
         for (BioticTypes.v3.CatchsampleType c : f.getCatchsample()) {
-            fishstation.getCatchsample().add(convertCatchsampleFromBiotic3(c));
+            CatchsampleType catchsample = convertCatchsampleFromBiotic3(c);
+            String key = catchsample.getSpecies() + "/" + catchsample.getSamplenumber();
+            if (catchKeys.contains(key)){
+                throw new BioticConversionException("Conversion result in non-unique keys for catchsample");
+            }
+            catchKeys.add(key);
+            
+            fishstation.getCatchsample().add(catchsample);
         }
         
         return fishstation;
@@ -308,11 +318,7 @@ public class Biotic1Handler extends NamespaceVersionHandler<MissionsType> {
     }
     
     private CatchsampleType convertCatchsampleFromBiotic3(BioticTypes.v3.CatchsampleType c) throws BioticConversionException {
-        CatchsampleType catchsample = this.biotic1factory.createCatchsampleType();
-        
-        //check that old key system is unqiue (species + partno)
-        assert false: "Handle if key fields are not unique";
-        
+        CatchsampleType catchsample = this.biotic1factory.createCatchsampleType();        
         catchsample.setAbundancecategory(this.createStringDescriptionTypeFromBiotic3(c.getAbundancecategory()));
         catchsample.setAphia(c.getAphia());
         catchsample.setComment(c.getCatchcomment());
@@ -346,10 +352,18 @@ public class Biotic1Handler extends NamespaceVersionHandler<MissionsType> {
         }
 
         // get prey
+        Set<String> preyKeys = new HashSet<>();
         for (BioticTypes.v3.IndividualType i : c.getIndividual()) {
             for (BioticTypes.v3.PreyType p3 : i.getPrey()) {
                 PreyType p = this.convertPreyFromBiotic3(p3);
                 p.setFishno(i.getSpecimenid());
+                
+                String key = p.getSpecies() + "/" + p.getFishno() + "/" + p.getPartno();
+                if (preyKeys.contains(key)){
+                    throw new BioticConversionException("Conversion result in non-unique keys for catchsample");
+                }
+                preyKeys.add(key);
+                
                 catchsample.getPrey().add(p);
             }
         }
@@ -358,9 +372,6 @@ public class Biotic1Handler extends NamespaceVersionHandler<MissionsType> {
     }
     
     private PreyType convertPreyFromBiotic3(BioticTypes.v3.PreyType p) throws BioticConversionException {
-        
-        //check that old keys are unique (species and partno)
-        assert false: "handle if keys are not unique";
         
         PreyType prey = this.biotic1factory.createPreyType();
         prey.setDevstage(this.createStringDescriptionTypeFromBiotic3(p.getDevstage()));
