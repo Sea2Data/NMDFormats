@@ -163,8 +163,9 @@ public class Biotic1Handler extends NamespaceVersionHandler<MissionsType> {
                     for (PreyType p : c.getPrey()) {
                         checkKeyNotNull(p.getSpecies());
                         checkKeyNotNull(p.getPartno());
+                        checkKeyNotNull(p.getFishno());
                         
-                        String preyKeyString = p.getSpecies() + "/" + p.getPartno();
+                        String preyKeyString = p.getFishno() + "/" + p.getSpecies() + "/" + p.getPartno();
                         checkKeyNotNull(preyKeys.contains(preyKeyString));
                         preyKeys.add(preyKeyString);
                         

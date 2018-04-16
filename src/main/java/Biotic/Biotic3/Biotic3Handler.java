@@ -169,10 +169,9 @@ public class Biotic3Handler extends NamespaceVersionHandler<MissionsType> {
 
                 Set<String> catchKeys = new HashSet<>();
                 for (CatchsampleType c : f.getCatchsample()) {
-                    checkKeyNotNull(c.getCatchcategory());
-                    checkKeyNotNull(c.getCatchpartnumber());
+                    checkKeyNotNull(c.getCatchsampleid());
 
-                    String catchkeystring = c.getCatchcategory() + "/" + c.getCatchpartnumber();
+                    String catchkeystring = c.getCatchsampleid() + "";
                     checkKeyNotDuplicated(catchkeystring, catchKeys);
                     catchKeys.add(catchkeystring);
 
@@ -204,10 +203,9 @@ public class Biotic3Handler extends NamespaceVersionHandler<MissionsType> {
 
                         Set<String> preyKeys = new HashSet<>();
                         for (PreyType p : i.getPrey()) {
-                            checkKeyNotNull(p.getPreycategory());
-                            checkKeyNotNull(p.getPreypartnumber());
+                            checkKeyNotNull(p.getPreysampleid());
 
-                            String preyKeyString = p.getPreycategory() + "/" + p.getPreypartnumber();
+                            String preyKeyString = p.getPreysampleid() + "";
                             checkKeyNotNull(preyKeys.contains(preyKeyString));
                             preyKeys.add(preyKeyString);
 
