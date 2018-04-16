@@ -1072,7 +1072,7 @@ Henviser ellers til dokument &#8221;historiske koder&#8221; for serienr. brukt i
           </xs:documentation>
         </xs:annotation>
       </xs:element>
-      <xs:element name="aphia" type="xs:string">
+      <xs:element name="aphia" type="KeyType">
         <xs:annotation>
           <xs:documentation>
             <imrd:imrDoc>
