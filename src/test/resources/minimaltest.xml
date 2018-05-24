@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<missions xmlns="http://www.imr.no/formats/nmdbiotic/v1.4">
+    <mission missiontype="11" year="2017" platform="3654" missionnumber="1" missiontypename="Prøvebåt" callsignal="LHVE" platformname="Gamle Kvalstein[2013]/LHVE[2013]">
+        <fishstation serialno="99301">
+            <catchsample species="164712" samplenumber="1" noname="TORSK" aphia="126436">
+                <individual specimenno="1">
+                    <agedetermination no="1">
+                    </agedetermination>
+                </individual>
+                <individual specimenno="2">
+                    <agedetermination no="1">
+                    </agedetermination>
+                </individual>
+			</catchsample>
+        </fishstation>
+    </mission>
+</missions>

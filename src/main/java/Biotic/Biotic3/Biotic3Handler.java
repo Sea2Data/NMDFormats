@@ -258,7 +258,13 @@ public class Biotic3Handler extends NamespaceVersionHandler<MissionsType> {
         FishstationType fishstation = this.biotic3factory.createFishstationType();
 
         fishstation.setStationyear(((BioticTypes.v1_4.MissionType) f.getParent()).getYear());
-        fishstation.setArea(f.getArea().toString());
+        if (f.getArea() == null){
+            fishstation.setArea(null);
+        }
+        else{
+            fishstation.setArea(f.getArea().toString());
+        }
+
         fishstation.setBottomdepthstart(f.getBottomdepthstart());
         fishstation.setBottomdepthstop(f.getBottomdepthstop());
         fishstation.setCatchplatform(createStringFromBiotic1(f.getPlatform()));
@@ -304,7 +310,12 @@ public class Biotic3Handler extends NamespaceVersionHandler<MissionsType> {
         fishstation.setStationstopdate(this.convertDateFromBiotic1(f.getStopdate()));
         fishstation.setLogstop(f.getStoplog());
         fishstation.setStationstoptime(this.convertTimeBiotic1(f.getStoptime()));
-        fishstation.setSystem(f.getSystem().toString());
+        if (f.getSystem()==null){
+            fishstation.setSystem(null);
+        }
+        else{
+            fishstation.setSystem(f.getSystem().toString());
+        }
         fishstation.setVerticaltrawlopening(f.getTrawlopening());
         fishstation.setVerticaltrawlopeningsd(f.getTrawlopeningsd());
         fishstation.setTripno(f.getTripno());

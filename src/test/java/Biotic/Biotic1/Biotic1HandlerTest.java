@@ -81,12 +81,11 @@ public class Biotic1HandlerTest {
 
     }
 
-    @Test
-    public void testConvertBiotic3() throws Exception {
+    protected void testConvertBiotic3BackAndForth(String testfile) throws Exception {
         System.out.println("test convert back and forth");
         // read biotic as 1
         Biotic1Handler r = new Biotic1Handler();
-        MissionsType m = r.read(Biotic1HandlerTest.class.getClassLoader().getResourceAsStream("test.xml"));
+        MissionsType m = r.read(Biotic1HandlerTest.class.getClassLoader().getResourceAsStream(testfile));
 
         // save to temp
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -95,7 +94,7 @@ public class Biotic1HandlerTest {
 
         //read as 3
         Biotic3Handler r3 = new Biotic3Handler();
-        BioticTypes.v3.MissionsType b3 = r3.readOldBiotic(Biotic1HandlerTest.class.getClassLoader().getResourceAsStream("test.xml"));
+        BioticTypes.v3.MissionsType b3 = r3.readOldBiotic(Biotic1HandlerTest.class.getClassLoader().getResourceAsStream(testfile));
 
         // convert back
         MissionsType mConverted = r.convertBiotic3(b3);
@@ -105,6 +104,12 @@ public class Biotic1HandlerTest {
 
         //check equality
         assertEquals(m1, m3);
+    }
+    
+        @Test
+    public void testConvertBiotic3() throws Exception {
+        testConvertBiotic3BackAndForth("test.xml");//test w station, catch, individuals and age
+        testConvertBiotic3BackAndForth("minimaltest.xml"); //test nulls
     }
     
     @Test

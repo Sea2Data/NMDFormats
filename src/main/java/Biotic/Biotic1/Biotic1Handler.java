@@ -37,9 +37,9 @@ import org.xml.sax.SAXException;
  * @author Edvin Fuglebakk edvin.fuglebakk@imr.no
  */
 public class Biotic1Handler extends NamespaceVersionHandler<MissionsType> {
-    
+
     private ObjectFactory biotic1factory;
-    
+
     public Biotic1Handler() {
         this.latestNamespace = "http://www.imr.no/formats/nmdbiotic/v1.4";
         this.latestBioticClass = MissionsType.class;
@@ -49,24 +49,23 @@ public class Biotic1Handler extends NamespaceVersionHandler<MissionsType> {
         this.compatibleNamespaces.add("http://www.imr.no/formats/nmdbiotic/v1.1");
         this.compatibleNamespaces.add("http://www.imr.no/formats/nmdbiotic/v1");
     }
-    
+
     @Override
     public MissionsType read(InputStream xml) throws JAXBException, XMLStreamException, ParserConfigurationException, SAXException, IOException {
         return super.read(xml);
     }
-    
+
     @Override
     public void save(OutputStream xml, MissionsType data) throws JAXBException {
         super.save(xml, data);
     }
 
     /**
-     * Converts BioticTypes.v3.MissionsType to
-     * BioticTypes.v1_4.MissionsType Silently ignores fields that are new in
-     * biotic v3, but throws exception if data that has been restructured in
-     * biotic v3 can not be converted to biotic v 1.4. Conversion from decimal
-     * to integer is done by discarding fractional part for the value returned
-     * by fishstation.getWireLength()
+     * Converts BioticTypes.v3.MissionsType to BioticTypes.v1_4.MissionsType
+     * Silently ignores fields that are new in biotic v3, but throws exception
+     * if data that has been restructured in biotic v3 can not be converted to
+     * biotic v 1.4. Conversion from decimal to integer is done by discarding
+     * fractional part for the value returned by fishstation.getWireLength()
      *
      * @param missionsBiotic3
      * @return
@@ -81,13 +80,13 @@ public class Biotic1Handler extends NamespaceVersionHandler<MissionsType> {
         checkKeys(ms);
         return ms;
     }
-    
+
     private void checkKeyNotNull(Object o) throws BioticConversionException {
         if (o == null) {
             throw new BioticConversionException("Key fields can not be null");
         }
     }
-    
+
     private void checkKeyNotDuplicated(String key, Set<String> otherKeys) throws BioticConversionException {
         if (otherKeys.contains(key)) {
             throw new BioticConversionException("Keys can not be duplicated");
@@ -102,84 +101,84 @@ public class Biotic1Handler extends NamespaceVersionHandler<MissionsType> {
      */
     protected void checkKeys(MissionsType missions) throws BioticConversionException {
         Set<String> missionKeys = new HashSet<>();
-        
+
         for (MissionType m : missions.getMission()) {
             checkKeyNotNull(m.getMissiontype());
             checkKeyNotNull(m.getYear());
             checkKeyNotNull(m.getPlatform());
             checkKeyNotNull(m.getMissionnumber());
-            
+
             String missionkeystring = m.getMissiontype() + "/" + m.getYear() + "/" + m.getPlatform() + "/" + m.getMissionnumber();
             checkKeyNotDuplicated(missionkeystring, missionKeys);
             missionKeys.add(missionkeystring);
-            
+
             Set<String> stationKeys = new HashSet<>();
             for (FishstationType f : m.getFishstation()) {
                 checkKeyNotNull(f.getSerialno());
-                
+
                 String stationkeystring = "" + f.getSerialno();
                 checkKeyNotDuplicated(stationkeystring, stationKeys);
                 stationKeys.add(stationkeystring);
-                
+
                 Set<String> catchKeys = new HashSet<>();
                 for (CatchsampleType c : f.getCatchsample()) {
                     checkKeyNotNull(c.getSpecies());
                     checkKeyNotNull(c.getSamplenumber());
-                    
+
                     String catchkeystring = c.getSpecies() + "/" + c.getSamplenumber();
                     checkKeyNotDuplicated(catchkeystring, catchKeys);
                     catchKeys.add(catchkeystring);
-                    
+
                     Set<String> individualKeys = new HashSet<>();
                     for (IndividualType i : c.getIndividual()) {
                         checkKeyNotNull(i.getSpecimenno());
-                        
+
                         String individualkeystring = "" + i.getSpecimenno();
                         checkKeyNotDuplicated(individualkeystring, individualKeys);
                         individualKeys.add(individualkeystring);
-                        
+
                         Set<String> ageKeys = new HashSet<>();
                         for (AgedeterminationType a : i.getAgedetermination()) {
                             checkKeyNotNull(a.getNo());
-                            
+
                             String agekeystring = "" + a.getNo();
                             checkKeyNotDuplicated(agekeystring, ageKeys);
                             ageKeys.add(agekeystring);
                         }
-                        
+
                         Set<String> tagKeys = new HashSet<>();
                         for (TagType t : i.getTag()) {
                             checkKeyNotNull(t.getTagno());
-                            
+
                             String tagKeyString = "" + t.getTagno();
                             checkKeyNotDuplicated(tagKeyString, tagKeys);
                             tagKeys.add(tagKeyString);
                         }
                     }
-                    
+
                     Set<String> preyKeys = new HashSet<>();
                     for (PreyType p : c.getPrey()) {
                         checkKeyNotNull(p.getSpecies());
                         checkKeyNotNull(p.getPartno());
                         checkKeyNotNull(p.getFishno());
-                        
+
                         String preyKeyString = p.getFishno() + "/" + p.getSpecies() + "/" + p.getPartno();
                         checkKeyNotNull(preyKeys.contains(preyKeyString));
                         preyKeys.add(preyKeyString);
-                        
+
                         Set<String> preylengthKeys = new HashSet<>();
                         for (PreylengthType pl : p.getPreylength()) {
                             checkKeyNotNull(pl.getLength());
-                            
+
                             String plkeystring = "" + pl.getLength();
                             checkKeyNotDuplicated(plkeystring, preylengthKeys);
                             preylengthKeys.add(plkeystring);
                         }
-                        
+
                         Set<String> ccpKeys = new HashSet<>();
                         for (CopepodedevstageType cp : p.getCopepodedevstage()) {
                             checkKeyNotNull(cp.getCopepodedevstage());
-                            
+
                             String cpkeystring = "" + cp.getCopepodedevstage();
                             checkKeyNotDuplicated(cpkeystring, ccpKeys);
                             ccpKeys.add(cpkeystring);
@@ -189,15 +188,16 @@ public class Biotic1Handler extends NamespaceVersionHandler<MissionsType> {
             }
         }
     }
-    
+
     private MissionType convertMissionFromBiotic3(BioticTypes.v3.MissionType missionBiotic3) throws BioticConversionException {
-        
-        int stopYear;
-        stopYear = Integer.parseInt(missionBiotic3.getMissionstopdate().toString().split("-")[0]);
-        if (stopYear != missionBiotic3.getStartyear().intValue()) {
-            throw new BioticConversionException("Missions can not cross years in Biotic v1.4");
+
+        if (missionBiotic3.getMissionstopdate() != null) {
+            int stopYear = Integer.parseInt(missionBiotic3.getMissionstopdate().toString().split("-")[0]);
+            if (stopYear != missionBiotic3.getStartyear().intValue()) {
+                throw new BioticConversionException("Missions can not cross years in Biotic v1.4");
+            }
         }
-        
+
         MissionType m = this.biotic1factory.createMissionType();
         m.setCallsignal(missionBiotic3.getCallsignal());
         m.setCruise(missionBiotic3.getCruise());
@@ -210,18 +210,18 @@ public class Biotic1Handler extends NamespaceVersionHandler<MissionsType> {
         m.setStartdate(this.convertDateFromBiotic3(missionBiotic3.getMissionstartdate()));
         m.setStopdate(this.convertDateFromBiotic3(missionBiotic3.getMissionstopdate()));
         m.setYear(missionBiotic3.getStartyear());
-        
+
         for (BioticTypes.v3.FishstationType fs : missionBiotic3.getFishstation()) {
-            m.getFishstation().add(this.convertFishstationFromBiotic3(fs, stopYear));
+            m.getFishstation().add(this.convertFishstationFromBiotic3(fs, m.getYear().intValue()));
         }
-        
+
         return m;
     }
-    
-    private FishstationType convertFishstationFromBiotic3(BioticTypes.v3.FishstationType f, int year) throws BioticConversionException {
+
+    private FishstationType convertFishstationFromBiotic3(BioticTypes.v3.FishstationType f, int startyear) throws BioticConversionException {
         FishstationType fishstation = this.biotic1factory.createFishstationType();
-        
-        if (f.getStationyear().intValue() != year) {
+
+        if (f.getStationyear().intValue() != startyear){
             throw new BioticConversionException("Missions can not cross years in Biotic v1.4");
         }
         
@@ -229,7 +229,9 @@ public class Biotic1Handler extends NamespaceVersionHandler<MissionsType> {
             throw new BioticConversionException("Multiple trawling depths are not handled in Biotic v1.4 conversion");
         }
         
-        fishstation.setArea(BigInteger.valueOf(Integer.parseInt(f.getArea())));
+        if (f.getArea()!=null){
+            fishstation.setArea(BigInteger.valueOf(Integer.parseInt(f.getArea())));
+        }
         fishstation.setBottomdepthstart(f.getBottomdepthstart());
         fishstation.setBottomdepthstop(f.getBottomdepthstop());
         fishstation.setPlatform(createStringDescriptionTypeFromBiotic3(f.getCatchplatform()));
@@ -243,7 +245,7 @@ public class Biotic1Handler extends NamespaceVersionHandler<MissionsType> {
         fishstation.setDoorspreadsd(f.getTrawldoorspreadsd());
         fishstation.setFishabundance(createStringDescriptionTypeFromBiotic3(f.getFishabundance()));
         fishstation.setFishdistribution(createStringDescriptionTypeFromBiotic3(f.getFishdistribution()));
-        
+
         fishstation.setFishingdepthmax(f.getFishingdepthmax());
         fishstation.setFishingdepthmean(f.getFishingdepthmean());
         fishstation.setFishingdepthmin(f.getFishingdepthmin());
@@ -275,7 +277,9 @@ public class Biotic1Handler extends NamespaceVersionHandler<MissionsType> {
         fishstation.setStopdate(this.convertDateFromBiotic3(f.getStationstopdate()));
         fishstation.setStoplog(f.getLogstop());
         fishstation.setStoptime(this.convertTimeFromBiotic3(f.getStationstoptime()));
-        fishstation.setSystem(BigInteger.valueOf(Integer.parseInt(f.getSystem())));
+        if (f.getSystem()!=null){
+            fishstation.setSystem(BigInteger.valueOf(Integer.parseInt(f.getSystem())));
+        }
         fishstation.setTrawlopening(f.getVerticaltrawlopening());
         fishstation.setTrawlopeningsd(f.getVerticaltrawlopeningsd());
         fishstation.setTripno(f.getTripno());
@@ -290,34 +294,34 @@ public class Biotic1Handler extends NamespaceVersionHandler<MissionsType> {
         } else {
             fishstation.setWirelength(null);
         }
-        
+
         Set<String> catchKeys = new HashSet<>();
         for (BioticTypes.v3.CatchsampleType c : f.getCatchsample()) {
             CatchsampleType catchsample = convertCatchsampleFromBiotic3(c);
             String key = catchsample.getSpecies() + "/" + catchsample.getSamplenumber();
-            if (catchKeys.contains(key)){
+            if (catchKeys.contains(key)) {
                 throw new BioticConversionException("Conversion result in non-unique keys for catchsample");
             }
             catchKeys.add(key);
-            
+
             fishstation.getCatchsample().add(catchsample);
         }
-        
+
         return fishstation;
     }
-    
+
     private StringDescriptionType createStringDescriptionTypeFromBiotic3(String string) {
         if (string == null) {
             return null;
         }
         StringDescriptionType sd = this.biotic1factory.createStringDescriptionType();
         sd.setValue(string);
-        
+
         return sd;
     }
-    
+
     private CatchsampleType convertCatchsampleFromBiotic3(BioticTypes.v3.CatchsampleType c) throws BioticConversionException {
-        CatchsampleType catchsample = this.biotic1factory.createCatchsampleType();        
+        CatchsampleType catchsample = this.biotic1factory.createCatchsampleType();
         catchsample.setAbundancecategory(this.createStringDescriptionTypeFromBiotic3(c.getAbundancecategory()));
         catchsample.setAphia(c.getAphia());
         catchsample.setComment(c.getCatchcomment());
@@ -338,7 +342,7 @@ public class Biotic1Handler extends NamespaceVersionHandler<MissionsType> {
         catchsample.setSampleproducttype(this.createStringDescriptionTypeFromBiotic3((c.getSampleproducttype())));
         catchsample.setSamplenumber(c.getCatchpartnumber());
         catchsample.setSampletype(this.createStringDescriptionTypeFromBiotic3(c.getSampletype()));
-        
+
         catchsample.setSpecies(c.getCatchcategory());
         catchsample.setSpecimensamplecount(c.getSpecimensamplecount());
         catchsample.setStomach(this.createStringDescriptionTypeFromBiotic3(c.getStomach()));
@@ -356,22 +360,22 @@ public class Biotic1Handler extends NamespaceVersionHandler<MissionsType> {
             for (BioticTypes.v3.PreyType p3 : i.getPrey()) {
                 PreyType p = this.convertPreyFromBiotic3(p3);
                 p.setFishno(i.getSpecimenid());
-                
+
                 String key = p.getSpecies() + "/" + p.getFishno() + "/" + p.getPartno();
-                if (preyKeys.contains(key)){
+                if (preyKeys.contains(key)) {
                     throw new BioticConversionException("Conversion result in non-unique keys for catchsample");
                 }
                 preyKeys.add(key);
-                
+
                 catchsample.getPrey().add(p);
             }
         }
-        
+
         return catchsample;
     }
-    
+
     private PreyType convertPreyFromBiotic3(BioticTypes.v3.PreyType p) throws BioticConversionException {
-        
+
         PreyType prey = this.biotic1factory.createPreyType();
         prey.setDevstage(this.createStringDescriptionTypeFromBiotic3(p.getDevstage()));
         prey.setDigestion(this.createStringDescriptionTypeFromBiotic3(p.getPreydigestion()));
@@ -382,24 +386,24 @@ public class Biotic1Handler extends NamespaceVersionHandler<MissionsType> {
         prey.setTotalcount(p.getTotalcount());
         prey.setTotalweight(p.getTotalweight());
         prey.setWeightresolution(this.createStringDescriptionTypeFromBiotic3(p.getWeightresolution()));
-        
+
         Set<BigDecimal> lengths = new HashSet<>();
         for (BioticTypes.v3.PreylengthType pl : p.getPreylengthfrequencytable()) {
             prey.getPreylength().add(this.convertPreyLengthFromBiotic3(pl));
-            
+
             if (lengths.contains(pl.getLengthintervalstart())) {
                 throw new BioticConversionException("Conversion results in non.unique keys for preylength");
             }
             lengths.add(pl.getLengthintervalstart());
         }
-        
+
         for (BioticTypes.v3.CopepodedevstageType cds : p.getCopepodedevstagefrequencytable()) {
             prey.getCopepodedevstage().add(this.convertCopepodedevstageFromBiotic3(cds));
         }
-        
+
         return prey;
     }
-    
+
     private IndividualType convertIndividualFromBiotic3(BioticTypes.v3.IndividualType i) {
         IndividualType individual = this.biotic1factory.createIndividualType();
         individual.setAbdomenwidth(i.getAbdomenwidth());
@@ -450,33 +454,33 @@ public class Biotic1Handler extends NamespaceVersionHandler<MissionsType> {
         individual.setVertebrae(i.getVertebraecount());
         individual.setVolume(i.getIndividualvolume());
         individual.setWeight(i.getIndividualweight());
-        
+
         for (BioticTypes.v3.AgedeterminationType a : i.getAgedetermination()) {
             individual.getAgedetermination().add(this.convertAgedeterminationFromBiotic3(a));
         }
-        
+
         for (BioticTypes.v3.TagType t : i.getTag()) {
             individual.getTag().add(this.convertTagFromBiotic3(t));
         }
-        
+
         return individual;
     }
-    
+
     private PreylengthType convertPreyLengthFromBiotic3(BioticTypes.v3.PreylengthType pl) {
         PreylengthType preylength = this.biotic1factory.createPreylengthType();
         preylength.setCount(pl.getLengthintervalcount());
         preylength.setLength(pl.getLengthintervalstart());
-        
+
         return preylength;
     }
-    
+
     private CopepodedevstageType convertCopepodedevstageFromBiotic3(BioticTypes.v3.CopepodedevstageType co) {
         CopepodedevstageType cop = this.biotic1factory.createCopepodedevstageType();
         cop.setCopepodedevstage(co.getCopepodedevstage());
         cop.setCount(co.getDevstagecount());
         return cop;
     }
-    
+
     private AgedeterminationType convertAgedeterminationFromBiotic3(BioticTypes.v3.AgedeterminationType a) {
         AgedeterminationType age = this.biotic1factory.createAgedeterminationType();
         age.setAge(a.getAge());
@@ -500,23 +504,23 @@ public class Biotic1Handler extends NamespaceVersionHandler<MissionsType> {
         age.setReadability(this.createStringDescriptionTypeFromBiotic3(a.getReadability()));
         age.setSpawningage(a.getSpawningage());
         age.setSpawningzones(a.getSpawningzones());
-        
+
         return age;
     }
-    
+
     private TagType convertTagFromBiotic3(BioticTypes.v3.TagType t) {
         TagType tag = this.biotic1factory.createTagType();
         tag.setTagno(t.getTagid());
         tag.setTagtype(this.createStringDescriptionTypeFromBiotic3(t.getTagtype()));
         return tag;
     }
-    
+
     private String convertDateFromBiotic3(XMLGregorianCalendar datev3) throws BioticConversionException {
-        
+
         if (datev3 == null) {
             return null;
         }
-        
+
         String date = datev3.toString();
         if (date.endsWith("Z")) {
             date = date.substring(0, date.length() - 1);
@@ -528,7 +532,7 @@ public class Biotic1Handler extends NamespaceVersionHandler<MissionsType> {
         date = datetab[2] + "/" + datetab[1] + "/" + datetab[0];
         return date;
     }
-    
+
     private String convertTimeFromBiotic3(XMLGregorianCalendar timev3) {
         if (timev3 == null) {
             return null;
