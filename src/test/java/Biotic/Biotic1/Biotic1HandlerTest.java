@@ -31,7 +31,7 @@ public class Biotic1HandlerTest {
 
     @BeforeClass
     public static void setUpClass() {
-    }
+    }   
 
     @AfterClass
     public static void tearDownClass() {

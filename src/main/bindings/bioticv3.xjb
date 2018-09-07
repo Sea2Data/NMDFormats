@@ -1,10 +1,10 @@
 <jxb:bindings version="2.1"
+              xmlns:bio="http://www.imr.no/formats/nmdbiotic/v3"
               xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
               xmlns:xs="http://www.w3.org/2001/XMLSchema"
               xmlns:annox="http://annox.dev.java.net"
               xmlns:namespace="http://jaxb2-commons.dev.java.net/namespace-prefix"
               xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"
-              xmlns:bio="http://www.imr.no/formats/nmdbiotic/v3_beta"
               xmlns:inheritance="http://jaxb2-commons.dev.java.net/basic/inheritance"
               jxb:extensionBindingPrefixes="xjc annox">
     <!-- By Kjetil Fjellheim (IMR) -->
@@ -13,7 +13,7 @@
     The following has been added. -->
 
         
-    <jxb:bindings schemaLocation="../resources/bioticv3.xsd" node="/xs:schema">
+    <jxb:bindings schemaLocation="https://git.imr.no/Formats/commons-biotic-jaxb/raw/master/src/main/resources/bioticv3.xsd" node="/xs:schema">
         <jxb:schemaBindings>
             <jxb:package name="BioticTypes.v3" />
         </jxb:schemaBindings>

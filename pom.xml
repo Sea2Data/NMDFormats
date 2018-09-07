@@ -28,6 +28,9 @@
                                         <directory>${basedir}/src/main/resources</directory>
                                     </fileset>
                                 </schema>
+                                <schema>
+                                    <url>https://git.imr.no/Formats/commons-biotic-jaxb/raw/master/src/main/resources/bioticv3.xsd</url>
+                                </schema>
                             </schemas>
                             <forceRegenerate>false</forceRegenerate>
                             <generateDirectory>${project.build.directory}/generated-sources/xjc</generateDirectory>
