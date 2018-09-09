@@ -13,7 +13,7 @@
     The following has been added. -->
 
         
-    <jxb:bindings schemaLocation="https://git.imr.no/Formats/commons-biotic-jaxb/raw/master/src/main/resources/bioticv3.xsd" node="/xs:schema">
+    <jxb:bindings schemaLocation="https://git.imr.no/Formats/commons-biotic-jaxb/raw/3.0.0/src/main/resources/bioticv3.xsd" node="/xs:schema">
         <jxb:schemaBindings>
             <jxb:package name="BioticTypes.v3" />
         </jxb:schemaBindings>
