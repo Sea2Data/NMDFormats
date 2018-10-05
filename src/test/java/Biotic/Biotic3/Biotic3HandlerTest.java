@@ -673,10 +673,9 @@ public class Biotic3HandlerTest {
 
             Set<String> stationKeys = new HashSet<>();
             for (FishstationType f : m.getFishstation()) {
-                assertNotNull(f.getStationyear());
                 assertNotNull(f.getSerialnumber());
 
-                String stationkeystring = f.getStationyear() + "/" + f.getSerialnumber();
+                String stationkeystring = "" + f.getSerialnumber();
                 assertFalse(stationKeys.contains(stationkeystring));
                 stationKeys.add(stationkeystring);
 

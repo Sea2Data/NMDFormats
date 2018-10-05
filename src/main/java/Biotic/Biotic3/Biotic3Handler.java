@@ -160,10 +160,9 @@ public class Biotic3Handler extends NamespaceVersionHandler<MissionsType> {
 
             Set<String> stationKeys = new HashSet<>();
             for (FishstationType f : m.getFishstation()) {
-                checkKeyNotNull(f.getStationyear());
                 checkKeyNotNull(f.getSerialnumber());
 
-                String stationkeystring = f.getStationyear() + "/" + f.getSerialnumber();
+                String stationkeystring = "" + f.getSerialnumber();
                 checkKeyNotDuplicated(stationkeystring, stationKeys);
                 stationKeys.add(stationkeystring);
 
@@ -257,7 +256,6 @@ public class Biotic3Handler extends NamespaceVersionHandler<MissionsType> {
     private FishstationType createFishstationFromBiotic1(BioticTypes.v1_4.FishstationType f) throws BioticConversionException {
         FishstationType fishstation = this.biotic3factory.createFishstationType();
 
-        fishstation.setStationyear(((BioticTypes.v1_4.MissionType) f.getParent()).getYear());
         if (f.getArea() == null){
             fishstation.setArea(null);
         }

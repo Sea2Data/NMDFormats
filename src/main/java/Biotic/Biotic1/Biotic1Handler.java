@@ -220,10 +220,6 @@ public class Biotic1Handler extends NamespaceVersionHandler<MissionsType> {
 
     private FishstationType convertFishstationFromBiotic3(BioticTypes.v3.FishstationType f, int startyear) throws BioticConversionException {
         FishstationType fishstation = this.biotic1factory.createFishstationType();
-
-        if (f.getStationyear().intValue() != startyear){
-            throw new BioticConversionException("Missions can not cross years in Biotic v1.4");
-        }
         
         if (!(f.getFishingdepthcount() == null || f.getFishingdepthcount().intValue() == 1)) {
             throw new BioticConversionException("Multiple trawling depths are not handled in Biotic v1.4 conversion");
