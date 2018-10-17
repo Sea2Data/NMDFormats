@@ -93,6 +93,7 @@ public class Biotic3Handler extends NamespaceVersionHandler<MissionsType> {
      */
     public MissionsType read(File xml) throws JAXBException, XMLStreamException, FileNotFoundException, ParserConfigurationException, SAXException, IOException {
         MissionsType result;
+        
         try (InputStream is = new FileInputStream(xml)) {
             result = this.read(is);
         } catch (javax.xml.bind.UnmarshalException e) {
