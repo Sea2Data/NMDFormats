@@ -1,0 +1,12 @@
+RecordType: Does it make more sense to have it named the same in all tables. Currently it identifies nothing more than what is already known if you know the column name
+SAsampled: necessary to allow real numbers?
+type for LEMixedTrip (integer Y/N)
+LEgear: specify FAO standard
+LEmeshSize: unit, decimal (keep type as in LEselectionDeviceMeshSize)?
+LEselectionDevice and VDtype: other code lists are usually string
+VDhomePort and FTdepartureLocation: specified as code list, other locodes not. (see OnshoreEvent and LandingEvent)
+VDlength: consider decimal?
+FDStratum and FTselectionMethodCluster: type not specified, same for key and some foreign keys on FT
+timezones: standardize for time/date fields
+SScatchCategory and SLcatchFraction: should be code list ? Have some comments on documentation for SScatchCategory
+SLyear: year is code list on sampling details

@@ -1,0 +1,307 @@
+<?xml version="1.0"?>
+<xs:schema version="1.0"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           elementFormDefault="qualified"
+           xmlns="partialRDBES/v1_16">
+    <!--
+    Schema compatible with parts of the relational model (Hierarchy 5, lower hiearchy C) for RDBES developmental version 1.16
+    Primarily intended to specify Java classes via jaxb generation, which will be used to export relational tables. Relational structure is thefore mirrored so that foreign keys are included even when they are implicit in the hiearchical model.
+    -->
+    <xs:element name="design" type="DesignType" />
+    
+    <xs:complexType name="DesignType">
+        <xs:sequence>
+            <xs:element name="DEsamplingScheme" type="xs:string"/>
+            <xs:element name="DEyear" type="CodeType"/>
+            <xs:element name="DEstratum" type="StratumType"/>
+            <xs:element name="DEhierarchyCorrect" type="CodeType"/>
+            <xs:element name="DEhierarchy" type="CodeType" />
+            <xs:element name="samplingdetails" type="SamplingdetailsType"/>
+        </xs:sequence>
+        <xs:attribute name="DEid" type="KeyType"  use="required"/>
+        <xs:attribute name="DErecordType" type="RecordType" use="required"/>
+    </xs:complexType>
+    
+    <xs:complexType name="SamplingdetailsType">
+        <xs:sequence>
+            <xs:element name="SDcountry" type="CodeType" />
+            <xs:element name="SDinstitution" type="CodeType" />
+            <xs:choice maxOccurs="unbounded">
+                <xs:element name="onshoreevent" type="OnshoreeventType"/>
+                <!-- other options should reflect PSUs in valid hierarchies, eg VesselSelection FishingTrip-->
+            </xs:choice>
+        </xs:sequence>
+        <xs:attribute name="SDid" type="KeyType" use="required"/>
+        <xs:attribute name="DEid" type="ForeignKeyType" use="required"/>
+        <xs:attribute name="SDrecordType" type="RecordType" use="required"/>
+    </xs:complexType>
+    
+    <xs:complexType name="OnshoreeventType">
+        <xs:sequence>
+            <xs:element name="OSnationalLocationName" type="xs:string"/>
+            <xs:element name="OSstratification" type="xs:boolean"/>
+            <xs:element name="OSlocation" type="LocodeType"/>
+            <xs:element name="OSsamplingDate" type="xs:date"/>
+            <xs:element name="OSsamplingTime" type="xs:time"/>
+            <xs:element name="OSstratum" type="StratumType"/>
+            <xs:element name="OSclustering" type="CodeType"/>
+            <xs:element name="OSclusterName" type="xs:string"/>
+            <xs:element name="OSsampler" type="CodeType"/>
+            <xs:element name="OStimeUnit" type="CodeType"/>
+            <xs:element name="OStimeValue" type="xs:double"/>
+            <xs:element name="OStotal" type="xs:int"/>
+            <xs:element name="OSsampled" type="xs:int"/>
+            <xs:element name="OSsampProb" type="xs:double"/>
+            <xs:element name="OSselectionMethod" type="CodeType"/>
+            <xs:element name="OSlocationType" type="CodeType"/>
+            <xs:element name="OSselectionMethodCluster" type="CodeType"/>
+            <xs:element name="OStotalClusters" type="xs:int"/>
+            <xs:element name="OSsampledClusters" type="xs:int"/>
+            <xs:element name="OSclustersProb" type="xs:double"/>
+            <xs:element name="OSreasonNotSampled" type="CodeType"/>
+            <xs:choice maxOccurs="unbounded">
+                <xs:element name="landingevent" type="LandingeventType"/>
+                <!-- additional choices should reflect legel sampling units in an onshorevent-->
+            </xs:choice>
+        </xs:sequence>
+        <xs:attribute name="OSid" type="KeyType" use="required"/>
+        <xs:attribute name="SDid" type="ForeignKeyType"/>
+        <xs:attribute name="OSrecordType" type="RecordType"/>
+    </xs:complexType>
+    
+    <xs:complexType name="LandingeventType">
+        <xs:sequence>
+            <xs:element name="LEstratification" type="xs:boolean"/>
+            <xs:element name="LEsequenceNumber" type="xs:int"/>
+            <xs:element name="LEhaulNumber" type="xs:int"/>
+            <xs:element name="LEstratum" type="StratumType"/>
+            <xs:element name="LEclustering" type="CodeType"/>
+            <xs:element name="LEclusterName" type="xs:string"/>
+            <xs:element name="LEsampler" type="CodeType"/>
+            <xs:element name="LEmixedTrip" type="xs:int"/>
+            <xs:element name="LEcatchReg" type="CodeType"/>
+            <xs:element name="LElocation" type="LocodeType"/>
+            <xs:element name="LElocationType" type="CodeType"/>
+            <xs:element name="LEcountry" type="CodeType"/>
+            <xs:element name="LEdate" type="xs:date"/>
+            <xs:element name="LEtime" type="xs:time"/>
+            <xs:element name="LEeconomicalZone" type="CodeType"/>
+            <xs:element name="LEarea" type="CodeType"/>
+            <xs:element name="LErectangle" type="CodeType"/>
+            <xs:element name="LEsubpolygon" type="CodeType"/>
+            <xs:element name="LEfunctinalUnit" type="CodeType"/>
+            <xs:element name="LEnationalCategory" type="CodeType"/>
+            <xs:element name="LEmetier5" type="CodeType"/>
+            <xs:element name="LEmetier6" type="CodeType"/>
+            <xs:element name="LEgear" type="CodeType"/>
+            <xs:element name="LEmeshSize" type="xs:int"/>
+            <xs:element name="LEselectionDevice" type="IntCodeType"/>
+            <xs:element name="LEselectionDeviceMeshSize" type="xs:int"/>
+            <xs:element name="LEtargetSpecies" type="CodeType"/>
+            <xs:element name="LEtotal" type="xs:int"/>
+            <xs:element name="LEsampled" type="xs:int"/>
+            <xs:element name="LEsampProb" type="xs:double"/>
+            <xs:element name="LEselectionMethod" type="CodeType"/>
+            <xs:element name="LEselectionMethodCluster" type="CodeType"/>
+            <xs:element name="LEtotalClusters" type="xs:int"/>
+            <xs:element name="LEsampledClusters" type="xs:int"/>
+            <xs:element name="LEclustersProb" type="xs:double"/>
+            <xs:element name="LEreasonNotSampled" type="CodeType"/>
+            <xs:element name="LEfullTripAvailable" type="CodeType"/>
+            <xs:element name="vesseldetails" type="VesseldetailsType"/>
+            <xs:element name="fishingtrip" type="FishingtripType"/>
+            <xs:choice maxOccurs="unbounded">
+                <xs:element name="speciesselection" type="SpeciesselectionType"/>
+                <!-- additional choices should reflect sampling units in landingevent that are valid in some hiearchy -->
+            </xs:choice>
+        </xs:sequence>
+        <xs:attribute name="LEid" type="KeyType" use="required"/>
+        <xs:attribute name="OSid" type="ForeignKeyType"/>
+        <xs:attribute name="FTid" type="ForeignKeyType"/>
+        <xs:attribute name="VSid" type="ForeignKeyType"/>
+        <xs:attribute name="VDid" type="ForeignKeyType"/>
+        <xs:attribute name="LErecordType" type="RecordType" use="required"/>
+    </xs:complexType>
+    
+    <xs:complexType name="VesseldetailsType">
+        <xs:sequence>
+            <xs:element name="VDencryptedCode" type="xs:string"/>
+            <xs:element name="VDhomePort" type="CodeType"/>
+            <xs:element name="VDflagCountry" type="CodeType"/>
+            <xs:element name="VDlength" type="xs:int"/>
+            <xs:element name="VDlengthCategory" type="CodeType"/>
+            <xs:element name="VDpower" type="xs:int"/>
+            <xs:element name="VDsize" type="xs:int"/>
+            <xs:element name="VDsizeUnit" type="CodeType"/>
+            <xs:element name="VDtype" type="IntCodeType"/>
+        </xs:sequence>
+        <xs:attribute name="VDid" type="KeyType" use="required"/>
+        <xs:attribute name="VDrecordType" type="RecordType" use="required"/>
+    </xs:complexType>
+    <xs:complexType name="FishingtripType">
+        <xs:sequence>
+            <xs:element name="FTnationalCode" type="xs:sting"/>
+            <xs:element name="FTstratification" type="xs:boolean"/>
+            <xs:element name="FTstratum" type="StratumType"/>
+            <xs:element name="FTclustering" type="CodeType"/>
+            <xs:element name="FTclusterName" type="xs:string"/>
+            <xs:element name="FTsampler" type="CodeType"/>
+            <xs:element name="FTnumberOfHauls" type="xs:int"/>
+            <xs:element name="FTdepartureLocation" type="CodeType"/>
+            <xs:element name="FTdepatureDate" type="xs:date"/>
+            <xs:element name="FTdepartureTime" type="xs:time"/>
+            <xs:element name="FTarrivalLocation" type="LocodeType"/>
+            <xs:element name="FTarrivalDate" type="xs:date"/>
+            <xs:element name="FTarrivalTime" type="xs:time"/>
+            <xs:element name="FTtotal" type="xs:int"/>
+            <xs:element name="FTsampled" type="xs:int"/>
+            <xs:element name="FTsampProb" type="xs:double"/>
+            <xs:element name="FTselectionMethod" type="CodeType"/>
+            <xs:element name="FTselectionMethodCluster" type="CodeType"/>
+            <xs:element name="FTtotalClusters" type="xs:int"/>
+            <xs:element name="FTsampledClusters" type="xs:int"/>
+            <xs:element name="FTclustersProb" type="xs:double"/>
+            <xs:element name="FTreasonNotSampled" type="CodeType"/>
+            <xs:choice maxOccurs="unbounded" minOccurs="0">
+                <xs:element name="fishingoperation" type="FishingoperationType"/>
+                <!-- additional options should reflect legal sampling units under fishing trip in accordance with a valid hiearchy-->
+            </xs:choice>
+        </xs:sequence>
+        <xs:attribute name="FTid" type="KeyType" use="required"/>
+        <xs:attribute name="OSid" type="ForeignKeyType"/>
+        <xs:attribute name="VSid" type="ForeignKeyType"/>
+        <xs:attribute name="VDid" type="ForeignKeyType"/>
+        <xs:attribute name="SDid" type="ForeignKeyType"/>
+        <xs:attribute name="FTrecordType" type="RecordType" use="required"/>
+    </xs:complexType>
+    
+    <xs:complexType name="fishingoperation" >
+        <!-- Not specified yet-->
+    </xs:complexType>
+
+    
+    <xs:complexType name="SpeciesselectionType">
+        <xs:sequence>
+            <xs:element name="SSstratification" type="xs:boolean"/>
+            <xs:element name="SScatchCategory" type="CodeType"/>
+            <xs:element name="SSstratum" type="xs:string"/>
+            <xs:element name="SSclustering" type="CodeType"/>
+            <xs:element name="SSclusterName" type="xs:string"/>
+            <xs:element name="SSsampler" type="CodeType"/>
+            <xs:element name="SSspeciesListName" type="xs:string"/>
+            <xs:element name="SStotal" type="xs:int"/>
+            <xs:element name="SSsampled" type="xs:int"/>
+            <xs:element name="SSselectionMethod" type="CodeType"/>
+            <xs:element name="SSselectionMethodCluster" type="CodeType"/>
+            <xs:element name="SStotalClusters" type="xs:int"/>
+            <xs:element name="SSsampledClusters" type="xs:int"/>
+            <xs:element name="SSclustersProb" type="xs:double"/>
+            <xs:element name="SSreasonNotSampled" type="CodeType"/>
+            <xs:element name="specieslistdetails" type="SpecieslistdetailsType"/>
+            <xs:element name="sample" type="SampleType"/>
+        </xs:sequence>
+        <xs:attribute name="SSid" type="KeyType" use="required"/>
+        <xs:attribute name="LEid" type="ForeignKeyType"/>
+        <xs:attribute name="FOid" type="ForeignKeyType"/>
+        <xs:attribute name="SLid" type="ForeignKeyType"/>
+        <xs:attribute name="SSrecordType" type="RecordType" use="required"/>
+    </xs:complexType>
+    
+    <xs:complexType name="SpecieslistdetailsType">
+        <xs:sequence>
+            <xs:element name="SLlistName" type="xs:string"/>
+            <xs:element name="Slyear" type="xs:int"/>
+            <xs:element name="SLspeciesCode" type="CodeType"/>
+            <xs:element name="SLcommercialSpecies" type="CodeType"/>
+            <xs:element name="SLcatchFraction" type="xs:string"/>
+        </xs:sequence>
+        <xs:attribute name="SLid" type="KeyType" use="required"/>
+        <xs:attribute name="SLrecordType" type="RecordType" use="required"/>
+    </xs:complexType>
+    
+    <xs:complexType name="SampleType">
+        <xs:sequence>
+            <xs:element name="SAnationalCode" type="xs:string"/>
+            <xs:element name="SAstratification" type="xs:boolean"/>
+            <xs:element name="SAstratum" type="StratumType"/>
+            <xs:element name="SAspeciesCode" type="CodeType"/>
+            <xs:element name="SAcommercialSpecies" type="CodeType"/>
+            <xs:element name="SApresentation" type="CodeType"/>
+            <xs:element name="SAcatchCategory" type="CodeType"/>
+            <xs:element name="SAlandingCategory" type="CodeType"/>
+            <xs:element name="SAcommSizeCatScale" type="CodeType"/>
+            <xs:element name="SAcommSizeCat" type="IntCodeType"/>
+            <xs:element name="SAsex" type="CodeType"/>
+            <xs:element name="SAunitType" type="CodeType"/>
+            <xs:element name="SAtotalWeightLive" type="xs:int"/>
+            <xs:element name="SAsampleWeightLive" type="xs:int"/>
+            <xs:element name="SAtotal" type="xs:double"/>
+            <xs:element name="SAsampled" type="xs:double"/>
+            <xs:element name="SAsampProb" type="xs:double"/>
+            <xs:element name="SAselectionMethod" type="CodeType"/>
+            <xs:element name="SAlowerHierarchy" type="CodeType"/>
+            <xs:element name="SAsampler" type="CodeType"/>
+            <xs:element name="SAreasonNotSampledFM" type="CodeType"/>
+            <xs:element name="SAreasonNotSampledBV" type="CodeType"/>
+            <xs:element name="SAtotalWeightMeasured" type="xs:int"/>
+            <xs:element name="SAsampleWeightMeasured" type="xs:int"/>
+            <xs:element name="SAconversionFactorMesLive" type="xs:double"/>
+            <xs:element name="subsample" type="SampleType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+                <xs:element name="biologicalvariable" type="BiologicalvariableType"/>
+                <!-- additional options should reflect legal lower hiearchy. E.g. frequency measure -->
+            </xs:choice>
+        </xs:sequence>
+        <xs:attribute name="SAid" type="KeyType" use="required"/>
+        <xs:attribute name="SAparentID" type="ForeginKeyType"/>
+        <xs:attribute name="SSid" type="ForeginKeyType"/>
+        <xs:attribute name="SArecordType" type="RecordType" use="required"/>
+    </xs:complexType>
+    
+    <xs:complexType name="BiologicalvariableType">
+        <xs:sequence>
+            <xs:element name="BVfishID" type="xs:int"/>
+            <xs:element name="BVstratification" type="xs:boolean"/>
+            <xs:element name="BVstratum" type="StratumType"/>
+            <xs:element name="BVtype" type="CodeType"/>
+            <xs:element name="BVvalue" type="xs:string"/>
+            <xs:element name="BVunitValue" type="CodeType"/>
+            <xs:element name="BVunitScaleList" type="CodeType"/>
+            <xs:element name="BVmethod" type="CodeType"/>
+            <xs:element name="BVMeasurementEquipment" type="CodeType"/>
+            <xs:element name="BVtotal" type="xs:int"/>
+            <xs:element name="BVsampled" type="xs:int"/>
+            <xs:element name="BVsampProb" type="xs:double"/>
+            <xs:element name="BVselectionMethod" type="CodeType"/>
+            <xs:element name="BVsampler" type="CodeType"/>
+        </xs:sequence>
+        <xs:attribute name="BVid" type="KeyType" use="required"/>
+        <xs:attribute name="SAid" type="ForeginKeyType"/>
+        <xs:attribute name="FMid" type="ForeginKeyType"/>
+        <xs:attribute name="BVrecordType" type="RecordType" use="required"/>
+    </xs:complexType>
+    
+    <xs:simpleType name="CodeType">
+        <xs:restriction base="xs:string"/>
+    </xs:simpleType>
+    <xs:simpleType name="IntCodeType">
+        <xs:restriction base="xs:int"/>
+    </xs:simpleType>
+    <xs:simpleType name="RecordType">
+        <xs:restriction base="xs:string"/>
+    </xs:simpleType>
+    <xs:simpleType name="StratumType">
+        <xs:restriction base="xs:string"/>
+    </xs:simpleType>
+    <xs:simpleType name="LocodeType">
+        <xs:restriction base="xs:string">
+            <xs:maxLength value="5" />
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="ForeignKeyType">
+        <xs:restriction base="xs:int"/>
+    </xs:simpleType>
+    <xs:simpleType name="KeyType">
+        <xs:restriction base="xs:int"/>
+    </xs:simpleType>
+</xs:schema>
