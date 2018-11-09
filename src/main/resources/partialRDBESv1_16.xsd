@@ -2,7 +2,8 @@
 <xs:schema version="1.0"
            xmlns:xs="http://www.w3.org/2001/XMLSchema"
            elementFormDefault="qualified"
-           xmlns="partialRDBES/v1_16">
+           xmlns="partialRDBES/v1_16"
+           targetNamespace="partialRDBES/v1_16">
     <!--
     Schema compatible with parts of the relational model (Hierarchy 5, lower hiearchy C) for RDBES developmental version 1.16
     Primarily intended to specify Java classes via jaxb generation, which will be used to export relational tables. Relational structure is thefore mirrored so that foreign keys are included even when they are implicit in the hiearchical model.
@@ -140,7 +141,7 @@
     </xs:complexType>
     <xs:complexType name="FishingtripType">
         <xs:sequence>
-            <xs:element name="FTnationalCode" type="xs:sting"/>
+            <xs:element name="FTnationalCode" type="xs:string"/>
             <xs:element name="FTstratification" type="xs:boolean"/>
             <xs:element name="FTstratum" type="StratumType"/>
             <xs:element name="FTclustering" type="CodeType"/>
@@ -175,7 +176,7 @@
         <xs:attribute name="FTrecordType" type="RecordType" use="required"/>
     </xs:complexType>
     
-    <xs:complexType name="fishingoperation" >
+    <xs:complexType name="FishingoperationType" >
         <!-- Not specified yet-->
     </xs:complexType>
 
@@ -253,8 +254,8 @@
             </xs:choice>
         </xs:sequence>
         <xs:attribute name="SAid" type="KeyType" use="required"/>
-        <xs:attribute name="SAparentID" type="ForeginKeyType"/>
-        <xs:attribute name="SSid" type="ForeginKeyType"/>
+        <xs:attribute name="SAparentID" type="ForeignKeyType"/>
+        <xs:attribute name="SSid" type="ForeignKeyType"/>
         <xs:attribute name="SArecordType" type="RecordType" use="required"/>
     </xs:complexType>
     
@@ -276,8 +277,8 @@
             <xs:element name="BVsampler" type="CodeType"/>
         </xs:sequence>
         <xs:attribute name="BVid" type="KeyType" use="required"/>
-        <xs:attribute name="SAid" type="ForeginKeyType"/>
-        <xs:attribute name="FMid" type="ForeginKeyType"/>
+        <xs:attribute name="SAid" type="ForeignKeyType"/>
+        <xs:attribute name="FMid" type="ForeignKeyType"/>
         <xs:attribute name="BVrecordType" type="RecordType" use="required"/>
     </xs:complexType>
     
