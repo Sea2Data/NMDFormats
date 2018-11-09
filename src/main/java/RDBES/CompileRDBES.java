@@ -67,6 +67,12 @@ public class CompileRDBES {
         
         //filtrer på oppdragstype
         
+        //lag hvert object
+        
+        // kjør fyll inn standard metode
+        
+        // overskriv pb spesifikke ting
+        
         throw new UnsupportedOperationException("Not implemented");
     }
 }
