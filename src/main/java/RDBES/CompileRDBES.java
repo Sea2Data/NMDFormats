@@ -39,6 +39,13 @@ public class CompileRDBES {
         this.conversions = conversions;
     }
     
+    public static void main(String[] args){
+        
+        // make command line interface for conversion options for each source file so that e.g. CL can be created separately from samples and vice versa
+        
+        throw new UnsupportedOperationException("Not implemented");
+    }
+    
     /**
      * Generates table in the RDBES exchange format at in the directory specified as outputpath
      * @param outputpath 
