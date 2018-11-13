@@ -50,7 +50,7 @@ public class Biotic3Handler extends NamespaceVersionHandler<MissionsType> {
     private boolean one2oneKeys = false;
 
     public Biotic3Handler() {
-        this.latestNamespace = "http://www.imr.no/formats/nmdbiotic/v3_beta";
+        this.latestNamespace = "http://www.imr.no/formats/nmdbiotic/v3";
         this.latestBioticClass = MissionsType.class;
         this.compatibleNamespaces = null;
     }
@@ -59,7 +59,7 @@ public class Biotic3Handler extends NamespaceVersionHandler<MissionsType> {
      * @param one2onekeys If true, converters from older formats will attempt to generate new keys as a function of older keys. This might incur additional assumptions, or stricter format compliance, so might throw errors in cases where one 2 one correspondance is not ensured (one2one==false).
      */
     public Biotic3Handler(boolean one2onekeys) {
-        this.latestNamespace = "http://www.imr.no/formats/nmdbiotic/v3_beta";
+        this.latestNamespace = "http://www.imr.no/formats/nmdbiotic/v3";
         this.latestBioticClass = MissionsType.class;
         this.compatibleNamespaces = null;
         this.one2oneKeys = one2onekeys;
