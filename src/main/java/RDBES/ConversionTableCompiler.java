@@ -19,6 +19,12 @@ public class ConversionTableCompiler {
     }
     
     public void getLandingsSitesFromNMD(String outpath){
+        // map landingsite code to locode
+        throw new UnsupportedOperationException("Not implemented");
+    }
+    
+    public void getVesselDetails(String outpath){
+        // map vessel to various vessel details
         throw new UnsupportedOperationException("Not implemented");
     }
     

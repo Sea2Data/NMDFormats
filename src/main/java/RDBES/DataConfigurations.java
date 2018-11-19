@@ -5,9 +5,9 @@
  */
 package RDBES;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -38,7 +38,8 @@ class DataConfigurations {
      * @return map from values in first column of resource file to values in second column
      */
     protected Map<String,String> loadResourceFile(String filename) throws IOException{
-        InputStream resourcefile = DataConfigurations.class.getClassLoader().getResourceAsStream(filename);
+        File infile = new File (this.resourcefilepath + File.pathSeparator + filename);
+        InputStream resourcefile = new FileInputStream(infile);
         BufferedReader br = new BufferedReader(new InputStreamReader(resourcefile));
         Map<String, String> resources = new HashMap<>();
         
@@ -77,18 +78,8 @@ class DataConfigurations {
         return loadResourceFile("landingssite.txt");
     }
 
-    public Map <String, String> getMetaDataPb(int year) {
-        
-        // put in resource file
-        Map <String, String> metadatapb = new HashMap<>();
-        metadatapb.put("samplingScheme", "Port sampling North of 64");
-        metadatapb.put("samplingFrame", "Fresh fish landings / N64 / COD-POL-HAD-GHB");
-        metadatapb.put("samplingCountry", "NOR");
-        metadatapb.put("samplingInstitution", "IMR");
-        metadatapb.put("sampler", "IMR");
-        metadatapb.put("portselectionmethod", "random");
-        metadatapb.put("portlocationtype", "processor");
-        return metadatapb;
+    public Map <String, String> getMetaDataPb(int year) throws IOException {
+        return loadResourceFile(year + File.pathSeparator + "provebat_metadata.txt");
     }
 
     private TemporalStrata getQstrat() throws StrataException{
@@ -110,11 +101,20 @@ class DataConfigurations {
         return new TemporalStrata(s);
     }
     
-    public TemporalStrata getPortStratificationPb(int year) throws StrataException {
-        // put in resource file
-        return getQstrat();
+    public TemporalStrata getPortStratificationPb(int year) throws StrataException, IOException {
+        Map<String, String> pbmeta = getMetaDataPb(year);
+        
+        if (pbmeta.get("portstrata").trim().equals("quarter")){
+                    return getQstrat();
+        }
+        else{
+            throw new UnsupportedOperationException("Stratasystem " + pbmeta.get("portstrata") + "not supported.");
+        }
         
     }
 
+    GearStrata getLandingStratificationPb(int year) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
     
 }

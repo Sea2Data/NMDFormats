@@ -5,29 +5,23 @@
  */
 package RDBES;
 
-import Biotic.Biotic3.Biotic3Handler;
 import BioticTypes.v3.FishstationType;
-import BioticTypes.v3.MissionType;
 import BioticTypes.v3.MissionsType;
 import LandingsTypes.v1.LandingsdataType;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import javax.xml.bind.JAXBException;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.stream.XMLStreamException;
-import org.xml.sax.SAXException;
 import partialRDBES.v1_16.DesignType;
+import partialRDBES.v1_16.LandingeventType;
 import partialRDBES.v1_16.ObjectFactory;
 import partialRDBES.v1_16.OnshoreeventType;
 import partialRDBES.v1_16.SamplingdetailsType;
+import partialRDBES.v1_16.VesseldetailsType;
 
 /**
+ * Base class for converting NMD / IMR data to to RDBES
  *
  * @author Edvin Fuglebakk edvin.fuglebakk@imr.no
  */
@@ -45,9 +39,13 @@ public class RDBESCompiler {
     /**
      * Compiles tables in the RDBES exchange format
      *
-     * @param biotic
-     * @param landings
-     * @param conversions
+     * @param biotic NMD biotic data / samples to be used for data set
+     * compilation
+     * @param landings landings data to be used for data set compilation
+     * @param conversions data configurations and conversion tables
+     * @param year year to compile data for
+     * @param strict if Exceptions will be thrown for inconvertable data.
+     * Otherwise inconvertable sampling units will be skipped with a warning.
      */
     public RDBESCompiler(MissionsType biotic, LandingsdataType landings, DataConfigurations conversions, int year, boolean strict) {
         this.rdbesFactory = new ObjectFactory();
@@ -60,16 +58,21 @@ public class RDBESCompiler {
         this.log = System.err;
     }
 
-    public static void main(String[] args) throws JAXBException, XMLStreamException, ParserConfigurationException, ParserConfigurationException, SAXException, SAXException, IOException, FileNotFoundException, RDBESConversionException, StrataException {
-
-        // make command line interface for conversion options for each source file so that e.g. CL can be created separately from samples and vice versa
-        String pbpath = "/Users/a5362/bioticsets/filtered/pb_2016.xml";
-        Biotic3Handler handler = new Biotic3Handler();
-        MissionsType biotic = handler.read(new File(pbpath));
-
-        RDBESCompiler compiler = new RDBESCompiler(biotic, null, null, 2016, false);
-
-        compiler.addProveBat();
+    /**
+     * Construct a new RDBES compiler initialized with same source files and
+     * configurations as another.
+     *
+     * @param rdbesCompiler
+     */
+    public RDBESCompiler(RDBESCompiler rdbesCompiler) {
+        this.rdbesFactory = rdbesCompiler.rdbesFactory;
+        this.rdbes = rdbesCompiler.rdbes;
+        this.biotic = rdbesCompiler.biotic;
+        this.landings = rdbesCompiler.landings;
+        this.dataconfigurations = rdbesCompiler.dataconfigurations;
+        this.year = rdbesCompiler.year;
+        this.strict = rdbesCompiler.strict;
+        this.log = rdbesCompiler.log;
     }
 
     /**
@@ -88,7 +91,7 @@ public class RDBESCompiler {
     /**
      * Creates CL table for RDBES
      */
-    protected void createCL() {
+    public void createCL() {
         throw new UnsupportedOperationException("Not implemented");
     }
 
@@ -125,8 +128,8 @@ public class RDBESCompiler {
     private int getOnshoreEventId() {
         int m = 0;
         for (DesignType d : this.rdbes) {
-            for (OnshoreeventType os: d.getSamplingdetails().getOnshoreevent()){
-                if (os.getOSid()>m){
+            for (OnshoreeventType os : d.getSamplingdetails().getOnshoreevent()) {
+                if (os.getOSid() > m) {
                     m = os.getOSid();
                 }
             }
@@ -134,99 +137,46 @@ public class RDBESCompiler {
         return (m + 1);
     }
 
-    private void setCommonDesign(DesignType design) {
+    private int getLandingEventId() {
+        int m = 0;
+        for (DesignType d : this.rdbes) {
+            for (OnshoreeventType os : d.getSamplingdetails().getOnshoreevent()) {
+                for (LandingeventType lt : os.getLandingevent()) {
+                    if (lt.getLEid() > m) {
+                        m = lt.getLEid();
+                    }
+                }
+            }
+        }
+        return (m + 1);
+    }
+
+    protected void setCommonSamplingDetails(SamplingdetailsType samplingdetails){
+        samplingdetails.setSDid(getSamplingDetailsId());
+        samplingdetails.setSDrecordType("SD");
+    }
+    
+    protected void setCommonDesign(DesignType design) {
         design.setDEid(getDesingId());
         design.setDErecordType("DE");
     }
 
-    private void setCommonOnshoreEvent(OnshoreeventType os, FishstationType fs) {
+    protected void setCommonOnshoreEvent(OnshoreeventType os, FishstationType fs) throws IOException {
         os.setOSid(getOnshoreEventId());
         os.setOSrecordType("OS");
         os.setOSnationalLocationName(fs.getLandingsite());
         os.setOSlocation(this.dataconfigurations.getLandingsSiteLoCode().get(fs.getLandingsite()));
         os.setOSsamplingDate(fs.getStationstartdate());
-        os.setOSsamplingTime(fs.getStationstarttime());
     }
 
-    //
-    // Sasmpling prorgam specific methods
-    //
-    /**
-     * Adds Port sampling program "Provebat" to RDBES
-     */
-    protected void addProveBat() throws RDBESConversionException, StrataException {
-
-        DesignType pb = this.rdbesFactory.createDesignType();
-        setCommonDesign(pb);
-        this.rdbes.add(pb);
-
-        //make configureable by year
-        pb.setDEhierarchy("5");
-        pb.setDEhierarchyCorrect("No");
-        pb.setDEsamplingScheme(this.dataconfigurations.getMetaDataPb(this.year).get("samplingScheme"));
-        pb.setDEstratum(this.dataconfigurations.getMetaDataPb(this.year).get("samplingFrame"));
-        pb.setDEyear("" + this.year);
-        addProvebatSamplingDetails(pb);
-
+    protected void setCommonLandingEvent(LandingeventType le, FishstationType fs) {
+        le.setLEid(getLandingEventId());
+        le.setLErecordType("LE");
+        
     }
 
-    private void addProvebatSamplingDetails(DesignType design) throws RDBESConversionException, StrataException {
-        SamplingdetailsType samplingdetails = this.rdbesFactory.createSamplingdetailsType();
-        samplingdetails.setSDid(getSamplingDetailsId());
-        samplingdetails.setSDcountry(this.dataconfigurations.getMetaDataPb(this.year).get("samplingFrame"));
-        samplingdetails.setSDinstitution(this.dataconfigurations.getMetaDataPb(this.year).get("samplingInstitution"));
-        samplingdetails.setSDrecordType("SD");
-        samplingdetails.setDEid(design.getDEid());
-        addProvebatOnshorevents(samplingdetails);
-        design.setSamplingdetails(samplingdetails);
+    protected VesseldetailsType getVesselDetails(String catchplatform) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    private void addProvebatOnshorevents(SamplingdetailsType samplingdetails) throws RDBESConversionException, StrataException {
-        TemporalStrata strata = this.dataconfigurations.getPortStratificationPb(this.year);
-        List<FishstationType> pbstations = getProveBatStations();
-        Set<String> portdaysadded = new HashSet<>();
-        for (FishstationType f : pbstations) {
-            if (f.getLandingsite() == null || "".equals(f.getLandingsite())) {
-                if (this.strict) {
-                    throw new RDBESConversionException("Landing site id missing for hierarchy 5");
-                } else {
-                    this.log.print("Landing site id missing for hierarchy 5. Station skipped");
-                }
-            } else {
-                OnshoreeventType os = this.rdbesFactory.createOnshoreeventType();
-                setCommonOnshoreEvent(os, f);
-                os.setSDid(samplingdetails.getSDid());
-                os.setOSstratification(true);
-                os.setOSstratum(strata.getStratum(f.getStationstartdate()).getName());
-                os.setOSclustering("No");
-                os.setOSsampler(this.dataconfigurations.getMetaDataPb(this.year).get("sampler"));
-                os.setOSselectionMethod(this.dataconfigurations.getMetaDataPb(this.year).get("portselectionmethod"));
-                os.setOSlocationType(this.dataconfigurations.getMetaDataPb(this.year).get("portlocationtype"));
-                samplingdetails.getOnshoreevent().add(os);
-            }
-        }
-        assert false: "set totals";
-        // set totals for all onshorevents (count pr strata), merge from landings ?
-    }
-
-    private List<FishstationType> getProveBatStations() throws RDBESConversionException {
-        List<FishstationType> pbstations = new ArrayList<>();
-        for (MissionType m : this.biotic.getMission()) {
-            if ("11".equals(m.getMissiontype())) {
-                for (FishstationType s : m.getFishstation()) {
-                    if (s.getStationstartdate() != null) {
-                        if (this.strict) {
-                            throw new RDBESConversionException("Startdate missing");
-                        } else {
-                            this.log.print("Startdate missing. Station skipped");
-                        }
-                    }
-                    if (s.getStationstartdate().getYear() == this.year) {
-                        pbstations.add(s);
-                    }
-                }
-            }
-        }
-        return pbstations;
-    }
 }
