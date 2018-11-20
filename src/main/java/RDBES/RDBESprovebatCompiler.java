@@ -174,6 +174,14 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
                     this.log.print("Vessel missing for landing event. Station skipped");
                 }
             }
+            else if (fs.getSystem()==null || !"2".equals(fs.getSystem()) || fs.getArea()==null) {
+                if (this.strict){
+                    throw new RDBESConversionException("Area missing for landing event");
+                }
+                else{
+                    this.log.print("Area missing for landing event. Station skipped");
+                }
+            }
             else{
                 
                             
@@ -199,8 +207,11 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
             landing.setLElocationType(os.getOSlocationType());
             landing.setLEcountry("NOR");
             landing.setLEdate(os.getOSsamplingDate());
+            landing.setLEarea(this.dataconfigurations.getHomrICES3().get(fs.getArea()));
+            landing.setLEmetier6(this.getImrGearMetier6(fs.getGear()));
             
-            //continue with LEeconomicalZone
+            assert false: "continue from LEmeshSize";
+            //landing.setLEmeshSize(year);
                 
             }
         }

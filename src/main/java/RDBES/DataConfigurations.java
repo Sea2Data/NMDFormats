@@ -113,8 +113,33 @@ class DataConfigurations {
         
     }
 
-    GearStrata getLandingStratificationPb(int year) {
+    public GearStrata getLandingStratificationPb(int year) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+
+    public Map<String, String> getHomrICES3() throws IOException {
+        return loadResourceFile("homr_ices3.txt");
+    }
+
+    public Map<String, String> getImrGearFAO() throws IOException {
+        return loadResourceFile("imrgear_FAO.txt");
+    }
+    
+    public Map<String, String> getImrGearTargetSpecies() throws IOException {
+        return loadResourceFile("imrgear_target.txt");
+    }
+
+    public Map<String, String> getImrGearMeshSize() throws IOException {
+        return loadResourceFile("imrgear_mesh_size.txt");
+    }
+
+    public Map<String, String> getImrGearSelDev() throws IOException {
+        return loadResourceFile("imrgear_SelDev.txt");
+    }
+
+    public Map<String, String> getImrGearSelDevMeshSize() throws IOException {
+        return loadResourceFile("imrgear_SelDevMeshSize.txt");
+    }
+
     
 }
