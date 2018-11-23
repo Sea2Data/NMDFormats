@@ -23,11 +23,23 @@ import java.util.Map;
 class DataConfigurations {
     
     File resourcefilepath;
-    
+    Map<String, String> landingssites = null;
+    Map<Integer, Map<String,String>> metaDataPb;
+    Map<String, String> homrices3 = null;
+    Map<String, String> gearfao = null;
+    Map<String, String> gearTargetSpecies = null;
+    Map<String, String> gearMeshSize = null;
+    Map<String, String> gearSelDev = null;
+    Map<String, String> gearSelDevMeshSize = null;
+    Map<String, String> presentation = null;
+    Map<String, String> scalingfactors = null;
+    Map<String, String> maturity = null;
+    Map<String, Map<String,String>> otolithtype = null;
     /**
      * @param resourcefiles path to location for resource files
      */
     public DataConfigurations(File resourcefiles){
+        this.metaDataPb = new HashMap<>();
         this.resourcefilepath = resourcefiles;
     }
     
@@ -74,12 +86,27 @@ class DataConfigurations {
      * Mapping IMR location code for landing site to LOCODE
      * @return 
      */
-    public Map<String, String> getLandingsSiteLoCode() throws IOException{
-        return loadResourceFile("landingssite.txt");
+    public String getLandingsSiteLoCode(String imrCode) throws IOException, RDBESConversionException{
+        if (this.landingssites==null){
+            this.landingssites = loadResourceFile("landingssite.txt");
+        }
+        String locode = this.landingssites.get(imrCode);
+        if (locode==null){
+            throw new RDBESConversionException("No mapping found for code");
+        }
+        return locode;
     }
 
-    public Map <String, String> getMetaDataPb(int year) throws IOException {
-        return loadResourceFile(year + File.pathSeparator + "provebat_metadata.txt");
+    public String getMetaDataPb(int year, String field) throws IOException, RDBESConversionException {
+        if (this.metaDataPb.get(year)==null){
+            this.metaDataPb.put(year, loadResourceFile(year + File.pathSeparator + "provebat_metadata.txt"));
+        }
+        
+        String value = this.metaDataPb.get(year).get(field);
+        if (value==null){
+            throw new RDBESConversionException("No mapping found for code");
+        }
+        return value;
     }
 
     private TemporalStrata getQstrat() throws StrataException{
@@ -101,45 +128,141 @@ class DataConfigurations {
         return new TemporalStrata(s);
     }
     
-    public TemporalStrata getPortStratificationPb(int year) throws StrataException, IOException {
-        Map<String, String> pbmeta = getMetaDataPb(year);
+    public TemporalStrata getPortStratificationPb(int year) throws StrataException, IOException, RDBESConversionException {
         
-        if (pbmeta.get("portstrata").trim().equals("quarter")){
-                    return getQstrat();
+        if (this.getMetaDataPb(year,"portstrata").trim().equals("quarter")){
+            return getQstrat();
         }
         else{
-            throw new UnsupportedOperationException("Stratasystem " + pbmeta.get("portstrata") + "not supported.");
+            throw new UnsupportedOperationException("Stratasystem " + this.getMetaDataPb(year,"portstrata") + "not supported.");
         }
         
     }
 
     public GearStrata getLandingStratificationPb(int year) {
+        
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public Map<String, String> getHomrICES3() throws IOException {
-        return loadResourceFile("homr_ices3.txt");
+    public String getHomrICES3(String homr) throws IOException, RDBESConversionException {
+         if (this.homrices3==null){
+            this.homrices3 = loadResourceFile("homr_ices3.txt");
+        }
+        String ices3 = this.homrices3.get(homr);
+        if (homr==null){
+            throw new RDBESConversionException("No mapping found for code");
+        }
+        return homr;
     }
 
-    public Map<String, String> getImrGearFAO() throws IOException {
-        return loadResourceFile("imrgear_FAO.txt");
+    /**
+     * Maps 4 digit imr gear code to FAO 1980 code
+     * @param imrGear
+     * @return
+     * @throws IOException 
+     */
+    public String getImrGearFAO(String imrGear) throws IOException, RDBESConversionException {
+        if (this.gearfao==null){
+            this.gearfao = loadResourceFile("imrgear_FAO.txt");
+        }
+        String fao = this.gearfao.get(imrGear);
+        if (fao==null){
+            throw new RDBESConversionException("No mapping found for code");
+        }
+        return fao;
     }
     
-    public Map<String, String> getImrGearTargetSpecies() throws IOException {
-        return loadResourceFile("imrgear_target.txt");
+    public String getImrGearTargetSpecies(String imrGear) throws IOException, RDBESConversionException {
+        if (this.gearTargetSpecies==null){
+            this.gearTargetSpecies = loadResourceFile("imrgear_target.txt");
+        }
+        String ts = this.gearTargetSpecies.get(imrGear);
+        if (ts==null){
+            throw new RDBESConversionException("No mapping found for code");
+        }
+        return ts;
     }
 
-    public Map<String, String> getImrGearMeshSize() throws IOException {
-        return loadResourceFile("imrgear_mesh_size.txt");
+    public int getImrGearMeshSize(String imrGear) throws IOException, RDBESConversionException {
+        if (this.gearMeshSize==null){
+            this.gearMeshSize = loadResourceFile("imrgear_meshSize.txt");
+        }
+        String ms = this.gearMeshSize.get(imrGear);
+        if (ms==null){
+            throw new RDBESConversionException("No mapping found for code");
+        }
+        return Integer.parseInt(ms);
     }
 
-    public Map<String, String> getImrGearSelDev() throws IOException {
-        return loadResourceFile("imrgear_SelDev.txt");
+    public int getImrGearSelDev(String imrGear) throws IOException, RDBESConversionException {
+        if (this.gearSelDev==null){
+            this.gearSelDev = loadResourceFile("imrgear_seldev.txt");
+        }
+        String gsd = this.gearSelDev.get(imrGear);
+        if (gsd==null){
+            throw new RDBESConversionException("No mapping found for code");
+        }
+        return Integer.parseInt(gsd);
     }
 
-    public Map<String, String> getImrGearSelDevMeshSize() throws IOException {
-        return loadResourceFile("imrgear_SelDevMeshSize.txt");
+    public int getImrGearSelDevMeshSize(String imrGear) throws IOException, RDBESConversionException {
+        if (this.gearSelDevMeshSize==null){
+            this.gearSelDevMeshSize = loadResourceFile("imrgear_SelDevMeshSize.txt");
+        }
+        String gsd = this.gearSelDevMeshSize.get(imrGear);
+        if (gsd==null){
+            throw new RDBESConversionException("No mapping found for code");
+        }
+        return Integer.parseInt(gsd);
     }
 
+    public String getPresentation(String sampleproducttype) throws IOException, RDBESConversionException {
+        if (this.presentation==null){
+            this.presentation = loadResourceFile("imrProductype_presentation.txt");
+        }
+        String pres = this.presentation.get(sampleproducttype);
+        if (pres==null){
+            throw new RDBESConversionException("No mapping found for code");
+        }
+        return pres;
+    }
     
+    public double getScalingFactor(String fromCode, String toCode) throws IOException, RDBESConversionException{
+         if (this.scalingfactors==null){
+            this.scalingfactors = loadResourceFile("imrProductype_scalingfactors.txt");
+        }
+        String scaling = this.scalingfactors.get(fromCode+","+toCode);
+        if (scaling==null){
+            throw new RDBESConversionException("No mapping found for code");
+        }
+        return Double.parseDouble(scaling);
+    }
+
+    /**
+     * Factor for converting lengths to the unit returned by getLengthUnit(lengthresolution)
+     * @param lengthresolution
+     * @return 
+     */
+    public double getLengthFactor(String lengthresolution) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public String getLengthUnit(String lengthresolution) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    public String getMaturity(String imrMaturity) throws IOException, RDBESConversionException{
+        if (this.maturity==null){
+            this.maturity = loadResourceFile("homr_ices3.txt");
+        }
+        String mat = this.maturity.get(imrMaturity);
+        if (mat==null){
+            throw new RDBESConversionException("No mapping found for code");
+        }
+        return mat;
+    }
+    
+    public Map<String, String> getOtolithType(String aphia){
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

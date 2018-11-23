@@ -199,7 +199,7 @@
             <xs:element name="SSclustersProb" type="xs:double"/>
             <xs:element name="SSreasonNotSampled" type="CodeType"/>
             <xs:element name="specieslistdetails" type="SpecieslistdetailsType"/>
-            <xs:element name="sample" type="SampleType"/>
+            <xs:element name="sample" type="SampleType" maxOccurs="unbounded" minOccurs="0"/>
         </xs:sequence>
         <xs:attribute name="SSid" type="KeyType" use="required"/>
         <xs:attribute name="LEid" type="ForeignKeyType"/>

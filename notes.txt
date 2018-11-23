@@ -10,3 +10,7 @@ FDStratum and FTselectionMethodCluster: type not specified, same for key and som
 timezones: standardize for time/date fields
 SScatchCategory and SLcatchFraction: should be code list ? Have some comments on documentation for SScatchCategory
 SLyear: year is code list on sampling details
+LEmixedtrip: integer ?
+SLspeciesCode: this is noted as code list, but in my mind it should support more than one aphia code.
+SSspeciesListName: redundant? same as SLlistName
+BVvalue: String

@@ -6,7 +6,9 @@
 package RDBES;
 
 import Biotic.Biotic3.Biotic3Handler;
+import BioticTypes.v3.CatchsampleType;
 import BioticTypes.v3.FishstationType;
+import BioticTypes.v3.IndividualType;
 import BioticTypes.v3.MissionType;
 import BioticTypes.v3.MissionsType;
 import LandingsTypes.v1.LandingsdataType;
@@ -24,17 +26,23 @@ import javax.xml.bind.JAXBException;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.stream.XMLStreamException;
 import org.xml.sax.SAXException;
+import partialRDBES.v1_16.BiologicalvariableType;
 import partialRDBES.v1_16.DesignType;
 import partialRDBES.v1_16.FishingtripType;
 import partialRDBES.v1_16.OnshoreeventType;
 import partialRDBES.v1_16.SamplingdetailsType;
 import partialRDBES.v1_16.LandingeventType;
+import partialRDBES.v1_16.SampleType;
+import partialRDBES.v1_16.SpecieslistdetailsType;
+import partialRDBES.v1_16.SpeciesselectionType;
 
 /**
  *
  * @author Edvin Fuglebakk edvin.fuglebakk@imr.no
  */
 public class RDBESprovebatCompiler extends RDBESCompiler {
+
+    protected SpecieslistdetailsType speciesselectiondetails;
 
     public static void main(String[] args) throws JAXBException, XMLStreamException, ParserConfigurationException, ParserConfigurationException, SAXException, SAXException, IOException, FileNotFoundException, RDBESConversionException, StrataException {
 
@@ -49,44 +57,115 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
         compiler.addProveBatAsH5();
     }
 
-    public RDBESprovebatCompiler(MissionsType biotic, LandingsdataType landings, DataConfigurations conversions, int year, boolean strict) {
+    public RDBESprovebatCompiler(MissionsType biotic, LandingsdataType landings, DataConfigurations conversions, int year, boolean strict) throws IOException, RDBESConversionException {
         super(biotic, landings, conversions, year, strict);
+        this.speciesselectiondetails = getSpeciesSelectionDetails();
     }
 
-    public RDBESprovebatCompiler(RDBESCompiler compiler) {
+    public RDBESprovebatCompiler(RDBESCompiler compiler) throws IOException, RDBESConversionException {
         super(compiler);
+        if (this.speciesselectiondetails == null) {
+            this.speciesselectiondetails = getSpeciesSelectionDetails();
+        }
     }
 
-    //
-    // Sasmpling prorgam specific methods
-    //
+    @Override
+    protected SamplingdetailsType getSamplingDetails() throws RDBESConversionException, StrataException, IOException {
+        SamplingdetailsType samplingdetails = super.getSamplingDetails();
+        samplingdetails.setSDcountry(this.dataconfigurations.getMetaDataPb(this.year, "samplingFrame"));
+        samplingdetails.setSDinstitution(this.dataconfigurations.getMetaDataPb(this.year, "samplingInstitution"));
+        addProvebatOnshorevents(samplingdetails);
+
+        return samplingdetails;
+
+    }
+
+    @Override
+    protected OnshoreeventType getOnshoreEvent() throws IOException, RDBESConversionException {
+        OnshoreeventType os = super.getOnshoreEvent();
+
+        os.setOSclustering("No");
+        os.setOSsampler(this.dataconfigurations.getMetaDataPb(this.year, "sampler"));
+        os.setOSselectionMethod(this.dataconfigurations.getMetaDataPb(this.year, "portselectionmethod"));
+        os.setOSlocationType(this.dataconfigurations.getMetaDataPb(this.year, "portlocationtype"));
+        return os;
+    }
+
+    @Override
+    protected SpecieslistdetailsType getSpeciesSelectionDetails() throws IOException, RDBESConversionException {
+        SpecieslistdetailsType specieslistdetails = super.getSpeciesSelectionDetails();
+        specieslistdetails.setSLlistName("Port sampling species list (provebat)" + this.year);
+        specieslistdetails.setSLspeciesCode(this.dataconfigurations.getMetaDataPb(this.year, "species"));
+        specieslistdetails.setSLcatchFraction("Lan");
+        return specieslistdetails;
+    }
+
+    @Override
+    protected LandingeventType getLandingEvent() throws IOException, RDBESConversionException {
+        LandingeventType landing = super.getLandingEvent();
+        landing.setLEclustering("No");
+        landing.setLEsampler(this.dataconfigurations.getMetaDataPb(year, "sampler"));
+        landing.setLEmixedTrip(0);
+        landing.setLEcatchReg("Lan");
+        landing.setLEcountry("NOR");
+        landing.setLEselectionMethod(this.dataconfigurations.getMetaDataPb(this.year, "landingselectionmethod"));
+        landing.setLEclustering("No");
+        landing.setLEfullTripAvailable("Yes");
+        return landing;
+    }
+
+    @Override
+    protected SpeciesselectionType getSpeciesSelection() {
+        SpeciesselectionType speciesSelection = super.getSpeciesSelection();
+        speciesSelection.setSpecieslistdetails(this.speciesselectiondetails);
+        speciesSelection.setSLid(this.speciesselectiondetails.getSLid());
+        speciesSelection.setSSstratification(false);
+        speciesSelection.setSScatchCategory("Lan");
+        speciesSelection.setSSclustering("No");
+        speciesSelection.setSSsampled(this.speciesselectiondetails.getSLspeciesCode().split(",").length);
+        speciesSelection.setSStotal(this.speciesselectiondetails.getSLspeciesCode().split(",").length);
+        speciesSelection.setSSselectionMethod("census");
+
+        return speciesSelection;
+    }
+
+    @Override
+    protected FishingtripType getFishingTrip(FishstationType fs) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    protected SampleType getSample() {
+        SampleType sample = super.getSample();
+        return sample;
+    }
+
+    @Override
+    protected BiologicalvariableType getBiologicalVariable() throws RDBESConversionException, IOException {
+        BiologicalvariableType biovar = super.getBiologicalVariable();
+        biovar.setBVsampler(this.dataconfigurations.getMetaDataPb(year, "sampler"));
+        biovar.setBVstratification(false);
+        biovar.setBVselectionMethod("census");
+        return biovar;
+    }
+
     /**
      * Adds Port sampling program "Provebat" to RDBES
      */
     protected void addProveBatAsH5() throws RDBESConversionException, StrataException, IOException {
 
-        DesignType pb = this.rdbesFactory.createDesignType();
-        setCommonDesign(pb);
+        DesignType pb = super.getDesign();
         this.rdbes.add(pb);
 
         //make configureable by year
         pb.setDEhierarchy("5");
         pb.setDEhierarchyCorrect("No");
-        pb.setDEsamplingScheme(this.dataconfigurations.getMetaDataPb(this.year).get("samplingScheme"));
-        pb.setDEstratum(this.dataconfigurations.getMetaDataPb(this.year).get("samplingFrame"));
+        pb.setDEsamplingScheme(this.dataconfigurations.getMetaDataPb(this.year, "samplingScheme"));
+        pb.setDEstratum(this.dataconfigurations.getMetaDataPb(this.year, "samplingFrame"));
         pb.setDEyear("" + this.year);
-        addProvebatSamplingDetails(pb);
-
-    }
-
-    protected void addProvebatSamplingDetails(DesignType design) throws RDBESConversionException, StrataException, IOException {
-        SamplingdetailsType samplingdetails = this.rdbesFactory.createSamplingdetailsType();
-        setCommonSamplingDetails(samplingdetails);
-        samplingdetails.setSDcountry(this.dataconfigurations.getMetaDataPb(this.year).get("samplingFrame"));
-        samplingdetails.setSDinstitution(this.dataconfigurations.getMetaDataPb(this.year).get("samplingInstitution"));
-        samplingdetails.setDEid(design.getDEid());
-        addProvebatOnshorevents(samplingdetails);
-        design.setSamplingdetails(samplingdetails);
+        SamplingdetailsType sd = this.getSamplingDetails();
+        sd.setDEid(pb.getDEid());
+        pb.setSamplingdetails(sd);
     }
 
     protected void addProvebatOnshorevents(SamplingdetailsType samplingdetails) throws RDBESConversionException, StrataException, IOException {
@@ -105,22 +184,21 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
                 String portdayid = f.getLandingsite() + "/" + f.getStationstartdate().toString();
                 if (!stationsToAdd.containsKey(portdayid)) {
                     stationsToAdd.put(portdayid, new LinkedList<>());
-                    OnshoreeventType os = this.rdbesFactory.createOnshoreeventType();
-                    setCommonOnshoreEvent(os, f);
+                    OnshoreeventType os = getOnshoreEvent();
                     os.setSDid(samplingdetails.getSDid());
                     os.setOSstratification(true);
                     os.setOSstratum(strata.getStratum(f.getStationstartdate()).getName());
-                    os.setOSclustering("No");
-                    os.setOSsampler(this.dataconfigurations.getMetaDataPb(this.year).get("sampler"));
-                    os.setOSselectionMethod(this.dataconfigurations.getMetaDataPb(this.year).get("portselectionmethod"));
-                    os.setOSlocationType(this.dataconfigurations.getMetaDataPb(this.year).get("portlocationtype"));
+                    os.setOSnationalLocationName(f.getLandingsite());
+                    os.setOSlocation(this.dataconfigurations.getLandingsSiteLoCode(f.getLandingsite()));
+                    os.setOSsamplingDate(f.getStationstartdate());
+
                     samplingdetails.getOnshoreevent().add(os);
                     onshoreadded.put(portdayid, os);
                 }
                 stationsToAdd.get(portdayid).add(f);
             }
         }
-        
+
         // count sampled port-days in strata
         Map<String, Set<String>> ports = new HashMap<>();
         for (OnshoreeventType os : samplingdetails.getOnshoreevent()) {
@@ -133,10 +211,175 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
         for (OnshoreeventType os : samplingdetails.getOnshoreevent()) {
             os.setOSsampled(ports.get(os.getOSstratum()).size());
         }
-        
+
         // add landings
-        for (String portday : onshoreadded.keySet()){
+        for (String portday : onshoreadded.keySet()) {
             addProveBatLandingEvents(onshoreadded.get(portday), stationsToAdd.get(portday));
+        }
+    }
+
+    private void addProveBatLandingEvents(OnshoreeventType os, List<FishstationType> stations) throws StrataException, IOException, RDBESConversionException {
+        GearStrata gearstrata = this.dataconfigurations.getLandingStratificationPb(this.year);
+        for (FishstationType fs : stations) {
+
+            if (fs.getCatchplatform() == null) {
+                if (this.strict) {
+                    throw new RDBESConversionException("Vessel missing for landing event");
+                } else {
+                    this.log.print("Vessel missing for landing event. Station skipped");
+                }
+            } else if (fs.getSystem() == null || !"2".equals(fs.getSystem()) || fs.getArea() == null) {
+                if (this.strict) {
+                    throw new RDBESConversionException("Area missing for landing event");
+                } else {
+                    this.log.print("Area missing for landing event. Station skipped");
+                }
+            } else {
+
+                LandingeventType landing = getLandingEvent();
+                landing.setLElocation(this.dataconfigurations.getLandingsSiteLoCode(fs.getLandingsite()));
+                landing.setFishingtrip(getFishingTrip(fs));
+                landing.setFTid(landing.getFishingtrip().getFTid());
+
+                landing.setVesseldetails(getVesselDetails(fs.getCatchplatform()));
+                landing.setVDid(landing.getVesseldetails().getVDid());
+
+                landing.setOSid(os.getOSid());
+                os.getLandingevent().add(landing);
+
+                landing.setLEstratification(true);
+                landing.setLEsequenceNumber(fs.getSerialnumber().intValue());
+                landing.setLEstratum(gearstrata.getStratum(fs.getGear()).getName());
+                landing.setLElocation(os.getOSlocation());
+                landing.setLElocationType(os.getOSlocationType());
+
+                landing.setLEdate(os.getOSsamplingDate());
+                landing.setLEarea(this.dataconfigurations.getHomrICES3(fs.getArea()));
+                landing.setLEmetier6(this.getImrGearMetier6(fs.getGear()));
+                landing.setLEgear(this.dataconfigurations.getImrGearFAO(fs.getGear()));
+                landing.setLEmeshSize(this.dataconfigurations.getImrGearMeshSize(fs.getGear()));
+                landing.setLEselectionDevice(this.dataconfigurations.getImrGearSelDev(fs.getGear()));
+                landing.setLEselectionDevice(this.dataconfigurations.getImrGearSelDevMeshSize(fs.getGear()));
+                landing.setLEtargetSpecies(this.dataconfigurations.getImrGearTargetSpecies(fs.getGear()));
+
+                addSpeciesSelection(landing, fs);
+            }
+        }
+
+        Map<String, Integer> sampled = new HashMap<>();
+        for (LandingeventType e : os.getLandingevent()) {
+            if (!sampled.containsKey(e.getLEstratum())) {
+                sampled.put(e.getLEstratum(), 1);
+            } else {
+                sampled.put(e.getLEstratum(), sampled.get(e.getLEstratum()) + 1);
+            }
+        }
+        for (LandingeventType e : os.getLandingevent()) {
+            e.setLEsampled(sampled.get(e.getLEstratum()));
+        }
+
+        // add total in strata from landings ?
+    }
+
+    private void addSpeciesSelection(LandingeventType landing, FishstationType fs) throws IOException, RDBESConversionException {
+        SpeciesselectionType speciesSelection = getSpeciesSelection();
+        speciesSelection.setLEid(landing.getLEid());
+
+        Map<String, List<CatchsampleType>> samples_by_species = new HashMap<>();
+
+        for (CatchsampleType cs : fs.getCatchsample()) {
+            if (!samples_by_species.containsKey(cs.getAphia())) {
+                samples_by_species.put(cs.getAphia(), new LinkedList<>());
+            }
+            samples_by_species.get(cs.getAphia()).add(cs);
+        }
+
+        for (String species : samples_by_species.keySet()) {
+            List<CatchsampleType> samples = samples_by_species.get(species);
+            addSample(speciesSelection, samples);
+        }
+
+    }
+
+    private void addSample(SpeciesselectionType speciesSelection, List<CatchsampleType> samples) throws IOException, RDBESConversionException {
+
+        if (samples.size() == 1) {
+            addLeafSample(speciesSelection, samples.get(0));
+        } else {
+            throw new UnsupportedOperationException("Delpr not implemented");
+        }
+
+    }
+
+    protected void addLeafSample(SpeciesselectionType speciesSelection, CatchsampleType catchsample) throws IOException, RDBESConversionException {
+        SampleType sample = this.getSample();
+        sample.setSSid(speciesSelection.getSSid());
+        speciesSelection.getSample().add(sample);
+
+        if (!("1".equals(catchsample.getCatchproducttype())) || !("1".equals(catchsample.getSampleproducttype()))) {
+            if (this.strict) {
+                throw new RDBESConversionException("Sample could not be entered because product type is not given in live weight");
+            } else {
+                this.log.println("Sample could not be entered because product type is not given in live weight. Skipping sample.");
+                sample.setSAreasonNotSampledBV("Inconsistent weights");
+                return;
+            }
+        }
+        if (catchsample.getLengthsamplecount().intValue() != catchsample.getIndividual().size()) {
+            if (this.strict) {
+                throw new RDBESConversionException("Mismatch between registered individuals and noted sample size");
+            } else {
+                this.log.println("\"Mismatch between registered individuals and noted sample size Skipping sample.");
+                sample.setSAreasonNotSampledBV("Incomplete registration");
+                return;
+            }
+        }
+
+        sample.setSAstratification(false);
+        sample.setSAspeciesCode(catchsample.getAphia());
+        sample.setSApresentation(this.dataconfigurations.getPresentation(catchsample.getSampleproducttype()));
+        sample.setSAcatchCategory("Lan");
+        sample.setSAsex("U");
+        sample.setSAunitType("number");
+        sample.setSAtotalWeightLive(Math.round(1000 * catchsample.getCatchweight().floatValue()));
+        sample.setSAselectionMethod(this.dataconfigurations.getMetaDataPb(year, "fishselectionmethod"));
+        sample.setSAsampler(this.dataconfigurations.getMetaDataPb(year, "sampler"));
+        if (catchsample.getLengthsamplecount().intValue() > 0) {
+            double totals = catchsample.getCatchweight().doubleValue() * catchsample.getLengthsampleweight().doubleValue() / catchsample.getLengthsamplecount().intValue();
+            sample.setSAtotal(totals);
+            sample.setSAsampled(catchsample.getLengthsamplecount().intValue());
+            addBiologicalVariables(sample, catchsample.getIndividual());
+        } else {
+            sample.setSAreasonNotSampledBV("Access");
+        }
+
+        sample.setSAlowerHierarchy("C");
+
+    }
+
+    private void addBiologicalVariables(SampleType sample, List<IndividualType> individuals) throws RDBESConversionException, IOException {
+        for (IndividualType i : individuals) {
+            BiologicalvariableType biovar = this.getBiologicalVariable();
+            biovar.setSAid(sample.getSAid());
+            sample.getBiologicalvariable().add(biovar);
+            biovar.setBVfishID(i.getSpecimenid().intValue());
+            biovar.setBVtotal(individuals.size());
+            if (i.getLength() != null) {
+                addLength(biovar, i);
+            }
+            if (i.getIndividualweight() != null) {
+                addWeight(biovar, i);
+            }
+            if (i.getMaturationstage() != null) {
+                addMaturation(biovar, i);
+            }
+            if (getPrefferedAgeReading(i) != null && getPrefferedAgeReading(i).getOtolithtype() != null) {
+                addOtolithType(biovar, i, sample.getSAspeciesCode());
+            }
+            if (getPrefferedAgeReading(i) != null && getPrefferedAgeReading(i).getAge() != null) {
+                addAge(biovar, i);
+            }
+
         }
     }
 
@@ -153,72 +396,13 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
                         }
                     }
                     //skip samples where sample boat is fishing platform
-                    if (s.getStationstartdate().getYear() == this.year && (s.getCatchplatform() == null ? ((MissionType)s.getParent()).getPlatform() != null : !s.getCatchplatform().equals(((MissionType)s.getParent()).getPlatform()))) {
+                    if (s.getStationstartdate().getYear() == this.year && (s.getCatchplatform() == null ? ((MissionType) s.getParent()).getPlatform() != null : !s.getCatchplatform().equals(((MissionType) s.getParent()).getPlatform()))) {
                         pbstations.add(s);
                     }
                 }
             }
         }
         return pbstations;
-    }
-
-    private void addProveBatLandingEvents(OnshoreeventType os, List<FishstationType> stations) throws StrataException, IOException, RDBESConversionException {
-        GearStrata gearstrata = this.dataconfigurations.getLandingStratificationPb(this.year);
-        for (FishstationType fs: stations){
-            
-            if (fs.getCatchplatform()==null){
-                if (this.strict){
-                    throw new RDBESConversionException("Vessel missing for landing event");
-                }
-                else{
-                    this.log.print("Vessel missing for landing event. Station skipped");
-                }
-            }
-            else if (fs.getSystem()==null || !"2".equals(fs.getSystem()) || fs.getArea()==null) {
-                if (this.strict){
-                    throw new RDBESConversionException("Area missing for landing event");
-                }
-                else{
-                    this.log.print("Area missing for landing event. Station skipped");
-                }
-            }
-            else{
-                
-                            
-            LandingeventType landing = this.rdbesFactory.createLandingeventType();
-            
-            landing.setFishingtrip(getProveBatFishingTrip());
-            landing.setFTid(landing.getFishingtrip().getFTid());
-            
-            landing.setVesseldetails(getVesselDetails(fs.getCatchplatform()));
-            landing.setVDid(landing.getVesseldetails().getVDid());
-            
-            landing.setOSid(os.getOSid());
-            os.getLandingevent().add(landing);
-            
-            landing.setLEstratification(true);
-            landing.setLEsequenceNumber(fs.getSerialnumber().intValue());
-            landing.setLEstratum(gearstrata.getStratum(fs.getGear()).getName());
-            landing.setLEclustering("No");
-            landing.setLEsampler(this.dataconfigurations.getMetaDataPb(year).get("sampler"));
-            landing.setLEmixedTrip(0);
-            landing.setLEcatchReg("Lan");
-            landing.setLElocation(os.getOSlocation());
-            landing.setLElocationType(os.getOSlocationType());
-            landing.setLEcountry("NOR");
-            landing.setLEdate(os.getOSsamplingDate());
-            landing.setLEarea(this.dataconfigurations.getHomrICES3().get(fs.getArea()));
-            landing.setLEmetier6(this.getImrGearMetier6(fs.getGear()));
-            
-            assert false: "continue from LEmeshSize";
-            //landing.setLEmeshSize(year);
-                
-            }
-        }
-    }
-
-    private FishingtripType getProveBatFishingTrip() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

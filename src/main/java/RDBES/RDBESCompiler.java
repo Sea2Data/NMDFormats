@@ -5,19 +5,29 @@
  */
 package RDBES;
 
+import BioticTypes.v3.AgedeterminationType;
+import BioticTypes.v3.CatchsampleType;
 import BioticTypes.v3.FishstationType;
+import BioticTypes.v3.IndividualType;
 import BioticTypes.v3.MissionsType;
 import LandingsTypes.v1.LandingsdataType;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import partialRDBES.v1_16.BiologicalvariableType;
 import partialRDBES.v1_16.DesignType;
+import partialRDBES.v1_16.FishingtripType;
 import partialRDBES.v1_16.LandingeventType;
 import partialRDBES.v1_16.ObjectFactory;
 import partialRDBES.v1_16.OnshoreeventType;
+import partialRDBES.v1_16.SampleType;
 import partialRDBES.v1_16.SamplingdetailsType;
+import partialRDBES.v1_16.SpecieslistdetailsType;
+import partialRDBES.v1_16.SpeciesselectionType;
 import partialRDBES.v1_16.VesseldetailsType;
 
 /**
@@ -35,6 +45,7 @@ public class RDBESCompiler {
     protected int year;
     protected boolean strict;
     protected PrintStream log;
+    private Map<String, Integer> ids;
 
     /**
      * Compiles tables in the RDBES exchange format
@@ -56,6 +67,20 @@ public class RDBESCompiler {
         this.year = year;
         this.strict = strict;
         this.log = System.err;
+        this.ids = new HashMap<>();
+        initids();
+    }
+
+    private void initids() {
+        this.ids.put("DE", 1);
+        this.ids.put("SD", 1);
+        this.ids.put("OS", 1);
+        this.ids.put("LE", 1);
+        this.ids.put("SE", 1);
+        this.ids.put("SS", 1);
+        this.ids.put("SL", 1);
+        this.ids.put("SA", 1);
+        this.ids.put("BV", 1);
     }
 
     /**
@@ -73,6 +98,7 @@ public class RDBESCompiler {
         this.year = rdbesCompiler.year;
         this.strict = rdbesCompiler.strict;
         this.log = rdbesCompiler.log;
+        this.ids = rdbesCompiler.ids;
     }
 
     /**
@@ -95,92 +121,222 @@ public class RDBESCompiler {
         throw new UnsupportedOperationException("Not implemented");
     }
 
+    private int getID(String fieldcode) {
+        int m = this.ids.get(fieldcode) + 1;
+        this.ids.put(fieldcode, m);
+        return m;
+    }
+
     /**
      * get unused designid
      *
      * @return
      */
     private int getDesingId() {
-        int m = 0;
-        for (DesignType d : this.rdbes) {
-            if (d.getDEid() > m) {
-                m = d.getDEid();
-            }
-        }
-        return (m + 1);
+        return getID("DE");
     }
 
-    /**
-     * Get unused samplingDetailsID
-     *
-     * @return
-     */
     private int getSamplingDetailsId() {
-        int m = 0;
-        for (DesignType d : this.rdbes) {
-            if (d.getDEid() > m) {
-                m = d.getSamplingdetails().getSDid();
-            }
-        }
-        return (m + 1);
+        return getID("SD");
     }
 
     private int getOnshoreEventId() {
-        int m = 0;
-        for (DesignType d : this.rdbes) {
-            for (OnshoreeventType os : d.getSamplingdetails().getOnshoreevent()) {
-                if (os.getOSid() > m) {
-                    m = os.getOSid();
-                }
-            }
-        }
-        return (m + 1);
+        return getID("OS");
     }
 
     private int getLandingEventId() {
-        int m = 0;
-        for (DesignType d : this.rdbes) {
-            for (OnshoreeventType os : d.getSamplingdetails().getOnshoreevent()) {
-                for (LandingeventType lt : os.getLandingevent()) {
-                    if (lt.getLEid() > m) {
-                        m = lt.getLEid();
-                    }
-                }
-            }
-        }
-        return (m + 1);
+        return getID("LE");
     }
 
-    protected void setCommonSamplingDetails(SamplingdetailsType samplingdetails){
+    private int getSpeciesSelectionId() {
+        return getID("SS");
+    }
+
+    private int getSpeciesListDetailsId() {
+        return getID("SL");
+    }
+
+    private int getSampleId() {
+        return getID("SA");
+    }
+
+    private int getBiologicalVariableId() {
+        return getID("BV");
+    }
+
+    protected SamplingdetailsType getSamplingDetails() throws RDBESConversionException, StrataException, IOException {
+        SamplingdetailsType samplingdetails = this.rdbesFactory.createSamplingdetailsType();
         samplingdetails.setSDid(getSamplingDetailsId());
         samplingdetails.setSDrecordType("SD");
+        return samplingdetails;
     }
-    
-    protected void setCommonDesign(DesignType design) {
+
+    protected DesignType getDesign() {
+        DesignType design = this.rdbesFactory.createDesignType();
         design.setDEid(getDesingId());
         design.setDErecordType("DE");
+        return design;
     }
 
-    protected void setCommonOnshoreEvent(OnshoreeventType os, FishstationType fs) throws IOException {
+    protected OnshoreeventType getOnshoreEvent() throws IOException, RDBESConversionException {
+        OnshoreeventType os = this.rdbesFactory.createOnshoreeventType();
         os.setOSid(getOnshoreEventId());
         os.setOSrecordType("OS");
-        os.setOSnationalLocationName(fs.getLandingsite());
-        os.setOSlocation(this.dataconfigurations.getLandingsSiteLoCode().get(fs.getLandingsite()));
-        os.setOSsamplingDate(fs.getStationstartdate());
+        return os;
     }
 
-    protected void setCommonLandingEvent(LandingeventType le, FishstationType fs) {
+    protected LandingeventType getLandingEvent() throws IOException, RDBESConversionException {
+        LandingeventType le = this.rdbesFactory.createLandingeventType();
         le.setLEid(getLandingEventId());
         le.setLErecordType("LE");
-        
+        return le;
+    }
+
+    protected SpeciesselectionType getSpeciesSelection() {
+        SpeciesselectionType speciesSelection = this.rdbesFactory.createSpeciesselectionType();
+        speciesSelection.setSSid(getSpeciesSelectionId());
+        speciesSelection.setSSrecordType("SS");
+        return speciesSelection;
+    }
+
+    protected SpecieslistdetailsType getSpeciesSelectionDetails() throws IOException, RDBESConversionException {
+        SpecieslistdetailsType specieslistdetails = this.rdbesFactory.createSpecieslistdetailsType();
+        specieslistdetails.setSLid(getSpeciesListDetailsId());
+        specieslistdetails.setSLrecordType("SL");
+        specieslistdetails.setSlyear(this.year);
+
+        return specieslistdetails;
+
+    }
+
+    protected SampleType getSample() {
+        SampleType sample = this.rdbesFactory.createSampleType();
+        sample.setSAid(getSampleId());
+        sample.setSArecordType("SA");
+        return sample;
+    }
+
+    protected BiologicalvariableType getBiologicalVariable() throws RDBESConversionException, IOException {
+        BiologicalvariableType biovar = this.rdbesFactory.createBiologicalvariableType();
+        biovar.setBVid(getBiologicalVariableId());
+        biovar.setBVrecordType("BV");
+        return biovar;
+    }
+
+    protected FishingtripType getFishingTrip(FishstationType fs) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     protected VesseldetailsType getVesselDetails(String catchplatform) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    protected String getImrGearMetier6(String gear){
+    protected String getImrGearMetier6(String gear) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-    
+
+    protected void addLength(BiologicalvariableType biovar, IndividualType i) {
+        biovar.setBVtype("Length");
+        double factor = dataconfigurations.getLengthFactor(i.getLengthresolution());
+        biovar.setBVvalue("" + Math.round(i.getLength().doubleValue() * factor));
+        biovar.setBVunitValue(this.dataconfigurations.getLengthUnit(i.getLengthresolution()));
+        biovar.setBVsampled(countLengths((CatchsampleType) i.getParent()));
+
+    }
+
+    protected void addWeight(BiologicalvariableType biovar, IndividualType i) {
+        biovar.setBVtype("Weight");
+        biovar.setBVvalue(i.getIndividualweight().toString());
+        biovar.setBVunitValue("kg");
+        biovar.setBVsampled(countWeights((CatchsampleType) i.getParent()));
+    }
+
+    protected void addMaturation(BiologicalvariableType biovar, IndividualType i) {
+        biovar.setBVtype("Maturation");
+        biovar.setBVvalue(i.getMaturationstage());
+        biovar.setBVunitValue("maturity scale");
+        biovar.setBVunitScaleList("IMR code");
+        biovar.setBVsampled(countMaturity((CatchsampleType) i.getParent()));
+    }
+
+    protected void addOtolithType(BiologicalvariableType biovar, IndividualType i, String sAspeciesCode) {
+        AgedeterminationType age = getPrefferedAgeReading(i);
+        biovar.setBVtype("Stock");
+        biovar.setBVvalue(this.dataconfigurations.getOtolithType(sAspeciesCode).get(age.getOtolithtype()));
+        biovar.setBVunitValue("stock list");
+        biovar.setBVunitScaleList("ICES stock list");
+        biovar.setBVsampled(countOtolithTypes((CatchsampleType) i.getParent()));
+    }
+
+    protected void addAge(BiologicalvariableType biovar, IndividualType i) {
+        AgedeterminationType age = getPrefferedAgeReading(i);
+        biovar.setBVtype("Age");
+        biovar.setBVvalue(age.getAge().toString());
+        biovar.setBVunitValue("years");
+        biovar.setBVsampled(countAges((CatchsampleType) i.getParent()));
+    }
+
+    private int countLengths(CatchsampleType catchsampleType) {
+        int lengths = 0;
+        for (IndividualType i : catchsampleType.getIndividual()) {
+            if (i.getLength() != null) {
+                lengths++;
+            }
+        }
+        return lengths;
+    }
+
+    private int countWeights(CatchsampleType catchsampleType) {
+        int weights = 0;
+        for (IndividualType i : catchsampleType.getIndividual()) {
+            if (i.getIndividualweight() != null) {
+                weights++;
+            }
+        }
+        return weights;
+    }
+
+    private int countMaturity(CatchsampleType catchsampleType) {
+        int mat = 0;
+        for (IndividualType i : catchsampleType.getIndividual()) {
+            if (i.getMaturationstage() != null) {
+                mat++;
+            }
+        }
+        return mat;
+    }
+
+    protected AgedeterminationType getPrefferedAgeReading(IndividualType i) {
+        if (i.getAgedetermination().size() == 1) {
+            return i.getAgedetermination().get(0);
+        }
+        AgedeterminationType pref = null;
+        for (AgedeterminationType a : i.getAgedetermination()) {
+            if (a.getAgedeterminationid().equals(i.getPreferredagereading())) {
+                pref = a;
+            }
+
+        }
+        return pref;
+    }
+
+    private int countOtolithTypes(CatchsampleType catchsampleType) {
+        int ot = 0;
+        for (IndividualType i : catchsampleType.getIndividual()) {
+            if (getPrefferedAgeReading(i) != null && getPrefferedAgeReading(i).getOtolithtype() != null) {
+                ot++;
+            }
+        }
+        return ot;
+    }
+
+    private int countAges(CatchsampleType catchsampleType) {
+        int ot = 0;
+        for (IndividualType i : catchsampleType.getIndividual()) {
+            if (getPrefferedAgeReading(i) != null && getPrefferedAgeReading(i).getAge() != null) {
+                ot++;
+            }
+        }
+        return ot;
+    }
 }

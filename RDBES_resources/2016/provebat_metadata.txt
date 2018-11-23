@@ -1,0 +1,14 @@
+#
+# Metadata for converting port sampling Provebat to RDBES
+#
+samplingScheme	"Port sampling North of 64"
+samplingFrame	"Fresh fish landings / N64 / COD-POL-HAD-GHB"
+samplingCountry	NOR
+samplingInstitution	IMR
+sampler	IMR
+portselectionmethod	random
+landingselectionmethod	random
+fishselectionmethod	random
+portlocationtype	processor
+portstrata	quarter
+species	126436, 126437, 126441, 127144
