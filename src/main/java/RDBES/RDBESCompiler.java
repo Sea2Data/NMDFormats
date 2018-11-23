@@ -10,14 +10,24 @@ import BioticTypes.v3.CatchsampleType;
 import BioticTypes.v3.FishstationType;
 import BioticTypes.v3.IndividualType;
 import BioticTypes.v3.MissionsType;
+import HierarchicalData.HierarchicalData;
+import HierarchicalData.RelationalConversion.DelimitedOutputWriter;
+import HierarchicalData.RelationalConversion.NamingConventions.DoNothingNamingConvention;
+import HierarchicalData.RelationalConversion.NamingConventions.ITableMakerNamingConvention;
+import HierarchicalData.RelationalConversion.RelationalConvertionException;
+import HierarchicalData.RelationalConversion.TableMaker;
 import LandingsTypes.v1.LandingsdataType;
+import XMLHandling.SchemaReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.xml.bind.JAXBException;
+import javax.xml.parsers.ParserConfigurationException;
 import partialRDBES.v1_16.BiologicalvariableType;
 import partialRDBES.v1_16.DesignType;
 import partialRDBES.v1_16.FishingtripType;
@@ -38,7 +48,7 @@ import partialRDBES.v1_16.VesseldetailsType;
 public class RDBESCompiler {
 
     protected ObjectFactory rdbesFactory;
-    protected List<DesignType> rdbes;
+    protected List<HierarchicalData> rdbes;
     protected MissionsType biotic;
     protected LandingsdataType landings;
     protected DataConfigurations dataconfigurations;
@@ -81,6 +91,8 @@ public class RDBESCompiler {
         this.ids.put("SL", 1);
         this.ids.put("SA", 1);
         this.ids.put("BV", 1);
+        this.ids.put("FS", 1);
+        this.ids.put("VD", 1);
     }
 
     /**
@@ -107,11 +119,21 @@ public class RDBESCompiler {
      *
      * @param outputpath
      */
-    public void writeTables(File outputpath) {
+    public void writeTables(File outputpath) throws JAXBException, ParserConfigurationException, ITableMakerNamingConvention.NamingException, NoSuchMethodException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, RelationalConvertionException, IOException {
+        DelimitedOutputWriter writer = new DelimitedOutputWriter("\t", "\\", "#", ".csv", "");
 
+        TableMaker tablemaker = new TableMaker(new SchemaReader(RDBESCompiler.class.getClassLoader().getResourceAsStream("partialRDBESv1_16.xsd")), new RDBESLeafNodeHandler());
+        tablemaker.setNamingConvention(new DoNothingNamingConvention());
+
+        Map<String, List<List<String>>> tables = tablemaker.getAllTables(new HierarchicalDataList(this.rdbes));
+        tables.remove("HierarchicalDataList");
+        writer.writeDelimitedFiles(tables, outputpath, tablemaker.getNamingConvention().getDescription());
         //skip CL etc if landings is null
         // use generic XML to relational conversion
-        throw new UnsupportedOperationException("Not implemented");
+        if (this.landings!=null){
+            throw new UnsupportedOperationException("writing of CL not supported yet");
+        }
+
     }
 
     /**
@@ -163,6 +185,15 @@ public class RDBESCompiler {
     private int getBiologicalVariableId() {
         return getID("BV");
     }
+    
+    private int getFishingTripId() {
+        return getID("FS");
+    }
+
+    private int getVEsselDetailsId() {
+        return getID("VD");
+    }
+
 
     protected SamplingdetailsType getSamplingDetails() throws RDBESConversionException, StrataException, IOException {
         SamplingdetailsType samplingdetails = this.rdbesFactory.createSamplingdetailsType();
@@ -223,16 +254,26 @@ public class RDBESCompiler {
         return biovar;
     }
 
-    protected FishingtripType getFishingTrip(FishstationType fs) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    protected FishingtripType getFishingTrip() {
+        FishingtripType ft = this.rdbesFactory.createFishingtripType();
+        ft.setFTid(getFishingTripId());
+        ft.setFTrecordType("FT");
+        return ft;
     }
 
     protected VesseldetailsType getVesselDetails(String catchplatform) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    protected String getImrGearMetier6(String gear) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        VesseldetailsType vd = this.rdbesFactory.createVesseldetailsType();
+        vd.setVDid(this.getVEsselDetailsId());
+        vd.setVDrecordType("VD");
+        vd.setVDencryptedCode(this.scramble_vessel(catchplatform));
+        vd.setVDflagCountry(this.dataconfigurations.getVesselFlag(catchplatform));
+        vd.setVDlength(this.dataconfigurations.getVesselLength(catchplatform));
+        vd.setVDlengthCategory(getLengthCategory(vd.getVDlength()));
+        vd.setVDpower(this.dataconfigurations.getVesselPower(catchplatform));
+        //vd.setVDsize(this.dataconfigurations.getVesselSize(catchplatform));
+        //vd.setVDsizeUnit();
+        this.log.println("Fix size parameters");
+        return vd;
     }
 
     protected void addLength(BiologicalvariableType biovar, IndividualType i) {
@@ -339,4 +380,23 @@ public class RDBESCompiler {
         }
         return ot;
     }
+
+    /**
+     * Creates consistent scrambling of vessel identifier, so that vessels can be ided in database, but not connected to other sources
+     * @param id
+     * @return 
+     */
+    protected String scramble_vessel(String id){
+        this.log.println("Implement vessel scrambler");
+        return id;
+    }
+
+    private String getLengthCategory(int vDlength) {
+        this.log.println("Implement length classes");
+        if (vDlength>0 && vDlength<12){
+            return "0-12";
+        }
+        throw new UnsupportedOperationException("Length class not defined");
+    }
+
 }

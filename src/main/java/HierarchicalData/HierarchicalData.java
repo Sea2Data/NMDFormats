@@ -8,6 +8,7 @@ package HierarchicalData;
 import java.util.LinkedList;
 import java.util.List;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  * The purpose of this class is to provide a JAVA model of the data where parent
@@ -23,24 +24,30 @@ import javax.xml.bind.Unmarshaller;
  */
 public abstract class HierarchicalData extends Unmarshaller.Listener {
 
-    protected HierarchicalData parent;
-    protected List<HierarchicalData> children;
+
+    private HierarchicalData parent;
+    private List<HierarchicalData> children;
 
     public void afterUnmarshal(Unmarshaller unmarshaller, Object parent) {
-        this.parent = (HierarchicalData) parent;
+        this.registerParent((HierarchicalData)parent);
+    }
+    
+    /**
+     * @return The parent HierarchicalData object.
+     */
+    public HierarchicalData getParent() {
+        return parent;
+    }
+    
+    //jaxb runs checks on getters for cyclicity. Hence the non-standard name.
+    public void registerParent(HierarchicalData parent){
+        this.parent =  parent;
         if (this.parent != null && this.parent.children == null) {
             this.parent.children = new LinkedList<>();
         }
         if (this.parent != null) {
             this.parent.children.add((HierarchicalData) this);
         }
-    }
-
-    /**
-     * @return The parent HierarchicalData object.
-     */
-    public HierarchicalData getParent() {
-        return parent;
     }
 
     /**

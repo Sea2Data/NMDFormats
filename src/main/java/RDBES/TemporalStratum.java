@@ -5,6 +5,7 @@
  */
 package RDBES;
 
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -19,6 +20,8 @@ class TemporalStratum {
     
     public TemporalStratum(String name){
         this.name = name;
+        this.startdates = new LinkedList<>();
+        this.enddates = new LinkedList<>();
     }
     
     /**

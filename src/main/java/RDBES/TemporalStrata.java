@@ -39,16 +39,18 @@ class TemporalStrata {
             }
         }
         
-        throw new StrataException("Day" + day + "not in strata.");
+        throw new StrataException("Day " + day + " not in strata.");
     }
     
     public TemporalStratum getStratum(XMLGregorianCalendar date) throws StrataException{
         Calendar cday = date.toGregorianCalendar();
         Calendar fday = new GregorianCalendar();
-        fday.set(date.getYear(), 1, 1);
+        fday.set(date.getYear(), 0, 0);
         int day;
-        day = (int) ChronoUnit.DAYS.between(cday.toInstant(),fday.toInstant());
-        return( getStratum(day));
+        day = (int) ChronoUnit.DAYS.between(fday.toInstant(), cday.toInstant());
+        System.out.println(date.toString());
+        System.out.println(day);
+        return( getStratum(day+1));
     }
     
 }

@@ -17,7 +17,8 @@ class GearStratum {
     protected Set<String> imr2letterCodes;
     protected Set<String> imr4letterCodes;
     
-    public GearStratum(Set<String> imr2letterCodes, Set<String> imr4letterCodes){
+    public GearStratum(String name, Set<String> imr2letterCodes, Set<String> imr4letterCodes){
+        this.name=name;
         this.imr2letterCodes = imr2letterCodes;
         this.imr4letterCodes = this.imr4letterCodes;
     }

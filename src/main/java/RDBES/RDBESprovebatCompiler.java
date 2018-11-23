@@ -11,10 +11,13 @@ import BioticTypes.v3.FishstationType;
 import BioticTypes.v3.IndividualType;
 import BioticTypes.v3.MissionType;
 import BioticTypes.v3.MissionsType;
+import HierarchicalData.RelationalConversion.NamingConventions.ITableMakerNamingConvention;
+import HierarchicalData.RelationalConversion.RelationalConvertionException;
 import LandingsTypes.v1.LandingsdataType;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -44,17 +47,19 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
 
     protected SpecieslistdetailsType speciesselectiondetails;
 
-    public static void main(String[] args) throws JAXBException, XMLStreamException, ParserConfigurationException, ParserConfigurationException, SAXException, SAXException, IOException, FileNotFoundException, RDBESConversionException, StrataException {
+    public static void main(String[] args) throws JAXBException, XMLStreamException, ParserConfigurationException, ParserConfigurationException, SAXException, SAXException, IOException, FileNotFoundException, RDBESConversionException, StrataException, ITableMakerNamingConvention.NamingException, NoSuchMethodException, NoSuchMethodException, IllegalAccessException, IllegalArgumentException, IllegalArgumentException, InvocationTargetException, RelationalConvertionException {
 
         // make command line interface for conversion options for each source file so that e.g. CL can be created separately from samples and vice versa
         String pbpath = "/Users/a5362/bioticsets/filtered/pb_2016.xml";
         String resourcepath = "/Users/a5362/code/github/NMDFormats/RDBES_resources";
+        String outpath = "/Users/a5362/code/github/NMDFormats/RDBES_output";
         Biotic3Handler handler = new Biotic3Handler();
         MissionsType biotic = handler.read(new File(pbpath));
 
         RDBESprovebatCompiler compiler = new RDBESprovebatCompiler(biotic, null, new DataConfigurations(new File(resourcepath)), 2016, false);
 
         compiler.addProveBatAsH5();
+        compiler.writeTables(new File(outpath));
     }
 
     public RDBESprovebatCompiler(MissionsType biotic, LandingsdataType landings, DataConfigurations conversions, int year, boolean strict) throws IOException, RDBESConversionException {
@@ -74,6 +79,7 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
         SamplingdetailsType samplingdetails = super.getSamplingDetails();
         samplingdetails.setSDcountry(this.dataconfigurations.getMetaDataPb(this.year, "samplingFrame"));
         samplingdetails.setSDinstitution(this.dataconfigurations.getMetaDataPb(this.year, "samplingInstitution"));
+        samplingdetails.getSpecieslistdetails().add(this.speciesselectiondetails);
         addProvebatOnshorevents(samplingdetails);
 
         return samplingdetails;
@@ -117,7 +123,6 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
     @Override
     protected SpeciesselectionType getSpeciesSelection() {
         SpeciesselectionType speciesSelection = super.getSpeciesSelection();
-        speciesSelection.setSpecieslistdetails(this.speciesselectiondetails);
         speciesSelection.setSLid(this.speciesselectiondetails.getSLid());
         speciesSelection.setSSstratification(false);
         speciesSelection.setSScatchCategory("Lan");
@@ -130,8 +135,9 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
     }
 
     @Override
-    protected FishingtripType getFishingTrip(FishstationType fs) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    protected FishingtripType getFishingTrip() {
+        FishingtripType ft = super.getFishingTrip();
+        return ft;
     }
 
     @Override
@@ -178,7 +184,7 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
                 if (this.strict) {
                     throw new RDBESConversionException("Landing site id missing for hierarchy 5");
                 } else {
-                    this.log.print("Landing site id missing for hierarchy 5. Station skipped");
+                    this.log.println("Landing site id missing for hierarchy 5. Station skipped.");
                 }
             } else {
                 String portdayid = f.getLandingsite() + "/" + f.getStationstartdate().toString();
@@ -226,20 +232,19 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
                 if (this.strict) {
                     throw new RDBESConversionException("Vessel missing for landing event");
                 } else {
-                    this.log.print("Vessel missing for landing event. Station skipped");
+                    this.log.println("Vessel missing for landing event. Station skipped.");
                 }
             } else if (fs.getSystem() == null || !"2".equals(fs.getSystem()) || fs.getArea() == null) {
                 if (this.strict) {
                     throw new RDBESConversionException("Area missing for landing event");
                 } else {
-                    this.log.print("Area missing for landing event. Station skipped");
+                    this.log.println("Area missing for landing event. Station skipped.");
                 }
             } else {
 
                 LandingeventType landing = getLandingEvent();
                 landing.setLElocation(this.dataconfigurations.getLandingsSiteLoCode(fs.getLandingsite()));
-                landing.setFishingtrip(getFishingTrip(fs));
-                landing.setFTid(landing.getFishingtrip().getFTid());
+                addFishingTrip(landing, fs);
 
                 landing.setVesseldetails(getVesselDetails(fs.getCatchplatform()));
                 landing.setVDid(landing.getVesseldetails().getVDid());
@@ -255,7 +260,7 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
 
                 landing.setLEdate(os.getOSsamplingDate());
                 landing.setLEarea(this.dataconfigurations.getHomrICES3(fs.getArea()));
-                landing.setLEmetier6(this.getImrGearMetier6(fs.getGear()));
+                landing.setLEmetier6(this.dataconfigurations.getImrGearMetier6(fs.getGear()));
                 landing.setLEgear(this.dataconfigurations.getImrGearFAO(fs.getGear()));
                 landing.setLEmeshSize(this.dataconfigurations.getImrGearMeshSize(fs.getGear()));
                 landing.setLEselectionDevice(this.dataconfigurations.getImrGearSelDev(fs.getGear()));
@@ -284,6 +289,7 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
     private void addSpeciesSelection(LandingeventType landing, FishstationType fs) throws IOException, RDBESConversionException {
         SpeciesselectionType speciesSelection = getSpeciesSelection();
         speciesSelection.setLEid(landing.getLEid());
+        landing.getSpeciesselection().add(speciesSelection);
 
         Map<String, List<CatchsampleType>> samples_by_species = new HashMap<>();
 
@@ -387,17 +393,21 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
         List<FishstationType> pbstations = new ArrayList<>();
         for (MissionType m : this.biotic.getMission()) {
             if ("11".equals(m.getMissiontype())) {
-                for (FishstationType s : m.getFishstation()) {
-                    if (s.getStationstartdate() != null) {
+                if (m.getMissionstartdate().getYear() == this.year) {
+                    if (m.getMissionstopdate().getYear() != this.year) {
                         if (this.strict) {
-                            throw new RDBESConversionException("Startdate missing");
+                            throw new RDBESConversionException("Sampling trip crossing years");
                         } else {
-                            this.log.print("Startdate missing. Station skipped");
+                            this.log.println("Sampling trip crossing years. Mission skipped.");
                         }
                     }
-                    //skip samples where sample boat is fishing platform
-                    if (s.getStationstartdate().getYear() == this.year && (s.getCatchplatform() == null ? ((MissionType) s.getParent()).getPlatform() != null : !s.getCatchplatform().equals(((MissionType) s.getParent()).getPlatform()))) {
-                        pbstations.add(s);
+                    for (FishstationType s : m.getFishstation()) {
+                        //skip samples where sample boat is fishing platform
+                        if ((s.getCatchplatform() != null && m.getPlatform() != null && s.getCatchplatform().equals(m.getPlatform()))) {
+                            this.log.println("Station vessel same as mission vessel for sampling boat. Skipping station.");
+                        } else {
+                            pbstations.add(s);
+                        }
                     }
                 }
             }
@@ -405,4 +415,17 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
         return pbstations;
     }
 
+    private void addFishingTrip(LandingeventType landing, FishstationType fs) {
+        
+        FishingtripType ft = getFishingTrip();
+        ft.setFTnationalCode(scramble_vessel(fs.getCatchplatform())+"/"+fs.getStationstartdate().toString());
+        ft.setFTstratification(false);
+        ft.setFTclustering("No");
+        ft.setFTarrivalLocation(landing.getLElocation());
+        ft.setFTarrivalDate(landing.getLEdate());
+        
+        
+        landing.setFishingtrip(ft);
+        landing.setFTid(landing.getFishingtrip().getFTid());
+    }
 }

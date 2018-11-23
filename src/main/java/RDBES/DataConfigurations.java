@@ -35,6 +35,7 @@ class DataConfigurations {
     Map<String, String> scalingfactors = null;
     Map<String, String> maturity = null;
     Map<String, Map<String,String>> otolithtype = null;
+    Map<String, String> gearImrToFao = null;
     /**
      * @param resourcefiles path to location for resource files
      */
@@ -50,7 +51,7 @@ class DataConfigurations {
      * @return map from values in first column of resource file to values in second column
      */
     protected Map<String,String> loadResourceFile(String filename) throws IOException{
-        File infile = new File (this.resourcefilepath + File.pathSeparator + filename);
+        File infile = new File (this.resourcefilepath.toString() + File.separator + filename);
         InputStream resourcefile = new FileInputStream(infile);
         BufferedReader br = new BufferedReader(new InputStreamReader(resourcefile));
         Map<String, String> resources = new HashMap<>();
@@ -74,13 +75,6 @@ class DataConfigurations {
         return resources;
     }
     
-    /**
-     * Mapping from IMR gear to FAO
-     * @return 
-     */
-    public Map<String, String> getGearIMR2FAO(){
-        throw new UnsupportedOperationException("Not implemented");
-    }
     
     /**
      * Mapping IMR location code for landing site to LOCODE
@@ -99,7 +93,7 @@ class DataConfigurations {
 
     public String getMetaDataPb(int year, String field) throws IOException, RDBESConversionException {
         if (this.metaDataPb.get(year)==null){
-            this.metaDataPb.put(year, loadResourceFile(year + File.pathSeparator + "provebat_metadata.txt"));
+            this.metaDataPb.put(year, loadResourceFile(year + File.separator + "provebat_metadata.txt"));
         }
         
         String value = this.metaDataPb.get(year).get(field);
@@ -109,7 +103,7 @@ class DataConfigurations {
         return value;
     }
 
-    private TemporalStrata getQstrat() throws StrataException{
+    protected TemporalStrata getQstrat() throws StrataException{
         List<TemporalStratum> s = new ArrayList<>();
         TemporalStratum q1 = new TemporalStratum("Q1");
         q1.addRange(1, 91);
@@ -215,6 +209,10 @@ class DataConfigurations {
         }
         return Integer.parseInt(gsd);
     }
+    
+    public String getImrGearMetier6(String gear) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 
     public String getPresentation(String sampleproducttype) throws IOException, RDBESConversionException {
         if (this.presentation==null){
@@ -263,6 +261,23 @@ class DataConfigurations {
     }
     
     public Map<String, String> getOtolithType(String aphia){
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+
+    public String getVesselFlag(String catchplatform) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public int getVesselLength(String catchplatform) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public int getVesselPower(String catchplatform) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public int getVesselSize(String catchplatform) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }
