@@ -203,33 +203,6 @@ public class RDBESprovebatCompilerTest {
         fail("Test not implemented");
     }
 
-    
-    /**
-     * Test of addProvebatOnshorevents method, of class RDBESprovebatCompiler.
-     */
-    @Test
-    public void testAddProvebatOnshorevents() throws Exception {
-        System.out.println("addProvebatOnshorevents");
-        SamplingdetailsType samplingdetails = null;
-        RDBESprovebatCompiler instance = null;
-        instance.addProvebatOnshorevents(samplingdetails);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of addLeafSample method, of class RDBESprovebatCompiler.
-     */
-    @Test
-    public void testAddLeafSample() throws Exception {
-        System.out.println("addLeafSample");
-        SpeciesselectionType speciesSelection = null;
-        CatchsampleType catchsample = null;
-        RDBESprovebatCompiler instance = null;
-        instance.addLeafSample(speciesSelection, catchsample);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
 
     /**
      * Test of getProveBatStations method, of class RDBESprovebatCompiler.

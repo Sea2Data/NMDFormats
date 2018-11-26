@@ -174,7 +174,7 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
         pb.setSamplingdetails(sd);
     }
 
-    protected void addProvebatOnshorevents(SamplingdetailsType samplingdetails) throws RDBESConversionException, StrataException, IOException {
+    private void addProvebatOnshorevents(SamplingdetailsType samplingdetails) throws RDBESConversionException, StrataException, IOException {
         TemporalStrata strata = this.dataconfigurations.getPortStratificationPb(this.year);
         List<FishstationType> pbstations = getProveBatStations();
         Map<String, List<FishstationType>> stationsToAdd = new HashMap<>();
@@ -182,7 +182,7 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
         for (FishstationType f : pbstations) {
             if (f.getLandingsite() == null || "".equals(f.getLandingsite())) {
                 if (this.strict) {
-                    throw new RDBESConversionException("Landing site id missing for hierarchy 5");
+                    throw new MissingKeyException("Landing site id missing for hierarchy 5");
                 } else {
                     this.log.println("Landing site id missing for hierarchy 5. Station skipped.");
                 }
@@ -230,7 +230,7 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
 
             if (fs.getCatchplatform() == null) {
                 if (this.strict) {
-                    throw new RDBESConversionException("Vessel missing for landing event");
+                    throw new MissingKeyException("Vessel missing for landing event");
                 } else {
                     this.log.println("Vessel missing for landing event. Station skipped.");
                 }
@@ -317,7 +317,7 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
 
     }
 
-    protected void addLeafSample(SpeciesselectionType speciesSelection, CatchsampleType catchsample) throws IOException, RDBESConversionException {
+    private void addLeafSample(SpeciesselectionType speciesSelection, CatchsampleType catchsample) throws IOException, RDBESConversionException {
         SampleType sample = this.getSample();
         sample.setSSid(speciesSelection.getSSid());
         speciesSelection.getSample().add(sample);
