@@ -76,12 +76,11 @@ public class RDBESprovebatCompilerTest {
     @Test
     public void testGetSamplingDetails() throws Exception {
         System.out.println("getSamplingDetails");
-        RDBESprovebatCompiler instance = null;
+        RDBESprovebatCompiler instance = mockWDummyConfig();
         SamplingdetailsType expResult = null;
         SamplingdetailsType result = instance.getSamplingDetails();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        assertEquals("SD", result.getSDrecordType());
+        assertTrue(result.getSDid()>0);
     }
 
     /**
@@ -90,12 +89,11 @@ public class RDBESprovebatCompilerTest {
     @Test
     public void testGetOnshoreEvent() throws Exception {
         System.out.println("getOnshoreEvent");
-        RDBESprovebatCompiler instance = null;
+        RDBESprovebatCompiler instance = mockWDummyConfig();
         OnshoreeventType expResult = null;
         OnshoreeventType result = instance.getOnshoreEvent();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        assertEquals("OS", result.getOSrecordType());
+        assertTrue(result.getOSid()>0);
     }
 
     /**
@@ -104,12 +102,11 @@ public class RDBESprovebatCompilerTest {
     @Test
     public void testGetSpeciesSelectionDetails() throws Exception {
         System.out.println("getSpeciesSelectionDetails");
-        RDBESprovebatCompiler instance = null;
+        RDBESprovebatCompiler instance = mockWDummyConfig();
         SpecieslistdetailsType expResult = null;
         SpecieslistdetailsType result = instance.getSpeciesSelectionDetails();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        assertEquals("SL", result.getSLrecordType());
+        assertTrue(result.getSLid()>0);
     }
 
     /**
@@ -118,55 +115,50 @@ public class RDBESprovebatCompilerTest {
     @Test
     public void testGetLandingEvent() throws Exception {
         System.out.println("getLandingEvent");
-        RDBESprovebatCompiler instance = null;
+        RDBESprovebatCompiler instance = mockWDummyConfig();
         LandingeventType expResult = null;
         LandingeventType result = instance.getLandingEvent();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        assertEquals("LE", result.getLErecordType());
+        assertTrue(result.getLEid()>0);
     }
 
     /**
      * Test of getSpeciesSelection method, of class RDBESprovebatCompiler.
      */
     @Test
-    public void testGetSpeciesSelection() {
+    public void testGetSpeciesSelection() throws Exception {
         System.out.println("getSpeciesSelection");
-        RDBESprovebatCompiler instance = null;
+        RDBESprovebatCompiler instance = mockWDummyConfig();
         SpeciesselectionType expResult = null;
         SpeciesselectionType result = instance.getSpeciesSelection();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        assertEquals("SS", result.getSSrecordType());
+        assertTrue(result.getSSid()>0);
     }
 
     /**
      * Test of getFishingTrip method, of class RDBESprovebatCompiler.
      */
     @Test
-    public void testGetFishingTrip() {
+    public void testGetFishingTrip() throws Exception {
         System.out.println("getFishingTrip");
-        FishstationType fs = null;
-        RDBESprovebatCompiler instance = null;
+        RDBESprovebatCompiler instance = mockWDummyConfig();
         FishingtripType expResult = null;
         FishingtripType result = instance.getFishingTrip();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        assertEquals(result.getFTrecordType(), "FT");
+        assertTrue(result.getFTid()>0);
     }
 
     /**
      * Test of getSample method, of class RDBESprovebatCompiler.
      */
     @Test
-    public void testGetSample() {
+    public void testGetSample() throws Exception {
         System.out.println("getSample");
-        RDBESprovebatCompiler instance = null;
+        RDBESprovebatCompiler instance = mockWDummyConfig();
         SampleType expResult = null;
         SampleType result = instance.getSample();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        assertEquals(result.getSArecordType(), "SA");
+        assertTrue(result.getSAid()>0);
     }
 
     /**
@@ -175,12 +167,11 @@ public class RDBESprovebatCompilerTest {
     @Test
     public void testGetBiologicalVariable() throws Exception {
         System.out.println("getBiologicalVariable");
-        RDBESprovebatCompiler instance = null;
+        RDBESprovebatCompiler instance = mockWDummyConfig();
         BiologicalvariableType expResult = null;
         BiologicalvariableType result = instance.getBiologicalVariable();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        assertEquals("BV", result.getBVrecordType());
+        assertTrue(result.getBVid()>0);
     }
 
     /**
@@ -246,12 +237,10 @@ public class RDBESprovebatCompilerTest {
     @Test
     public void testGetProveBatStations() throws Exception {
         System.out.println("getProveBatStations");
-        RDBESprovebatCompiler instance = null;
+        RDBESprovebatCompiler instance = mockWDummyConfig();
         List<FishstationType> expResult = null;
         List<FishstationType> result = instance.getProveBatStations();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        assertTrue(result.size()>0);
     }
     
 }
