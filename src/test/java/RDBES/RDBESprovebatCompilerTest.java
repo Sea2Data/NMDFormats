@@ -189,6 +189,29 @@ public class RDBESprovebatCompilerTest {
         assertTrue(d.getSamplingdetails().getOnshoreevent().get(0).getLandingevent().size()>1);
         assertTrue(d.getSamplingdetails().getOnshoreevent().get(0).getLandingevent().get(0).getSpeciesselection().size()==1);
         assertTrue(d.getSamplingdetails().getOnshoreevent().get(0).getLandingevent().get(0).getSpeciesselection().get(0).getSample().size()>0);
+        
+        SpeciesselectionType ss = d.getSamplingdetails().getOnshoreevent().get(0).getLandingevent().get(0).getSpeciesselection().get(0);
+        boolean bv_checked = false;
+        boolean agefound = false;
+        boolean lengthfound = false;
+        System.out.println(d.getSamplingdetails().getOnshoreevent().get(0).getLandingevent().get(0).getSpeciesselection().size());
+        for (SampleType sa : ss.getSample()){
+            System.out.println(sa.getSAspeciesCode());
+            if (sa.getBiologicalvariable().size()>0){
+                bv_checked = true;
+                for (BiologicalvariableType bv: sa.getBiologicalvariable()){
+                    if (bv.getBVtype().equals("Age")){
+                        agefound=true;
+                    }
+                    if (bv.getBVtype().equals("Length")){
+                        lengthfound=true;
+                    }
+                }
+            }
+        }
+        assertTrue(bv_checked);
+        assertTrue(agefound);
+        assertTrue(lengthfound);
     }
 
         /**

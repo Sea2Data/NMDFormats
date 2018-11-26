@@ -236,7 +236,7 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
                 }
             } else if (fs.getSystem() == null || !"2".equals(fs.getSystem()) || fs.getArea() == null) {
                 if (this.strict) {
-                    throw new RDBESConversionException("Area missing for landing event");
+                    throw new MandatoryFieldMissing("Area missing for landing event");
                 } else {
                     this.log.println("Area missing for landing event. Station skipped.");
                 }
@@ -250,7 +250,6 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
                 landing.setVDid(landing.getVesseldetails().getVDid());
 
                 landing.setOSid(os.getOSid());
-                os.getLandingevent().add(landing);
 
                 landing.setLEstratification(true);
                 landing.setLEsequenceNumber(fs.getSerialnumber().intValue());
@@ -268,6 +267,7 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
                 landing.setLEtargetSpecies(this.dataconfigurations.getImrGearTargetSpecies(fs.getGear()));
 
                 addSpeciesSelection(landing, fs);
+                os.getLandingevent().add(landing);
             }
         }
 
@@ -289,7 +289,6 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
     private void addSpeciesSelection(LandingeventType landing, FishstationType fs) throws IOException, RDBESConversionException {
         SpeciesselectionType speciesSelection = getSpeciesSelection();
         speciesSelection.setLEid(landing.getLEid());
-        landing.getSpeciesselection().add(speciesSelection);
 
         Map<String, List<CatchsampleType>> samples_by_species = new HashMap<>();
 
@@ -304,11 +303,13 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
             List<CatchsampleType> samples = samples_by_species.get(species);
             addSample(speciesSelection, samples);
         }
+        
+        landing.getSpeciesselection().add(speciesSelection);
 
     }
 
     private void addSample(SpeciesselectionType speciesSelection, List<CatchsampleType> samples) throws IOException, RDBESConversionException {
-
+        
         if (samples.size() == 1) {
             addLeafSample(speciesSelection, samples.get(0));
         } else {
@@ -320,17 +321,6 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
     private void addLeafSample(SpeciesselectionType speciesSelection, CatchsampleType catchsample) throws IOException, RDBESConversionException {
         SampleType sample = this.getSample();
         sample.setSSid(speciesSelection.getSSid());
-        speciesSelection.getSample().add(sample);
-
-        if (!("1".equals(catchsample.getCatchproducttype())) || !("1".equals(catchsample.getSampleproducttype()))) {
-            if (this.strict) {
-                throw new RDBESConversionException("Sample could not be entered because product type is not given in live weight");
-            } else {
-                this.log.println("Sample could not be entered because product type is not given in live weight. Skipping sample.");
-                sample.setSAreasonNotSampledBV("Inconsistent weights");
-                return;
-            }
-        }
         if (catchsample.getLengthsamplecount().intValue() != catchsample.getIndividual().size()) {
             if (this.strict) {
                 throw new RDBESConversionException("Mismatch between registered individuals and noted sample size");
@@ -340,14 +330,23 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
                 return;
             }
         }
-
+        if (!("1".equals(catchsample.getCatchproducttype())) || !("1".equals(catchsample.getSampleproducttype()))) {
+            if (this.strict) {
+                throw new MandatoryFieldMissing("Sample could not be entered because product type is not given in live weight");
+            } else {
+                this.log.println("Sample could not be entered because product type is not given in live weight. Skipping sample.");
+            }
+        }
+        else{
+            sample.setSAtotalWeightLive(Math.round(1000 * catchsample.getCatchweight().floatValue()));    
+        }
         sample.setSAstratification(false);
         sample.setSAspeciesCode(catchsample.getAphia());
         sample.setSApresentation(this.dataconfigurations.getPresentation(catchsample.getSampleproducttype()));
         sample.setSAcatchCategory("Lan");
         sample.setSAsex("U");
         sample.setSAunitType("number");
-        sample.setSAtotalWeightLive(Math.round(1000 * catchsample.getCatchweight().floatValue()));
+        
         sample.setSAselectionMethod(this.dataconfigurations.getMetaDataPb(year, "fishselectionmethod"));
         sample.setSAsampler(this.dataconfigurations.getMetaDataPb(year, "sampler"));
         if (catchsample.getLengthsamplecount().intValue() > 0) {
@@ -360,7 +359,8 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
         }
 
         sample.setSAlowerHierarchy("C");
-
+        
+        speciesSelection.getSample().add(sample);
     }
 
     private void addBiologicalVariables(SampleType sample, List<IndividualType> individuals) throws RDBESConversionException, IOException {
