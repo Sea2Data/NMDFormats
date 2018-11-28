@@ -204,7 +204,7 @@ public class RDBESprovebatCompilerTest {
                     if (bv.getBVtype().equals("Age")){
                         agefound=true;
                     }
-                    if (bv.getBVtype().equals("Length")){
+                    if (bv.getBVtype().equals("ForkLength")){
                         lengthfound=true;
                     }
                     if (bv.getBVtype().equals("Weight")){

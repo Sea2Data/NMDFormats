@@ -7,6 +7,7 @@ package RDBES;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -16,6 +17,11 @@ import java.util.Map;
  * @author Edvin Fuglebakk edvin.fuglebakk@imr.no
  */
 public class DataConfigurationDummy extends DataConfigurations {
+
+    @Override
+    public String getLengthMeasurement(String lengthmeasurement) throws IOException, RDBESConversionException {
+        return "ForkLength";
+    }
 
     @Override
     public int getVesselSize(String catchplatform) {

@@ -301,8 +301,8 @@ public class RDBESCompiler {
         return vd;
     }
 
-    protected void addLength(BiologicalvariableType biovar, IndividualType i) {
-        biovar.setBVtype("Length");
+    protected void addLength(BiologicalvariableType biovar, IndividualType i, CatchsampleType cs) throws IOException, RDBESConversionException {
+        biovar.setBVtype(dataconfigurations.getLengthMeasurement(cs.getLengthmeasurement()));
         double factor = dataconfigurations.getLengthFactor(i.getLengthresolution());
         biovar.setBVvalue("" + Math.round(i.getLength().doubleValue() * factor));
         biovar.setBVunitValue(this.dataconfigurations.getLengthUnit(i.getLengthresolution()));

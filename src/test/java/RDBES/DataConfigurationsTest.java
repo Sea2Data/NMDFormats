@@ -217,30 +217,39 @@ public class DataConfigurationsTest {
      * Test of getLengthFactor method, of class DataConfigurations.
      */
     @Test
-    public void testGetLengthFactor() {
+    public void testGetLengthFactor() throws Exception{
         System.out.println("getLengthFactor");
-        String lengthresolution = "";
-        DataConfigurations instance = null;
-        double expResult = 0.0;
+        String lengthresolution = "1";
+        DataConfigurations instance = mock();
+        double expResult = 1e3;
         double result = instance.getLengthFactor(lengthresolution);
         assertEquals(expResult, result, 0.0);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
     /**
      * Test of getLengthUnit method, of class DataConfigurations.
      */
     @Test
-    public void testGetLengthUnit() {
+    public void testGetLengthUnit() throws Exception{
         System.out.println("getLengthUnit");
-        String lengthresolution = "";
-        DataConfigurations instance = null;
-        String expResult = "";
+        String lengthresolution = "1";
+        DataConfigurations instance = mock();
+        String expResult = "1mm";
         String result = instance.getLengthUnit(lengthresolution);
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+    }
+    
+    /**
+     * Test of getLengthMeasurement method, of class DataConfigurations.
+     */
+    @Test
+    public void testLengthMeasurement() throws Exception{
+        System.out.println("getLengthMeasurement");
+        String lm = "E";
+        DataConfigurations instance = mock();
+        String expResult = "FullLength";
+        String result = instance.getLengthMeasurement(lm);
+        assertEquals(expResult, result);
     }
 
     /**

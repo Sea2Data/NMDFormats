@@ -444,7 +444,7 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
             sample.setSAreasonNotSampledBV("Access");
         }
         else{
-            addBiologicalVariables(sample, catchsample.getIndividual());
+            addBiologicalVariables(sample, catchsample);
         }
 
         sample.setSAlowerHierarchy("C");
@@ -452,7 +452,8 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
         speciesSelection.getSample().add(sample);
     }
 
-    private void addBiologicalVariables(SampleType sample, List<IndividualType> individuals) throws RDBESConversionException, IOException {
+    private void addBiologicalVariables(SampleType sample, CatchsampleType cs) throws RDBESConversionException, IOException {
+        List<IndividualType> individuals = cs.getIndividual();
         for (IndividualType i : individuals) {
 
             if (i.getLength() != null) {
@@ -461,7 +462,7 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
 
                 biovar.setBVfishID(i.getSpecimenid().intValue());
                 biovar.setBVtotal(individuals.size());
-                addLength(biovar, i);
+                addLength(biovar, i, cs);
                 sample.getBiologicalvariable().add(biovar);
             }
             else{

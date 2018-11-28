@@ -15,5 +15,9 @@ SLspeciesCode: this is noted as code list, but in my mind it should support more
 SSspeciesListName: redundant? same as SLlistName
 BVvalue: String
 
+FM vs BV:
+- accuracyType vs unitVal
+- FMtype vs BVtype (FMtype subset of BVtype?)
+
 Questions on metier:
 - OK to let gear define target ?

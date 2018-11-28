@@ -45,6 +45,8 @@ class DataConfigurations {
     Map<String, String> vessellength = null;
     Map<String, String> vesselpower = null;
     Map<String, String> vesselsize = null;
+    Map<String, String> lengthmeasurement = null;
+    Map<String, String> lengthunit = null;
 
     /**
      * @param resourcefiles path to location for resource files
@@ -333,13 +335,42 @@ class DataConfigurations {
      * @param lengthresolution
      * @return
      */
-    public double getLengthFactor(String lengthresolution) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public double getLengthFactor(String lengthresolution) throws RDBESConversionException, IOException {
+        String unit = getLengthUnit(lengthresolution);
+        
+        if (unit.equals("1cm")){
+            return 1e2;
+        }
+        else if (unit.equals("1mm")){
+            return 1e3;
+        }
+        else{
+            throw new RDBESConversionException("No conversion factor defined for unit:" + unit);
+        }
     }
 
-    public String getLengthUnit(String lengthresolution) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public String getLengthUnit(String lengthresolution) throws IOException, RDBESConversionException {
+        if (this.lengthunit == null) {
+            this.lengthunit = loadResourceFile("lengthunit.csv");
+        }
+        String lm = this.lengthunit.get(lengthresolution);
+        if (lm == null) {
+            throw new RDBESConversionException("No mapping found for code: " + lengthresolution);
+        }
+        return lm;
     }
+    
+    public String getLengthMeasurement(String lengthmeasurement) throws IOException, RDBESConversionException {
+        if (this.lengthmeasurement == null) {
+            this.lengthmeasurement = loadResourceFile("lengthmeasurement.csv");
+        }
+        String lm = this.lengthmeasurement.get(lengthmeasurement);
+        if (lm == null) {
+            throw new RDBESConversionException("No mapping found for code: " + lengthmeasurement);
+        }
+        return lm;
+    }
+
 
     public String getMaturity(String imrMaturity) throws IOException, RDBESConversionException {
         if (this.maturity == null) {
@@ -399,4 +430,5 @@ class DataConfigurations {
         }
         return Integer.parseInt(power);
     }
+
 }
