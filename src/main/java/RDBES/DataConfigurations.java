@@ -342,10 +342,10 @@ class DataConfigurations {
     public double getLengthFactor(String lengthresolution) throws RDBESConversionException, IOException {
         String unit = getLengthUnit(lengthresolution);
         
-        if (unit.equals("1cm")){
+        if (unit.equals("cm")){
             return 1e2;
         }
-        else if (unit.equals("1mm")){
+        else if (unit.equals("mm")){
             return 1e3;
         }
         else{
@@ -418,9 +418,16 @@ class DataConfigurations {
         if (length == null) {
             throw new RDBESConversionException("No mapping found for code");
         }
-        return Integer.parseInt(length);
+        return (int) Math.round(Double.parseDouble(length));
     }
 
+    /**
+     * Get vessel power in kW
+     * @param catchplatform
+     * @return
+     * @throws IOException
+     * @throws RDBESConversionException 
+     */
     public int getVesselPower(String catchplatform) throws IOException, RDBESConversionException {
         if (this.vesselpower == null) {
             this.vesselpower = loadResourceFile("platform_power.csv");
@@ -429,18 +436,13 @@ class DataConfigurations {
         if (power == null) {
             throw new RDBESConversionException("No mapping found for code");
         }
-        return Integer.parseInt(power);
+        return (int)Math.round(Integer.parseInt(power)*0.7457);
     }
 
     public int getVesselSize(String catchplatform) throws IOException, RDBESConversionException {
-        if (this.vesselsize == null) {
-            this.vesselsize = loadResourceFile("platform_size.csv");
-        }
-        String power = this.vesselsize.get(catchplatform);
-        if (power == null) {
-            throw new RDBESConversionException("No mapping found for code");
-        }
-        return Integer.parseInt(power);
+        
+            throw new RDBESConversionException("Not implemented");
+        
     }
 
 }

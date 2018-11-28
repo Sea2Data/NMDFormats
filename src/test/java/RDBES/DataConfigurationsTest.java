@@ -233,7 +233,7 @@ public class DataConfigurationsTest {
         System.out.println("getLengthUnit");
         String lengthresolution = "1";
         DataConfigurations instance = mock();
-        String expResult = "1mm";
+        String expResult = "mm";
         String result = instance.getLengthUnit(lengthresolution);
         assertEquals(expResult, result);
     }
@@ -296,13 +296,12 @@ public class DataConfigurationsTest {
     @Test
     public void testGetVesselLength() throws Exception{
         System.out.println("getVesselLength");
-        String catchplatform = "";
+        String catchplatform = "3552";
         DataConfigurations instance = mock();
-        int expResult = 0;
+        int expResult = (int)Math.round(10.01);
         int result = instance.getVesselLength(catchplatform);
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        
     }
 
     /**
@@ -311,19 +310,17 @@ public class DataConfigurationsTest {
     @Test
     public void testGetVesselPower() throws Exception {
         System.out.println("getVesselPower");
-        String catchplatform = "";
+        String catchplatform = "3552";
         DataConfigurations instance = mock();
-        int expResult = 0;
+        int expResult = (int)Math.round(110*0.7457);
         int result = instance.getVesselPower(catchplatform);
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
     /**
      * Test of getVesselSize method, of class DataConfigurations.
      */
-    @Test
+    //@Test
     public void testGetVesselSize() throws Exception{
         System.out.println("getVesselSize");
         String catchplatform = "";
