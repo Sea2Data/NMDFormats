@@ -171,7 +171,7 @@ class DataConfigurations {
         if (this.homrices3 == null) {
             this.homrices3 = loadResourceFile("homr_ices3.csv");
         }
-        String ices3 = this.homrices3.get(homr);
+        String ices3 = this.homrices3.get(String.format("%02d", Integer.parseInt(homr)));
         if (ices3 == null) {
             throw new RDBESConversionException("No mapping found for code");
         }
@@ -197,7 +197,7 @@ class DataConfigurations {
      */
     public String getImrGearFAO(String imrGear) throws IOException, RDBESConversionException {
         if (this.gearfao == null) {
-            this.gearfao = loadResourceFile("imrgear_FAO.txt");
+            this.gearfao = loadResourceFile("imrgear_FAO.csv");
         }
         String fao = this.gearfao.get(imrGear);
         if (fao == null) {
@@ -206,31 +206,39 @@ class DataConfigurations {
         return fao;
     }
 
-    public String getImrGearTargetSpecies(String imrGear) throws IOException, RDBESConversionException {
-        if (this.gearTargetSpecies == null) {
-            this.gearTargetSpecies = loadResourceFile("imrgear_target.txt");
-        }
-        String ts = this.gearTargetSpecies.get(imrGear);
-        if (ts == null) {
-            throw new RDBESConversionException("No mapping found for code");
-        }
-        return ts;
-    }
-
-    public int getImrGearMeshSize(String imrGear) throws IOException, RDBESConversionException {
+    /**
+     * Reads mesh size for gear
+     * return null if mesh size is not relevant, and throws exception if no mapping is found. This means  that all gears must be added to resource file, and left with a blank mesh-size if mesh-size is not relevant
+     * @param imrGear
+     * @return
+     * @throws IOException
+     * @throws RDBESConversionException if no mapping is found for gear
+     */
+    public Integer getImrGearMeshSize(String imrGear) throws IOException, RDBESConversionException {
         if (this.gearMeshSize == null) {
-            this.gearMeshSize = loadResourceFile("imrgear_meshSize.txt");
+            this.gearMeshSize = loadResourceFile("imrgear_meshsize.csv");
         }
         String ms = this.gearMeshSize.get(imrGear);
         if (ms == null) {
             throw new RDBESConversionException("No mapping found for code");
         }
+        if (ms.equals("")){
+            return null;
+        }
         return Integer.parseInt(ms);
     }
 
+    /**
+     * Maps gear to selection device mounted.
+     * 
+     * @param imrGear
+     * @return
+     * @throws IOException
+     * @throws RDBESConversionException 
+     */
     public int getImrGearSelDev(String imrGear) throws IOException, RDBESConversionException {
         if (this.gearSelDev == null) {
-            this.gearSelDev = loadResourceFile("imrgear_seldev.txt");
+            this.gearSelDev = loadResourceFile("imrgear_seldev.csv");
         }
         String gsd = this.gearSelDev.get(imrGear);
         if (gsd == null) {
@@ -239,28 +247,70 @@ class DataConfigurations {
         return Integer.parseInt(gsd);
     }
 
-    public int getImrGearSelDevMeshSize(String imrGear) throws IOException, RDBESConversionException {
+    /**
+     * Returns Mesh size for selectivity device
+     * throws exception if mapping not found
+     * returns null if no selectivitydevice is mapped for this gear
+     * @param imrGear
+     * @return
+     * @throws IOException
+     * @throws RDBESConversionException 
+     */
+    public Integer getImrGearSelDevMeshSize(String imrGear) throws IOException, RDBESConversionException {
         if (this.gearSelDevMeshSize == null) {
-            this.gearSelDevMeshSize = loadResourceFile("imrgear_SelDevMeshSize.txt");
+            this.gearSelDevMeshSize = loadResourceFile("imrgear_seldevmeshsize.csv");
         }
         String gsd = this.gearSelDevMeshSize.get(imrGear);
         if (gsd == null) {
             throw new RDBESConversionException("No mapping found for code");
         }
+        if (gsd.equals("")){
+            return null;
+        }
         return Integer.parseInt(gsd);
     }
 
-    public String getImrGearMetier6(String gear) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    /**
+     * Constructs metier level 6 code. 
+     * Assumes information is complete. E.g. null for mesh size, implies that mesh size is not relevant for gear.
+     * @param gear FAO code
+     * @param target 
+     * @param mesh_size 
+     * @param seldev
+     * @param seldelvmeshsize
+     * @return 
+     */
+    public String getImrGearMetier6(String gear, String target, Integer mesh_size, Integer seldev, Integer seldelvmeshsize) throws RDBESConversionException{
+        
+        if (gear==null){
+            throw new RDBESConversionException("No gear provided");
+        }
+        if (target==null){
+            throw new RDBESConversionException("No target species provided");
+        }
+        
+        if (seldev==null){
+            seldev = 0;
+        }
+        if (seldelvmeshsize==null){
+            seldelvmeshsize=0;
+        }
+        if (mesh_size != null){
+            return gear + "_" + target + "_>=" + mesh_size + "_" + seldev + "_" + seldelvmeshsize;
+        }
+        else{
+            return gear + "_" + target + "_" + seldev + "_" + seldelvmeshsize;
+        }
+
     }
 
     public String getPresentation(String sampleproducttype) throws IOException, RDBESConversionException {
         if (this.presentation == null) {
-            this.presentation = loadResourceFile("imrProductype_presentation.txt");
+            this.presentation = loadResourceFile("imrProductype_presentation.csv");
         }
         String pres = this.presentation.get(sampleproducttype);
         if (pres == null) {
-            throw new RDBESConversionException("No mapping found for code");
+            throw new RDBESConversionException("No mapping found for code: " + sampleproducttype);
         }
         return pres;
     }

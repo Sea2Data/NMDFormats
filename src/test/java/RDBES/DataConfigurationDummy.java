@@ -9,7 +9,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -56,10 +55,6 @@ public class DataConfigurationDummy extends DataConfigurations {
         return m;
     }
 
-    @Override
-    public String getImrGearMetier6(String gear) {
-        return gear;
-    }
 
     @Override
     public String getMaturity(String imrMaturity) throws IOException, RDBESConversionException {
@@ -87,7 +82,7 @@ public class DataConfigurationDummy extends DataConfigurations {
     }
 
     @Override
-    public int getImrGearSelDevMeshSize(String imrGear) throws IOException, RDBESConversionException {
+    public Integer getImrGearSelDevMeshSize(String imrGear) throws IOException, RDBESConversionException {
         return 10;
     }
 
@@ -97,14 +92,10 @@ public class DataConfigurationDummy extends DataConfigurations {
     }
 
     @Override
-    public int getImrGearMeshSize(String imrGear) throws IOException, RDBESConversionException {
+    public Integer getImrGearMeshSize(String imrGear) throws IOException, RDBESConversionException {
         return 10;
     }
 
-    @Override
-    public String getImrGearTargetSpecies(String imrGear) throws IOException, RDBESConversionException {
-        return imrGear;
-    }
 
     @Override
     public String getImrGearFAO(String imrGear) throws IOException, RDBESConversionException {

@@ -155,6 +155,11 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
         return biovar;
     }
 
+    @Override
+    protected String getTargetSpecies(FishstationType fs) throws RDBESConversionException{
+        return "DEM"; // move to config ?
+    }
+    
     /**
      * Adds Port sampling program "Provebat" to RDBES
      */
@@ -254,7 +259,7 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
                 try {
                     landing.setLElocation(this.dataconfigurations.getLandingsSiteLoCode(fs.getLandingsite()));
                 } catch (RDBESConversionException e) {
-                    this.log.println("Missing field LElocation. Skipping field.");
+                    this.log.println("Missing field LElocation (landingsite: " + fs.getLandingsite() + "). Skipping field.");
                 }
                 addFishingTrip(landing, fs);
 
@@ -280,17 +285,53 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
                         if (this.strict) {
                             throw new MandatoryFieldMissing("Missing mandatory field LEarea.");
                         } else {
-                            this.log.println("Missing mandatory field LEarea. skipping field.");
+                            this.log.println("Missing mandatory field LEarea (area: " + fs.getArea() + "). skipping field.");
                         }
                     }
                 }
 
-                landing.setLEmetier6(this.dataconfigurations.getImrGearMetier6(fs.getGear()));
-                landing.setLEgear(this.dataconfigurations.getImrGearFAO(fs.getGear()));
-                landing.setLEmeshSize(this.dataconfigurations.getImrGearMeshSize(fs.getGear()));
-                landing.setLEselectionDevice(this.dataconfigurations.getImrGearSelDev(fs.getGear()));
-                landing.setLEselectionDevice(this.dataconfigurations.getImrGearSelDevMeshSize(fs.getGear()));
-                landing.setLEtargetSpecies(this.dataconfigurations.getImrGearTargetSpecies(fs.getGear()));
+                try {
+                    landing.setLEgear(this.dataconfigurations.getImrGearFAO(fs.getGear()));
+                } catch (RDBESConversionException e) {
+                    if (this.strict) {
+                        throw new MandatoryFieldMissing("Missing mandatory field LEgear (" + fs.getGear() + ").");
+                    } else {
+                        this.log.println("Missing mandatory field LEgear (" + fs.getGear() + "). Skipping field.");
+                    }
+                }
+                try {
+                    landing.setLEmeshSize(this.dataconfigurations.getImrGearMeshSize(fs.getGear()));
+                } catch (RDBESConversionException e) {
+
+                }
+                try {
+                    landing.setLEselectionDevice(this.dataconfigurations.getImrGearSelDev(fs.getGear()));
+                } catch (RDBESConversionException e) {
+
+                }
+                try {
+                    if (landing.getLEselectionDevice()!=0){
+                        landing.setLEselectionDeviceMeshSize(this.dataconfigurations.getImrGearSelDevMeshSize(fs.getGear()));
+                    }
+
+                } catch (RDBESConversionException | NullPointerException e) {
+
+                }
+                try {
+                    landing.setLEtargetSpecies(this.getTargetSpecies(fs));
+                } catch (RDBESConversionException e) {
+
+                }
+
+                try {
+                    landing.setLEmetier6(this.dataconfigurations.getImrGearMetier6(this.dataconfigurations.getImrGearFAO(fs.getGear()), landing.getLEtargetSpecies(), this.dataconfigurations.getImrGearMeshSize(fs.getGear()), this.dataconfigurations.getImrGearSelDev(fs.getGear()), this.dataconfigurations.getImrGearSelDevMeshSize(fs.getGear())));
+                } catch (RDBESConversionException e) {
+                    if (strict) {
+                        throw new MandatoryFieldMissing("Missing mandatory field LEmetier6");
+                    } else {
+                        this.log.println("Missing mandatory field LEmetier6. Skipping element");
+                    }
+                }
 
                 addSpeciesSelection(landing, fs);
                 os.getLandingevent().add(landing);
@@ -347,11 +388,11 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
     private void addLeafSample(SpeciesselectionType speciesSelection, CatchsampleType catchsample) throws IOException, RDBESConversionException {
         SampleType sample = this.getSample();
         sample.setSSid(speciesSelection.getSSid());
-        if (catchsample.getLengthsamplecount() == null || catchsample.getLengthsamplecount().intValue() != catchsample.getIndividual().size()) {
+        if ((catchsample.getLengthsamplecount() == null && catchsample.getIndividual().size() != 0) || (catchsample.getLengthsamplecount() != null && catchsample.getLengthsamplecount().intValue() != catchsample.getIndividual().size())) {
             if (this.strict) {
-                throw new RDBESConversionException("Mismatch between registered individuals and noted sample size");
+                throw new RDBESConversionException("Mismatch between registered individuals and noted sample size (" + ((FishstationType)catchsample.getParent()).getSerialnumber() + "/" + catchsample.getCatchsampleid() + ").");
             } else {
-                this.log.println("\"Mismatch between registered individuals and noted sample size Skipping sample.");
+                this.log.println("\"Mismatch between registered individuals and noted sample size Skipping sample (" + ((FishstationType)catchsample.getParent()).getSerialnumber() + "/" + catchsample.getCatchsampleid() + ").");
                 sample.setSAreasonNotSampledBV("Incomplete registration");
                 return;
             }
@@ -360,27 +401,50 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
             if (this.strict) {
                 throw new MandatoryFieldMissing("Sample could not be entered because product type is not given in live weight");
             } else {
-                this.log.println("Sample could not be entered because product type is not given in live weight. Skipping sample.");
+                this.log.println("Sample could not be entered because product type is not given in live weight. Skipping field SAtotalWeightLive.");
             }
         } else {
             sample.setSAtotalWeightLive(Math.round(1000 * catchsample.getCatchweight().floatValue()));
         }
+        if (catchsample.getSampleproducttype()==null){
+            if (this.strict){
+                throw new MandatoryFieldMissing("Mandatory field SApresentation missing.");
+            }
+            else{
+                this.log.println("Mandatory field SApresentation missing. Skipping field.");
+            }
+        }
+        else{
+            sample.setSApresentation(this.dataconfigurations.getPresentation(catchsample.getSampleproducttype()));
+        }
+                
         sample.setSAstratification(false);
         sample.setSAspeciesCode(catchsample.getAphia());
-        sample.setSApresentation(this.dataconfigurations.getPresentation(catchsample.getSampleproducttype()));
+
         sample.setSAcatchCategory("Lan");
         sample.setSAsex("U");
         sample.setSAunitType("number");
 
         sample.setSAselectionMethod(this.dataconfigurations.getMetaDataPb(year, "fishselectionmethod"));
         sample.setSAsampler(this.dataconfigurations.getMetaDataPb(year, "sampler"));
-        if (catchsample.getLengthsamplecount().intValue() > 0) {
-            double totals = catchsample.getCatchweight().doubleValue() * catchsample.getIndividual().size() / catchsample.getLengthsamplecount().intValue();
+        if (catchsample.getIndividual().size() > 0 && catchsample.getLengthsampleweight()!=null) {
+            double totals = catchsample.getCatchweight().doubleValue() * catchsample.getLengthsampleweight().doubleValue() / catchsample.getIndividual().size();
             sample.setSAtotal(totals);
             sample.setSAsampled(catchsample.getLengthsamplecount().doubleValue());
-            addBiologicalVariables(sample, catchsample.getIndividual());
+
         } else {
+            if (strict){
+                throw new RDBESConversionException("Could not set design parameters for sample");
+            }
+            else{
+                this.log.println("Could not set design parameters for sample. Skipping SAtotal and SAsampled");
+            }
+        }
+        if (catchsample.getIndividual().size()==0){
             sample.setSAreasonNotSampledBV("Access");
+        }
+        else{
+            addBiologicalVariables(sample, catchsample.getIndividual());
         }
 
         sample.setSAlowerHierarchy("C");
@@ -399,6 +463,9 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
                 biovar.setBVtotal(individuals.size());
                 addLength(biovar, i);
                 sample.getBiologicalvariable().add(biovar);
+            }
+            else{
+                throw new RDBESConversionException("Individual without length");
             }
             if (i.getIndividualweight() != null) {
                 BiologicalvariableType biovar = this.getBiologicalVariable();

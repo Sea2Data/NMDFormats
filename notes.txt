@@ -14,3 +14,6 @@ LEmixedtrip: integer ?
 SLspeciesCode: this is noted as code list, but in my mind it should support more than one aphia code.
 SSspeciesListName: redundant? same as SLlistName
 BVvalue: String
+
+Questions on metier:
+- OK to let gear define target ?

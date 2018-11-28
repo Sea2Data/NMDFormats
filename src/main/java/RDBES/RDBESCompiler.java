@@ -425,5 +425,14 @@ public class RDBESCompiler {
         }
         throw new UnsupportedOperationException("Length class not defined");
     }
+    
+    /**
+     * Returns code for target species for generating metier codes
+     * @param fs
+     * @return 
+     */
+    protected String getTargetSpecies(FishstationType fs) throws RDBESConversionException{
+        throw new UnsupportedOperationException("Not supported. Override");
+    }
 
 }

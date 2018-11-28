@@ -58,14 +58,11 @@ public class DataConfigurationsTest {
     @Test
     public void testGetMetaDataPb() throws Exception {
         System.out.println("getMetaDataPb");
-        int year = 0;
-        String field = "";
-        DataConfigurations instance = null;
-        String expResult = "";
-        String result = instance.getMetaDataPb(year, field);
+        String field = "portselectionmethod";
+        DataConfigurations instance = mock();
+        String expResult = "random";
+        String result = instance.getMetaDataPb(2016, field);
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
     /**
@@ -102,7 +99,7 @@ public class DataConfigurationsTest {
         int year = 2016;
         DataConfigurations instance = mock();
         GearStrata result = instance.getLandingStratificationPb(year);
-        assertEquals(4, result.strata.size());
+        assertEquals(5, result.strata.size());
         assertEquals("Gillnet", result.getStratum("4144").getName());
     }
 
@@ -117,6 +114,9 @@ public class DataConfigurationsTest {
         String expResult = "27.2.a";
         String result = instance.getHomrICES3("04");
         assertEquals(expResult, result);
+        expResult = "27.2.a";
+        result = instance.getHomrICES3("4");
+        assertEquals(expResult, result);
     }
 
     /**
@@ -125,29 +125,13 @@ public class DataConfigurationsTest {
     @Test
     public void testGetImrGearFAO() throws Exception {
         System.out.println("getImrGearFAO");
-        String imrGear = "";
-        DataConfigurations instance = null;
-        String expResult = "";
+        String imrGear = "4144";
+        DataConfigurations instance = mock();
+        String expResult = "GNS";
         String result = instance.getImrGearFAO(imrGear);
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
-    /**
-     * Test of getImrGearTargetSpecies method, of class DataConfigurations.
-     */
-    @Test
-    public void testGetImrGearTargetSpecies() throws Exception {
-        System.out.println("getImrGearTargetSpecies");
-        String imrGear = "";
-        DataConfigurations instance = null;
-        String expResult = "";
-        String result = instance.getImrGearTargetSpecies(imrGear);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
 
     /**
      * Test of getImrGearMeshSize method, of class DataConfigurations.
@@ -155,13 +139,11 @@ public class DataConfigurationsTest {
     @Test
     public void testGetImrGearMeshSize() throws Exception {
         System.out.println("getImrGearMeshSize");
-        String imrGear = "";
-        DataConfigurations instance = null;
-        int expResult = 0;
-        int result = instance.getImrGearMeshSize(imrGear);
+        DataConfigurations instance = mock();
+        int expResult = 90;
+        int result = instance.getImrGearMeshSize("4114");
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        assertNull(instance.getImrGearMeshSize("5210"));
     }
 
     /**
@@ -170,13 +152,11 @@ public class DataConfigurationsTest {
     @Test
     public void testGetImrGearSelDev() throws Exception {
         System.out.println("getImrGearSelDev");
-        String imrGear = "";
-        DataConfigurations instance = null;
+        String imrGear = "5211";
+        DataConfigurations instance = mock();
         int expResult = 0;
         int result = instance.getImrGearSelDev(imrGear);
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
     /**
@@ -185,28 +165,23 @@ public class DataConfigurationsTest {
     @Test
     public void testGetImrGearSelDevMeshSize() throws Exception {
         System.out.println("getImrGearSelDevMeshSize");
-        String imrGear = "";
-        DataConfigurations instance = null;
-        int expResult = 0;
-        int result = instance.getImrGearSelDevMeshSize(imrGear);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        String imrGear = "5211";
+        DataConfigurations instance = mock();
+        assertNull(instance.getImrGearSelDevMeshSize(imrGear));
+        int result = instance.getImrGearSelDevMeshSize("3021");
+        assertEquals(50, result);
     }
 
     /**
      * Test of getImrGearMetier6 method, of class DataConfigurations.
      */
     @Test
-    public void testGetImrGearMetier6() {
+    public void testGetImrGearMetier6() throws Exception {
         System.out.println("getImrGearMetier6");
         String gear = "";
-        DataConfigurations instance = null;
-        String expResult = "";
-        String result = instance.getImrGearMetier6(gear);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        DataConfigurations instance = mock();
+        String expResult = "OTB_CRU_>=70_0_0_all";
+        String result = instance.getImrGearMetier6("OTB", "CRU", 70, null, null);
     }
 
     /**
@@ -215,13 +190,11 @@ public class DataConfigurationsTest {
     @Test
     public void testGetPresentation() throws Exception {
         System.out.println("getPresentation");
-        String sampleproducttype = "";
-        DataConfigurations instance = null;
-        String expResult = "";
+        String sampleproducttype = "1";
+        DataConfigurations instance = mock();
+        String expResult = "1";
         String result = instance.getPresentation(sampleproducttype);
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
     /**
