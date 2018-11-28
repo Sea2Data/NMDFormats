@@ -10,7 +10,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.Set;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 /**
@@ -48,8 +47,6 @@ class TemporalStrata {
         fday.set(date.getYear(), 0, 0);
         int day;
         day = (int) ChronoUnit.DAYS.between(fday.toInstant(), cday.toInstant());
-        System.out.println(date.toString());
-        System.out.println(day);
         return( getStratum(day+1));
     }
     

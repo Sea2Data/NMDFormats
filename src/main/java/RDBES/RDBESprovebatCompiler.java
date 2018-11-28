@@ -195,7 +195,15 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
                     os.setOSstratification(true);
                     os.setOSstratum(strata.getStratum(f.getStationstartdate()).getName());
                     os.setOSnationalLocationName(f.getLandingsite());
-                    os.setOSlocation(this.dataconfigurations.getLandingsSiteLoCode(f.getLandingsite()));
+                    try {
+                        os.setOSlocation(this.dataconfigurations.getLandingsSiteLoCode(f.getLandingsite()));
+                    } catch (RDBESConversionException e) {
+                        if (this.strict) {
+                            throw new MandatoryFieldMissing("No to locode found for landingssite: " + f.getLandingsite());
+                        } else {
+                            this.log.println("No to locode found for landingssite: " + f.getLandingsite() + "skipping field");
+                        }
+                    }
                     os.setOSsamplingDate(f.getStationstartdate());
 
                     samplingdetails.getOnshoreevent().add(os);
@@ -243,7 +251,11 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
             } else {
 
                 LandingeventType landing = getLandingEvent();
-                landing.setLElocation(this.dataconfigurations.getLandingsSiteLoCode(fs.getLandingsite()));
+                try {
+                    landing.setLElocation(this.dataconfigurations.getLandingsSiteLoCode(fs.getLandingsite()));
+                } catch (RDBESConversionException e) {
+                    this.log.println("Missing field LElocation. Skipping field.");
+                }
                 addFishingTrip(landing, fs);
 
                 landing.setVesseldetails(getVesselDetails(fs.getCatchplatform()));
@@ -256,9 +268,23 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
                 landing.setLEstratum(gearstrata.getStratum(fs.getGear()).getName());
                 landing.setLElocation(os.getOSlocation());
                 landing.setLElocationType(os.getOSlocationType());
-
                 landing.setLEdate(os.getOSsamplingDate());
-                landing.setLEarea(this.dataconfigurations.getHomrICES3(fs.getArea()));
+                try {
+                    String ices3 = this.dataconfigurations.getICES3(fs.getLatitudestart(), fs.getLongitudestart());
+                    landing.setLEarea(ices3);
+                } catch (RDBESConversionException e) {
+                    try {
+                        String ices3 = this.dataconfigurations.getHomrICES3(fs.getArea());
+                        landing.setLEarea(ices3);
+                    } catch (RDBESConversionException e2) {
+                        if (this.strict) {
+                            throw new MandatoryFieldMissing("Missing mandatory field LEarea.");
+                        } else {
+                            this.log.println("Missing mandatory field LEarea. skipping field.");
+                        }
+                    }
+                }
+
                 landing.setLEmetier6(this.dataconfigurations.getImrGearMetier6(fs.getGear()));
                 landing.setLEgear(this.dataconfigurations.getImrGearFAO(fs.getGear()));
                 landing.setLEmeshSize(this.dataconfigurations.getImrGearMeshSize(fs.getGear()));
@@ -351,7 +377,7 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
         if (catchsample.getLengthsamplecount().intValue() > 0) {
             double totals = catchsample.getCatchweight().doubleValue() * catchsample.getIndividual().size() / catchsample.getLengthsamplecount().intValue();
             sample.setSAtotal(totals);
-            sample.setSAsampled(catchsample.getLengthsamplecount().intValue());
+            sample.setSAsampled(catchsample.getLengthsamplecount().doubleValue());
             addBiologicalVariables(sample, catchsample.getIndividual());
         } else {
             sample.setSAreasonNotSampledBV("Access");

@@ -130,7 +130,7 @@ public class RDBESCompiler {
         writer.writeDelimitedFiles(tables, outputpath, tablemaker.getNamingConvention().getDescription());
         //skip CL etc if landings is null
         // use generic XML to relational conversion
-        if (this.landings!=null){
+        if (this.landings != null) {
             throw new UnsupportedOperationException("writing of CL not supported yet");
         }
 
@@ -185,7 +185,7 @@ public class RDBESCompiler {
     private int getBiologicalVariableId() {
         return getID("BV");
     }
-    
+
     private int getFishingTripId() {
         return getID("FS");
     }
@@ -193,7 +193,6 @@ public class RDBESCompiler {
     private int getVEsselDetailsId() {
         return getID("VD");
     }
-
 
     protected SamplingdetailsType getSamplingDetails() throws RDBESConversionException, StrataException, IOException {
         SamplingdetailsType samplingdetails = this.rdbesFactory.createSamplingdetailsType();
@@ -261,17 +260,43 @@ public class RDBESCompiler {
         return ft;
     }
 
-    protected VesseldetailsType getVesselDetails(String catchplatform) {
+    protected VesseldetailsType getVesselDetails(String catchplatform) throws IOException, RDBESConversionException {
         VesseldetailsType vd = this.rdbesFactory.createVesseldetailsType();
         vd.setVDid(this.getVEsselDetailsId());
         vd.setVDrecordType("VD");
         vd.setVDencryptedCode(this.scramble_vessel(catchplatform));
-        vd.setVDflagCountry(this.dataconfigurations.getVesselFlag(catchplatform));
-        vd.setVDlength(this.dataconfigurations.getVesselLength(catchplatform));
-        vd.setVDlengthCategory(getLengthCategory(vd.getVDlength()));
-        vd.setVDpower(this.dataconfigurations.getVesselPower(catchplatform));
-        //vd.setVDsize(this.dataconfigurations.getVesselSize(catchplatform));
-        //vd.setVDsizeUnit();
+        try{
+            vd.setVDflagCountry(this.dataconfigurations.getVesselFlag(catchplatform));
+        } catch (RDBESConversionException e){
+            if (this.strict){
+                throw new MandatoryFieldMissing("Missing mandatory vessel parameter VDflagCountry.");
+            }
+            else{
+                this.log.println("Missing mandatory vessel parameter VDflagCountry. Skipping field."); 
+            }
+        }
+
+        try {
+            vd.setVDlength(this.dataconfigurations.getVesselLength(catchplatform));
+            vd.setVDpower(this.dataconfigurations.getVesselPower(catchplatform));
+            //vd.setVDsize(this.dataconfigurations.getVesselSize(catchplatform));
+            //vd.setVDsizeUnit();
+        } catch (RDBESConversionException e) {
+            this.log.println("Missing non-mandatory vessel parameters. Skipping fields.");
+        }
+
+        if (vd.getVDlength()==null){
+            if (strict) {
+                throw new MandatoryFieldMissing("Missing mandatory filed VDlengthCategory.");
+            } else {
+                this.log.println("Missing mandatory vessel parameter VDlengthCategory. Skipping field.");
+            }
+            
+ 
+        } else {
+                       vd.setVDlengthCategory(getLengthCategory(vd.getVDlength()));
+        }
+
         this.log.println("Fix size parameters");
         return vd;
     }
@@ -382,18 +407,20 @@ public class RDBESCompiler {
     }
 
     /**
-     * Creates consistent scrambling of vessel identifier, so that vessels can be ided in database, but not connected to other sources
+     * Creates consistent scrambling of vessel identifier, so that vessels can
+     * be ided in database, but not connected to other sources
+     *
      * @param id
-     * @return 
+     * @return
      */
-    protected String scramble_vessel(String id){
+    protected String scramble_vessel(String id) {
         this.log.println("Implement vessel scrambler");
         return id;
     }
 
     private String getLengthCategory(int vDlength) {
         this.log.println("Implement length classes");
-        if (vDlength>0 && vDlength<12){
+        if (vDlength > 0 && vDlength < 12) {
             return "0-12";
         }
         throw new UnsupportedOperationException("Length class not defined");

@@ -8,6 +8,8 @@ package RDBES;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -115,8 +117,8 @@ public class DataConfigurationDummy extends DataConfigurations {
     }
 
     @Override
-    public GearStrata getLandingStratificationPb(int year) {
-        GearStrata g = new DummyGearStrata();
+    public GearStrata getLandingStratificationPb(int year) throws StrataException {
+        GearStrata g = new DummyGearStrata(new LinkedList<>());
         
         return g;
     }

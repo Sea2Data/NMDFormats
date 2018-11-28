@@ -20,7 +20,7 @@ class GearStratum {
     public GearStratum(String name, Set<String> imr2letterCodes, Set<String> imr4letterCodes){
         this.name=name;
         this.imr2letterCodes = imr2letterCodes;
-        this.imr4letterCodes = this.imr4letterCodes;
+        this.imr4letterCodes = imr4letterCodes;
     }
     
     public String getName() {

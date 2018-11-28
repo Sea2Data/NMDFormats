@@ -226,10 +226,42 @@ public class RDBESprovebatCompilerTest {
     @Test
     public void testAddProveBatAsH5WConfigs() throws Exception {
         System.out.println("addProveBatAsH5");
-        //RDBESprovebatCompiler instance = mock();
-        //instance.addProveBatAsH5();
-        //assertTrue(instance.rdbes.size()==1);
-        fail("Test not implemented");
+        RDBESprovebatCompiler instance = mock();
+        instance.addProveBatAsH5();
+        assertTrue(instance.rdbes.size()==1);
+                DesignType d = (DesignType) instance.rdbes.get(0);
+        assertTrue(d.getDEhierarchy()!=null);
+        assertTrue(d.getSamplingdetails().getOnshoreevent().size()>5);
+        assertTrue(d.getSamplingdetails().getOnshoreevent().get(0).getLandingevent().size()>1);
+        assertTrue(d.getSamplingdetails().getOnshoreevent().get(0).getLandingevent().get(0).getSpeciesselection().size()==1);
+        assertTrue(d.getSamplingdetails().getOnshoreevent().get(0).getLandingevent().get(0).getSpeciesselection().get(0).getSample().size()>0);
+        
+        SpeciesselectionType ss = d.getSamplingdetails().getOnshoreevent().get(0).getLandingevent().get(0).getSpeciesselection().get(0);
+        boolean bv_checked = false;
+        boolean agefound = false;
+        boolean lengthfound = false;
+        boolean weightfound = false;
+        for (SampleType sa : ss.getSample()){
+            if (sa.getBiologicalvariable().size()>0){
+                bv_checked = true;
+                for (BiologicalvariableType bv: sa.getBiologicalvariable()){
+                    if (bv.getBVtype().equals("Age")){
+                        agefound=true;
+                    }
+                    if (bv.getBVtype().equals("Length")){
+                        lengthfound=true;
+                    }
+                    if (bv.getBVtype().equals("Weight")){
+                        weightfound=true;
+                    }
+
+                }
+            }
+        }
+        assertTrue(bv_checked);
+        assertTrue(agefound);
+        assertTrue(lengthfound);
+        assertTrue(weightfound);
     }
 
 

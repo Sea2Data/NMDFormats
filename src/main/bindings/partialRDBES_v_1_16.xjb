@@ -19,6 +19,37 @@
         <jxb:bindings>
             <namespace:prefix name="" />
         </jxb:bindings>
+        <jxb:bindings multiple="true" node="//xs:attribute[@type='ForeignKeyType']">
+            <jxb:property>
+                <jxb:baseType>
+                    <xjc:javaType name="java.lang.Integer" adapter="adapters.IntegerAdapter" />
+                </jxb:baseType>
+            </jxb:property>
+        </jxb:bindings> 
+        <jxb:bindings multiple="true" node="//xs:attribute[@type='KeyType']">
+            <jxb:property>
+                <jxb:baseType>
+                    <xjc:javaType name="java.lang.Integer" adapter="adapters.IntegerAdapter" />
+                </jxb:baseType>
+            </jxb:property>
+        </jxb:bindings> 
+                
+        <jxb:bindings multiple="true" node="//xs:element[@type='xs:integer']">
+            
+            <xjc:javaType name="java.lang.Integer" adapter="adapters.IntegerAdapter" />
+            
+        </jxb:bindings> 
+
+        <jxb:bindings multiple="true" node="//xs:element[@type='IntCodeType']">
+            
+            <xjc:javaType name="java.lang.Integer" adapter="adapters.IntegerAdapter" />
+            
+        </jxb:bindings> 
+
+
+        <jxb:bindings multiple="true" node="//xs:element[@type='xs:decimal']">
+            <xjc:javaType name="java.lang.Double" adapter="adapters.DoubleAdapter" />
+        </jxb:bindings> 
         <jxb:bindings node="//xs:complexType[@name='DesignType']">
             <inheritance:extends> HierarchicalData.HierarchicalData </inheritance:extends>
             <annox:annotate>

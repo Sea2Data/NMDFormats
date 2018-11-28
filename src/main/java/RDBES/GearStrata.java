@@ -15,6 +15,22 @@ class GearStrata {
     
     protected List<GearStratum> strata;
     
+    public GearStrata(List<GearStratum> strata) throws StrataException{
+        for (int i=0; i<strata.size(); i++){
+            for (int j=i+1; j<strata.size(); j++){
+                GearStratum gs1 = strata.get(i);
+                GearStratum gs2 = strata.get(j);
+                if (gs1.getName().equals(gs2.getName())){
+                    throw new StrataException("Some strata have same name");
+                }
+                if (gs2.overlap(gs1) || gs1.overlap(gs2)){
+                    throw new StrataException("Some strata overlap");
+                }
+            }
+        }
+        this.strata = strata;
+    }
+    
     /**
      * Returns the stratum of the given 2 or 4 letter imr gear code
      * @param imrCode
