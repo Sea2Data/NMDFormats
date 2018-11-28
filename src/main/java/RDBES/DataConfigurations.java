@@ -39,6 +39,7 @@ class DataConfigurations {
     Map<String, String> scalingfactors = null;
     Map<String, String> maturity = null;
     Map<String, Map<String, String>> otolithtype = null;
+    Map<String, Map<String, String>> scalingfactor = null;
     Map<String, String> gearImrToFao = null;
     Map<Integer, GearStrata> landingsstratificationpb = null;
     Map<String, String> vesselflag = null;
@@ -54,6 +55,8 @@ class DataConfigurations {
     public DataConfigurations(File resourcefiles) {
         this.metaDataPb = new HashMap<>();
         this.landingsstratificationpb = new HashMap<>();
+        this.otolithtype = new HashMap<>();
+        this.scalingfactor = new HashMap<>();
         this.resourcefilepath = resourcefiles;
     }
 
@@ -317,15 +320,16 @@ class DataConfigurations {
         return pres;
     }
 
-    public double getScalingFactor(String fromCode, String toCode) throws IOException, RDBESConversionException {
-        if (this.scalingfactors == null) {
-            this.scalingfactors = loadResourceFile("imrProductype_scalingfactors.txt");
+    public double getScalingFactor(String aphia, String fromCode, String toCode) throws IOException, RDBESConversionException {
+        if (this.scalingfactor.get(aphia)==null){
+            this.scalingfactor.put(aphia, loadResourceFile("presentationfactors" + File.separator + aphia+ ".csv"));
         }
-        String scaling = this.scalingfactors.get(fromCode + "," + toCode);
-        if (scaling == null) {
-            throw new RDBESConversionException("No mapping found for code");
+        String sf = this.scalingfactor.get(aphia).get(fromCode+"-"+toCode);
+        if (sf==null){
+            throw new RDBESConversionException("No mapping found for code: " + fromCode+"-"+toCode + ", and species:" + aphia);
         }
-        return Double.parseDouble(scaling);
+        
+        return Double.parseDouble(sf);
     }
 
     /**
@@ -383,8 +387,16 @@ class DataConfigurations {
         return mat;
     }
 
-    public Map<String, String> getOtolithType(String aphia) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public String getOtolithType(String aphia, String type) throws IOException, RDBESConversionException {
+        if (this.otolithtype.get(aphia)==null){
+            this.otolithtype.put(aphia, loadResourceFile("otolithtypes" + File.separator + aphia+ ".csv"));
+        }
+        String ot = this.otolithtype.get(aphia).get(type);
+        if (ot==null){
+            throw new RDBESConversionException("No mapping found for code: " + type + ", and species:" + aphia);
+        }
+        
+        return ot;
     }
 
     public String getVesselFlag(String catchplatform) throws IOException, RDBESConversionException {

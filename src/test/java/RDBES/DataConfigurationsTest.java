@@ -203,14 +203,13 @@ public class DataConfigurationsTest {
     @Test
     public void testGetScalingFactor() throws Exception {
         System.out.println("getScalingFactor");
-        String fromCode = "";
-        String toCode = "";
-        DataConfigurations instance = null;
-        double expResult = 0.0;
-        double result = instance.getScalingFactor(fromCode, toCode);
+        String aphia = "126436";
+        String fromCode = "4";
+        String toCode = "1";
+        DataConfigurations instance = mock();
+        double expResult = 1.18;
+        double result = instance.getScalingFactor(aphia, fromCode, toCode);
         assertEquals(expResult, result, 0.0);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
     /**
@@ -258,28 +257,24 @@ public class DataConfigurationsTest {
     @Test
     public void testGetMaturity() throws Exception {
         System.out.println("getMaturity");
-        String imrMaturity = "";
-        DataConfigurations instance = null;
-        String expResult = "";
+        String imrMaturity = "4";
+        DataConfigurations instance = mock();
+        String expResult = "4";
         String result = instance.getMaturity(imrMaturity);
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
     /**
      * Test of getOtolithType method, of class DataConfigurations.
      */
     @Test
-    public void testGetOtolithType() {
+    public void testGetOtolithType() throws Exception{
         System.out.println("getOtolithType");
-        String aphia = "";
-        DataConfigurations instance = null;
-        Map<String, String> expResult = null;
-        Map<String, String> result = instance.getOtolithType(aphia);
+        String aphia = "126436";
+        DataConfigurations instance = mock();
+        String expResult = "Coastal";
+        String result = instance.getOtolithType(aphia, "1");
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
     /**
@@ -302,7 +297,7 @@ public class DataConfigurationsTest {
     public void testGetVesselLength() throws Exception{
         System.out.println("getVesselLength");
         String catchplatform = "";
-        DataConfigurations instance = null;
+        DataConfigurations instance = mock();
         int expResult = 0;
         int result = instance.getVesselLength(catchplatform);
         assertEquals(expResult, result);
@@ -317,7 +312,7 @@ public class DataConfigurationsTest {
     public void testGetVesselPower() throws Exception {
         System.out.println("getVesselPower");
         String catchplatform = "";
-        DataConfigurations instance = null;
+        DataConfigurations instance = mock();
         int expResult = 0;
         int result = instance.getVesselPower(catchplatform);
         assertEquals(expResult, result);
@@ -332,7 +327,7 @@ public class DataConfigurationsTest {
     public void testGetVesselSize() throws Exception{
         System.out.println("getVesselSize");
         String catchplatform = "";
-        DataConfigurations instance = null;
+        DataConfigurations instance = mock();
         int expResult = 0;
         int result = instance.getVesselSize(catchplatform);
         assertEquals(expResult, result);

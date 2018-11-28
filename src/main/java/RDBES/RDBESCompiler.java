@@ -325,10 +325,10 @@ public class RDBESCompiler {
         biovar.setBVsampled(countMaturity((CatchsampleType) i.getParent()));
     }
 
-    protected void addOtolithType(BiologicalvariableType biovar, IndividualType i, String sAspeciesCode) {
+    protected void addOtolithType(BiologicalvariableType biovar, IndividualType i, String sAspeciesCode) throws IOException, RDBESConversionException {
         AgedeterminationType age = getPrefferedAgeReading(i);
         biovar.setBVtype("Stock");
-        biovar.setBVvalue(this.dataconfigurations.getOtolithType(sAspeciesCode).get(age.getOtolithtype()));
+        biovar.setBVvalue(this.dataconfigurations.getOtolithType(sAspeciesCode, age.getOtolithtype()));
         biovar.setBVunitValue("stock list");
         biovar.setBVunitScaleList("ICES stock list");
         biovar.setBVsampled(countOtolithTypes((CatchsampleType) i.getParent()));

@@ -7,10 +7,7 @@ package RDBES;
 
 import java.io.File;
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map;
 
 /**
  *
@@ -47,18 +44,8 @@ public class DataConfigurationDummy extends DataConfigurations {
         super(resourcefiles);
     }
 
-    @Override
-    public Map<String, String> getOtolithType(String aphia) {
-        Map<String, String> m = new HashMap<>();
-        m.put("1", "1");
-        m.put("2", "2");
-        m.put("3", "3");
-        m.put("4", "4");
-        m.put("5", "5");
-        m.put("6", "6");
-        m.put("7", "7");
-        m.put("8", "8");
-        return m;
+    public String getOtolithType(String aphia, String type) {
+        return type;
     }
 
 
@@ -78,7 +65,7 @@ public class DataConfigurationDummy extends DataConfigurations {
     }
 
     @Override
-    public double getScalingFactor(String fromCode, String toCode) throws IOException, RDBESConversionException {
+    public double getScalingFactor(String aphia, String fromCode, String toCode) throws IOException, RDBESConversionException {
         return 1.0;
     }
 
