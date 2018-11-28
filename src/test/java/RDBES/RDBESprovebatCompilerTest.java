@@ -194,6 +194,7 @@ public class RDBESprovebatCompilerTest {
         boolean bv_checked = false;
         boolean agefound = false;
         boolean lengthfound = false;
+        boolean weightfound = false;
         System.out.println(d.getSamplingdetails().getOnshoreevent().get(0).getLandingevent().get(0).getSpeciesselection().size());
         for (SampleType sa : ss.getSample()){
             System.out.println(sa.getSAspeciesCode());
@@ -206,12 +207,17 @@ public class RDBESprovebatCompilerTest {
                     if (bv.getBVtype().equals("Length")){
                         lengthfound=true;
                     }
+                    if (bv.getBVtype().equals("Weight")){
+                        weightfound=true;
+                    }
+
                 }
             }
         }
         assertTrue(bv_checked);
         assertTrue(agefound);
         assertTrue(lengthfound);
+        assertTrue(weightfound);
     }
 
         /**

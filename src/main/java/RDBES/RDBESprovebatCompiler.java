@@ -303,13 +303,13 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
             List<CatchsampleType> samples = samples_by_species.get(species);
             addSample(speciesSelection, samples);
         }
-        
+
         landing.getSpeciesselection().add(speciesSelection);
 
     }
 
     private void addSample(SpeciesselectionType speciesSelection, List<CatchsampleType> samples) throws IOException, RDBESConversionException {
-        
+
         if (samples.size() == 1) {
             addLeafSample(speciesSelection, samples.get(0));
         } else {
@@ -321,7 +321,7 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
     private void addLeafSample(SpeciesselectionType speciesSelection, CatchsampleType catchsample) throws IOException, RDBESConversionException {
         SampleType sample = this.getSample();
         sample.setSSid(speciesSelection.getSSid());
-        if (catchsample.getLengthsamplecount().intValue() != catchsample.getIndividual().size()) {
+        if (catchsample.getLengthsamplecount() == null || catchsample.getLengthsamplecount().intValue() != catchsample.getIndividual().size()) {
             if (this.strict) {
                 throw new RDBESConversionException("Mismatch between registered individuals and noted sample size");
             } else {
@@ -336,9 +336,8 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
             } else {
                 this.log.println("Sample could not be entered because product type is not given in live weight. Skipping sample.");
             }
-        }
-        else{
-            sample.setSAtotalWeightLive(Math.round(1000 * catchsample.getCatchweight().floatValue()));    
+        } else {
+            sample.setSAtotalWeightLive(Math.round(1000 * catchsample.getCatchweight().floatValue()));
         }
         sample.setSAstratification(false);
         sample.setSAspeciesCode(catchsample.getAphia());
@@ -346,11 +345,11 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
         sample.setSAcatchCategory("Lan");
         sample.setSAsex("U");
         sample.setSAunitType("number");
-        
+
         sample.setSAselectionMethod(this.dataconfigurations.getMetaDataPb(year, "fishselectionmethod"));
         sample.setSAsampler(this.dataconfigurations.getMetaDataPb(year, "sampler"));
         if (catchsample.getLengthsamplecount().intValue() > 0) {
-            double totals = catchsample.getCatchweight().doubleValue() * catchsample.getLengthsampleweight().doubleValue() / catchsample.getLengthsamplecount().intValue();
+            double totals = catchsample.getCatchweight().doubleValue() * catchsample.getIndividual().size() / catchsample.getLengthsamplecount().intValue();
             sample.setSAtotal(totals);
             sample.setSAsampled(catchsample.getLengthsamplecount().intValue());
             addBiologicalVariables(sample, catchsample.getIndividual());
@@ -359,31 +358,58 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
         }
 
         sample.setSAlowerHierarchy("C");
-        
+
         speciesSelection.getSample().add(sample);
     }
 
     private void addBiologicalVariables(SampleType sample, List<IndividualType> individuals) throws RDBESConversionException, IOException {
         for (IndividualType i : individuals) {
-            BiologicalvariableType biovar = this.getBiologicalVariable();
-            biovar.setSAid(sample.getSAid());
-            sample.getBiologicalvariable().add(biovar);
-            biovar.setBVfishID(i.getSpecimenid().intValue());
-            biovar.setBVtotal(individuals.size());
+
             if (i.getLength() != null) {
+                BiologicalvariableType biovar = this.getBiologicalVariable();
+                biovar.setSAid(sample.getSAid());
+
+                biovar.setBVfishID(i.getSpecimenid().intValue());
+                biovar.setBVtotal(individuals.size());
                 addLength(biovar, i);
+                sample.getBiologicalvariable().add(biovar);
             }
             if (i.getIndividualweight() != null) {
+                BiologicalvariableType biovar = this.getBiologicalVariable();
+                biovar.setSAid(sample.getSAid());
+
+                biovar.setBVfishID(i.getSpecimenid().intValue());
+                biovar.setBVtotal(individuals.size());
+
                 addWeight(biovar, i);
+                sample.getBiologicalvariable().add(biovar);
             }
             if (i.getMaturationstage() != null) {
+                BiologicalvariableType biovar = this.getBiologicalVariable();
+                biovar.setSAid(sample.getSAid());
+
+                biovar.setBVfishID(i.getSpecimenid().intValue());
+                biovar.setBVtotal(individuals.size());
                 addMaturation(biovar, i);
+                sample.getBiologicalvariable().add(biovar);
             }
             if (getPrefferedAgeReading(i) != null && getPrefferedAgeReading(i).getOtolithtype() != null) {
+                BiologicalvariableType biovar = this.getBiologicalVariable();
+                biovar.setSAid(sample.getSAid());
+
+                biovar.setBVfishID(i.getSpecimenid().intValue());
+                biovar.setBVtotal(individuals.size());
                 addOtolithType(biovar, i, sample.getSAspeciesCode());
+                sample.getBiologicalvariable().add(biovar);
             }
             if (getPrefferedAgeReading(i) != null && getPrefferedAgeReading(i).getAge() != null) {
+                BiologicalvariableType biovar = this.getBiologicalVariable();
+                biovar.setSAid(sample.getSAid());
+
+                biovar.setBVfishID(i.getSpecimenid().intValue());
+                biovar.setBVtotal(individuals.size());
                 addAge(biovar, i);
+                sample.getBiologicalvariable().add(biovar);
             }
 
         }
@@ -416,15 +442,14 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
     }
 
     private void addFishingTrip(LandingeventType landing, FishstationType fs) {
-        
+
         FishingtripType ft = getFishingTrip();
-        ft.setFTnationalCode(scramble_vessel(fs.getCatchplatform())+"/"+fs.getStationstartdate().toString());
+        ft.setFTnationalCode(scramble_vessel(fs.getCatchplatform()) + "/" + fs.getStationstartdate().toString());
         ft.setFTstratification(false);
         ft.setFTclustering("No");
         ft.setFTarrivalLocation(landing.getLElocation());
         ft.setFTarrivalDate(landing.getLEdate());
-        
-        
+
         landing.setFishingtrip(ft);
         landing.setFTid(landing.getFishingtrip().getFTid());
     }
