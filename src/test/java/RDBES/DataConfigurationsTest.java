@@ -303,6 +303,23 @@ public class DataConfigurationsTest {
         assertEquals(expResult, result);
         
     }
+    
+    @Test
+    public void testGetAgingstrucutreSampled() throws Exception{
+        System.out.println("GetAgingstrucutreSampled");
+        DataConfigurations instance = mock();
+        String result = instance.getAgingstructureSampled("2");
+        assertEquals("otolith", result);
+        
+    }
+    
+    @Test
+    public void testGetAgingstrucutreRead() throws Exception{
+        System.out.println("GetAgingstrucutreRead");
+        DataConfigurations instance = mock();
+        String result = instance.getAgingstructureRead("126436", "3");
+        assertEquals("otolith", result);
+    }
 
     /**
      * Test of getVesselPower method, of class DataConfigurations.

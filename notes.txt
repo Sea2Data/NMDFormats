@@ -18,6 +18,8 @@ BVvalue: String
 SAsampledWeightMeasured vs SAsampledWeight: documentation wrong wrp live weight?
 SAconversionFactorMesLive: need for both live and sampled ?
 
+support for registeering total catch of unsampled species (ratio estimation discards?)
+
 FM vs BV:
 - accuracyType vs unitVal
 - FMtype vs BVtype (FMtype subset of BVtype?)

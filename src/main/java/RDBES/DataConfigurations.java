@@ -48,6 +48,8 @@ class DataConfigurations {
     Map<String, String> vesselsize = null;
     Map<String, String> lengthmeasurement = null;
     Map<String, String> lengthunit = null;
+    Map<String, Map<String, String>> agingstructureread = null;
+    Map<String, String> agingstructuresampled = null;
 
     /**
      * @param resourcefiles path to location for resource files
@@ -56,6 +58,7 @@ class DataConfigurations {
         this.metaDataPb = new HashMap<>();
         this.landingsstratificationpb = new HashMap<>();
         this.otolithtype = new HashMap<>();
+        this.agingstructureread = new HashMap<>();
         this.scalingfactor = new HashMap<>();
         this.resourcefilepath = resourcefiles;
     }
@@ -399,6 +402,31 @@ class DataConfigurations {
         return ot;
     }
 
+    public String getAgingstructureRead(String aphia, String agingstructure) throws IOException, RDBESConversionException {
+        if (this.agingstructureread.get(aphia) == null) {
+            this.agingstructureread.put(aphia, loadResourceFile("agingstructures" + File.separator + aphia + ".csv"));
+        }
+        String ot = this.agingstructureread.get(aphia).get(agingstructure);
+        if (ot == null) {
+            throw new RDBESConversionException("No mapping found for code: " + agingstructure + ", and species:" + aphia);
+        }
+
+        return ot;
+    }
+    
+    public String getAgingstructureSampled(String agingstructure) throws IOException, RDBESConversionException {
+        if (this.agingstructuresampled == null) {
+            this.agingstructuresampled = loadResourceFile("agingstructuresampled.csv");
+        }
+        String as = this.agingstructuresampled.get(agingstructure);
+        if (as == null) {
+            throw new RDBESConversionException("No mapping found for code");
+        }
+        return as;
+    }
+
+
+    
     public String getVesselFlag(String catchplatform) throws IOException, RDBESConversionException {
         if (this.vesselflag == null) {
             this.vesselflag = loadResourceFile("platform_flag.csv");
@@ -444,5 +472,4 @@ class DataConfigurations {
             throw new RDBESConversionException("Not implemented");
         
     }
-
 }

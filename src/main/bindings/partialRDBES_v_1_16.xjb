@@ -7,7 +7,7 @@
               xmlns:rdb="partialRDBES/v1_16"
               xmlns:inheritance="http://jaxb2-commons.dev.java.net/basic/inheritance"
               jxb:extensionBindingPrefixes="xjc annox">
-    <!-- By Kjetil Fjellheim (IMR) -->
+    <!-- Edvin Fuglebakk (IMR) -->
     <!--
     This document is referenced from the pom and is used to change the generated classes.
     The following has been added. -->

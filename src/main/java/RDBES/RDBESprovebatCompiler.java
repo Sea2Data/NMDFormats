@@ -35,13 +35,14 @@ import partialRDBES.v1_16.FishingtripType;
 import partialRDBES.v1_16.OnshoreeventType;
 import partialRDBES.v1_16.SamplingdetailsType;
 import partialRDBES.v1_16.LandingeventType;
-import partialRDBES.v1_16.RdbesRecordsType;
 import partialRDBES.v1_16.SampleType;
 import partialRDBES.v1_16.SpecieslistdetailsType;
 import partialRDBES.v1_16.SpeciesselectionType;
 
 /**
- *
+ * 2d0:
+ * - handle specieslist configured by trip (identify bl.kveite-turer)
+ * - handle unkown-codes in platforms
  * @author Edvin Fuglebakk edvin.fuglebakk@imr.no
  */
 public class RDBESprovebatCompiler extends RDBESCompiler {
@@ -251,7 +252,6 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
                 } catch (RDBESConversionException e) {
                     this.log.println("Missing field LElocation (landingsite: " + fs.getLandingsite() + "). Skipping field.");
                 }
-                addFishingTrip(landing, fs);
 
                 landing.setVesseldetails(getVesselDetails(fs.getCatchplatform()));
                 landing.setVDid(landing.getVesseldetails().getVDid());
@@ -315,7 +315,7 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
                 } catch (RDBESConversionException e) {
                     missingMandatoryField("LEgear", "gear parameters");
                 }
-
+                addFishingTrip(landing, fs);
                 addSpeciesSelection(landing, fs);
 
                 addChild(os, landing);
@@ -342,11 +342,15 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
 
         Map<String, List<CatchsampleType>> samples_by_species = new HashMap<>();
 
+        //gather catchsamples by species, exclude those not in specieslist
         for (CatchsampleType cs : fs.getCatchsample()) {
-            if (!samples_by_species.containsKey(cs.getAphia())) {
-                samples_by_species.put(cs.getAphia(), new LinkedList<>());
+            if (this.speciesselectiondetails.getSLspeciesCode().contains(cs.getAphia())) {
+                if (!samples_by_species.containsKey(cs.getAphia())) {
+                    samples_by_species.put(cs.getAphia(), new LinkedList<>());
+                }
+                samples_by_species.get(cs.getAphia()).add(cs);
+
             }
-            samples_by_species.get(cs.getAphia()).add(cs);
         }
 
         for (String species : samples_by_species.keySet()) {
@@ -371,40 +375,55 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
     private void addLeafSample(SpeciesselectionType speciesSelection, CatchsampleType catchsample) throws IOException, RDBESConversionException {
         SampleType sample = this.getSample();
         if (((catchsample.getLengthsamplecount() == null || catchsample.getLengthsamplecount().intValue() == 0) && !catchsample.getIndividual().isEmpty()) || (catchsample.getLengthsamplecount() != null && catchsample.getLengthsamplecount().intValue() != catchsample.getIndividual().size())) {
-            if (this.strict) {
-                throw new RDBESConversionException("Mismatch between registered individuals and noted sample size (" + ((FishstationType) catchsample.getParent()).getSerialnumber() + "/" + catchsample.getCatchsampleid() + ").");
-            } else {
-                this.log.println("\"Mismatch between registered individuals and noted sample size Skipping sample (" + ((FishstationType) catchsample.getParent()).getSerialnumber() + "/" + catchsample.getCatchsampleid() + ").");
-                sample.setSAreasonNotSampledBV("Incomplete registration");
-                return;
-            }
+            error("Mismatch between registered individuals and noted sample size (" + ((FishstationType) catchsample.getParent()).getSerialnumber() + "/" + catchsample.getCatchsampleid() + ").");
+            sample.setSAreasonNotSampledBV("Incomplete registration");
+            addChild(speciesSelection, sample);
+            return;
+
         }
         if ("1".equals(catchsample.getCatchproducttype())) {
+            // do not set factor for type 1, as weight is taken from sales nots which often contain converted weights.
             sample.setSAtotalWeightLive(Math.round(1000 * catchsample.getCatchweight().floatValue()));
+        } else {
+            try {
+                double factor = this.dataconfigurations.getScalingFactor(catchsample.getAphia(), catchsample.getCatchproducttype(), "1");
+                if (catchsample.getCatchweight() != null) {
+                    sample.setSAconversionFactorMesLive(factor);
+                    sample.setSAtotalWeightMeasured((int) Math.round(1000 * catchsample.getCatchweight().floatValue()));
+                    sample.setSAtotalWeightLive((int) Math.round(1000 * catchsample.getCatchweight().floatValue() * factor));
+                } else {
+                    missingField("SAtotalWeightLive", "Catchweight");
+                }
+
+            } catch (RDBESConversionException e) {
+                missingField("SAtotalWeightLive", "Catchproducttype");
+            }
         }
 
-        if ("1".equals(catchsample.getSampleproducttype())) {
-            if (catchsample.getLengthsampleweight() != null) {
-                sample.setSAsampleWeightLive(Math.round(1000 * catchsample.getLengthsampleweight().floatValue()));
+        if (catchsample.getCatchproducttype() != null && catchsample.getCatchproducttype().equals(catchsample.getSampleproducttype())) {
+            if ("1".equals(catchsample.getSampleproducttype())) {
+                if (catchsample.getLengthsampleweight() != null) {
+                    sample.setSAsampleWeightMeasured(Math.round(1000 * catchsample.getLengthsampleweight().floatValue()));
+                    sample.setSAsampleWeightLive(Math.round(1000 * catchsample.getLengthsampleweight().floatValue()));
+                } else {
+                    missingField("SAsampleWeightLive", "Lengthsampleweight");
+                }
             } else {
-                missingField("SAsampleWeightLive", "Lengthsampleweight");
+                try {
+                    double factor = this.dataconfigurations.getScalingFactor(catchsample.getAphia(), catchsample.getSampleproducttype(), "1");
+                    if (catchsample.getLengthsampleweight() != null) {
+                        sample.setSAsampleWeightMeasured(Math.round(1000 * catchsample.getLengthsampleweight().floatValue()));
+                        sample.setSAsampleWeightLive((int) Math.round(1000 * catchsample.getLengthsampleweight().floatValue() * factor));
+                    } else {
+                        missingField("SAsampledWeightLive", "Lengthsampleweight");
+                    }
+
+                } catch (RDBESConversionException e) {
+                    missingField("SAsampledWeightLive", "Sampleproducttype");
+                }
             }
-        }
-        try {
-            if (sample.getSAtotalWeightLive() == null && catchsample.getCatchproducttype() != null && catchsample.getCatchproducttype().equals(catchsample.getSampleproducttype())) {
-                double factor = this.dataconfigurations.getScalingFactor(catchsample.getAphia(), catchsample.getCatchproducttype(), "1");
-                sample.setSAconversionFactorMesLive(factor);
-                sample.setSAsampleWeightLive((int) Math.round(1000 * catchsample.getLengthsampleweight().floatValue() * factor));
-                sample.setSAtotalWeightLive((int) Math.round(1000 * catchsample.getCatchweight().floatValue() * factor));
-            } else {
-                throw new RDBESConversionException("");
-            }
-        } catch (RDBESConversionException e) {
-            if (this.strict) {
-                throw new RDBESConversionException("Could not set all weights.");
-            } else {
-                this.log.println("Could not set all weights. Skipping field.");
-            }
+        } else {
+            error("Could not set SAsampleWeightLive because Sampleproducttype is different from Catchproducttype");
         }
 
         if (catchsample.getSampleproducttype() == null) {
@@ -439,7 +458,6 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
         } else {
             addBiologicalVariables(sample, catchsample);
         }
-
         sample.setSAlowerHierarchy("C");
 
         addChild(speciesSelection, sample);
@@ -537,6 +555,14 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
             throw new MandatoryFieldMissing("Could not fill: " + rdbesfield + ", because " + sourcefield + " is missing or has incompatible value.");
         } else {
             this.log.println("Skipping: " + rdbesfield + ", because " + sourcefield + " is missing or has incompatible value.");
+        }
+    }
+
+    private void error(String message) throws MandatoryFieldMissing {
+        if (this.strict) {
+            throw new MandatoryFieldMissing(message);
+        } else {
+            this.log.println(message);
         }
     }
 

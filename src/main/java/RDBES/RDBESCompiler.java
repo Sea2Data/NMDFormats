@@ -328,6 +328,13 @@ public class RDBESCompiler {
         biovar.setBVvalue(this.dataconfigurations.getOtolithType(sAspeciesCode, age.getOtolithtype()));
         biovar.setBVunitValue("stock list");
         biovar.setBVunitScaleList("ICES stock list");
+        if (age.getAgingstructureread()!=null){
+            biovar.setBVmethod(this.dataconfigurations.getAgingstructureRead(sAspeciesCode, age.getAgingstructureread()));
+        }
+        else{
+            biovar.setBVmethod(this.dataconfigurations.getAgingstructureSampled(((CatchsampleType) i.getParent()).getAgingstructure()));
+        }
+
         biovar.setBVsampled(countOtolithTypes((CatchsampleType) i.getParent()));
     }
 

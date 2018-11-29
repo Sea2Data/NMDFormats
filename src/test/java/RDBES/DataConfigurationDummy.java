@@ -16,6 +16,17 @@ import java.util.LinkedList;
 public class DataConfigurationDummy extends DataConfigurations {
 
     @Override
+    public String getAgingstructureSampled(String agingstructure) throws IOException, RDBESConversionException {
+        return "otolith";
+    }
+
+    @Override
+    public String getAgingstructureRead(String aphia, String agingstructure) throws IOException, RDBESConversionException {
+        return "otolith";
+    }
+
+
+    @Override
     public String getLengthMeasurement(String lengthmeasurement) throws IOException, RDBESConversionException {
         return "ForkLength";
     }
@@ -114,7 +125,12 @@ public class DataConfigurationDummy extends DataConfigurations {
 
     @Override
     public String getMetaDataPb(int year, String field) throws IOException, RDBESConversionException {
-        return field;
+        if (field.equals("species")){
+            return "126436";
+        }else{
+            return field;
+        }
+
     }
 
     @Override
