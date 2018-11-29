@@ -35,6 +35,7 @@ import partialRDBES.v1_16.FishingtripType;
 import partialRDBES.v1_16.OnshoreeventType;
 import partialRDBES.v1_16.SamplingdetailsType;
 import partialRDBES.v1_16.LandingeventType;
+import partialRDBES.v1_16.RdbesRecordsType;
 import partialRDBES.v1_16.SampleType;
 import partialRDBES.v1_16.SpecieslistdetailsType;
 import partialRDBES.v1_16.SpeciesselectionType;
@@ -79,7 +80,7 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
         SamplingdetailsType samplingdetails = super.getSamplingDetails();
         samplingdetails.setSDcountry(this.dataconfigurations.getMetaDataPb(this.year, "samplingFrame"));
         samplingdetails.setSDinstitution(this.dataconfigurations.getMetaDataPb(this.year, "samplingInstitution"));
-        samplingdetails.getSpecieslistdetails().add(this.speciesselectiondetails);
+        addChild(samplingdetails, this.speciesselectiondetails);
         addProvebatOnshorevents(samplingdetails);
 
         return samplingdetails;
@@ -156,17 +157,16 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
     }
 
     @Override
-    protected String getTargetSpecies(FishstationType fs) throws RDBESConversionException{
+    protected String getTargetSpecies(FishstationType fs) throws RDBESConversionException {
         return "DEM"; // move to config ?
     }
-    
+
     /**
      * Adds Port sampling program "Provebat" to RDBES
      */
     protected void addProveBatAsH5() throws RDBESConversionException, StrataException, IOException {
 
         DesignType pb = super.getDesign();
-        this.rdbes.add(pb);
 
         //make configureable by year
         pb.setDEhierarchy("5");
@@ -175,8 +175,8 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
         pb.setDEstratum(this.dataconfigurations.getMetaDataPb(this.year, "samplingFrame"));
         pb.setDEyear("" + this.year);
         SamplingdetailsType sd = this.getSamplingDetails();
-        sd.setDEid(pb.getDEid());
-        pb.setSamplingdetails(sd);
+        addChild(pb, sd);
+        addChild(this.rdbes, pb);
     }
 
     private void addProvebatOnshorevents(SamplingdetailsType samplingdetails) throws RDBESConversionException, StrataException, IOException {
@@ -196,7 +196,6 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
                 if (!stationsToAdd.containsKey(portdayid)) {
                     stationsToAdd.put(portdayid, new LinkedList<>());
                     OnshoreeventType os = getOnshoreEvent();
-                    os.setSDid(samplingdetails.getSDid());
                     os.setOSstratification(true);
                     os.setOSstratum(strata.getStratum(f.getStationstartdate()).getName());
                     os.setOSnationalLocationName(f.getLandingsite());
@@ -211,7 +210,7 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
                     }
                     os.setOSsamplingDate(f.getStationstartdate());
 
-                    samplingdetails.getOnshoreevent().add(os);
+                    addChild(samplingdetails, os);
                     onshoreadded.put(portdayid, os);
                 }
                 stationsToAdd.get(portdayid).add(f);
@@ -242,17 +241,8 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
         for (FishstationType fs : stations) {
 
             if (fs.getCatchplatform() == null) {
-                if (this.strict) {
-                    throw new MissingKeyException("Vessel missing for landing event");
-                } else {
-                    this.log.println("Vessel missing for landing event. Station skipped.");
-                }
-            } else if (fs.getSystem() == null || !"2".equals(fs.getSystem()) || fs.getArea() == null) {
-                if (this.strict) {
-                    throw new MandatoryFieldMissing("Area missing for landing event");
-                } else {
-                    this.log.println("Area missing for landing event. Station skipped.");
-                }
+                missingMandatoryField("LandingEvent", "Catchplatform");
+
             } else {
 
                 LandingeventType landing = getLandingEvent();
@@ -265,9 +255,6 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
 
                 landing.setVesseldetails(getVesselDetails(fs.getCatchplatform()));
                 landing.setVDid(landing.getVesseldetails().getVDid());
-
-                landing.setOSid(os.getOSid());
-
                 landing.setLEstratification(true);
                 landing.setLEsequenceNumber(fs.getSerialnumber().intValue());
                 landing.setLEstratum(gearstrata.getStratum(fs.getGear()).getName());
@@ -279,8 +266,12 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
                     landing.setLEarea(ices3);
                 } catch (RDBESConversionException e) {
                     try {
-                        String ices3 = this.dataconfigurations.getHomrICES3(fs.getArea());
-                        landing.setLEarea(ices3);
+                        if (fs.getSystem() == null || !"2".equals(fs.getSystem()) || fs.getArea() == null) {
+                            missingMandatoryField("LEarea", "System");
+                        } else {
+                            String ices3 = this.dataconfigurations.getHomrICES3(fs.getArea());
+                            landing.setLEarea(ices3);
+                        }
                     } catch (RDBESConversionException e2) {
                         if (this.strict) {
                             throw new MandatoryFieldMissing("Missing mandatory field LEarea.");
@@ -293,11 +284,7 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
                 try {
                     landing.setLEgear(this.dataconfigurations.getImrGearFAO(fs.getGear()));
                 } catch (RDBESConversionException e) {
-                    if (this.strict) {
-                        throw new MandatoryFieldMissing("Missing mandatory field LEgear (" + fs.getGear() + ").");
-                    } else {
-                        this.log.println("Missing mandatory field LEgear (" + fs.getGear() + "). Skipping field.");
-                    }
+                    missingMandatoryField("LEgear", "Gear");
                 }
                 try {
                     landing.setLEmeshSize(this.dataconfigurations.getImrGearMeshSize(fs.getGear()));
@@ -310,7 +297,7 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
 
                 }
                 try {
-                    if (landing.getLEselectionDevice()!=0){
+                    if (landing.getLEselectionDevice() != 0) {
                         landing.setLEselectionDeviceMeshSize(this.dataconfigurations.getImrGearSelDevMeshSize(fs.getGear()));
                     }
 
@@ -326,15 +313,12 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
                 try {
                     landing.setLEmetier6(this.dataconfigurations.getImrGearMetier6(this.dataconfigurations.getImrGearFAO(fs.getGear()), landing.getLEtargetSpecies(), this.dataconfigurations.getImrGearMeshSize(fs.getGear()), this.dataconfigurations.getImrGearSelDev(fs.getGear()), this.dataconfigurations.getImrGearSelDevMeshSize(fs.getGear())));
                 } catch (RDBESConversionException e) {
-                    if (strict) {
-                        throw new MandatoryFieldMissing("Missing mandatory field LEmetier6");
-                    } else {
-                        this.log.println("Missing mandatory field LEmetier6. Skipping element");
-                    }
+                    missingMandatoryField("LEgear", "gear parameters");
                 }
 
                 addSpeciesSelection(landing, fs);
-                os.getLandingevent().add(landing);
+
+                addChild(os, landing);
             }
         }
 
@@ -355,7 +339,6 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
 
     private void addSpeciesSelection(LandingeventType landing, FishstationType fs) throws IOException, RDBESConversionException {
         SpeciesselectionType speciesSelection = getSpeciesSelection();
-        speciesSelection.setLEid(landing.getLEid());
 
         Map<String, List<CatchsampleType>> samples_by_species = new HashMap<>();
 
@@ -371,7 +354,7 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
             addSample(speciesSelection, samples);
         }
 
-        landing.getSpeciesselection().add(speciesSelection);
+        addChild(landing, speciesSelection);
 
     }
 
@@ -387,37 +370,49 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
 
     private void addLeafSample(SpeciesselectionType speciesSelection, CatchsampleType catchsample) throws IOException, RDBESConversionException {
         SampleType sample = this.getSample();
-        sample.setSSid(speciesSelection.getSSid());
-        if ((catchsample.getLengthsamplecount() == null && catchsample.getIndividual().size() != 0) || (catchsample.getLengthsamplecount() != null && catchsample.getLengthsamplecount().intValue() != catchsample.getIndividual().size())) {
+        if (((catchsample.getLengthsamplecount() == null || catchsample.getLengthsamplecount().intValue() == 0) && !catchsample.getIndividual().isEmpty()) || (catchsample.getLengthsamplecount() != null && catchsample.getLengthsamplecount().intValue() != catchsample.getIndividual().size())) {
             if (this.strict) {
-                throw new RDBESConversionException("Mismatch between registered individuals and noted sample size (" + ((FishstationType)catchsample.getParent()).getSerialnumber() + "/" + catchsample.getCatchsampleid() + ").");
+                throw new RDBESConversionException("Mismatch between registered individuals and noted sample size (" + ((FishstationType) catchsample.getParent()).getSerialnumber() + "/" + catchsample.getCatchsampleid() + ").");
             } else {
-                this.log.println("\"Mismatch between registered individuals and noted sample size Skipping sample (" + ((FishstationType)catchsample.getParent()).getSerialnumber() + "/" + catchsample.getCatchsampleid() + ").");
+                this.log.println("\"Mismatch between registered individuals and noted sample size Skipping sample (" + ((FishstationType) catchsample.getParent()).getSerialnumber() + "/" + catchsample.getCatchsampleid() + ").");
                 sample.setSAreasonNotSampledBV("Incomplete registration");
                 return;
             }
         }
-        if (!("1".equals(catchsample.getCatchproducttype())) || !("1".equals(catchsample.getSampleproducttype()))) {
-            if (this.strict) {
-                throw new MandatoryFieldMissing("Sample could not be entered because product type is not given in live weight");
-            } else {
-                this.log.println("Sample could not be entered because product type is not given in live weight. Skipping field SAtotalWeightLive.");
-            }
-        } else {
+        if ("1".equals(catchsample.getCatchproducttype())) {
             sample.setSAtotalWeightLive(Math.round(1000 * catchsample.getCatchweight().floatValue()));
         }
-        if (catchsample.getSampleproducttype()==null){
-            if (this.strict){
-                throw new MandatoryFieldMissing("Mandatory field SApresentation missing.");
-            }
-            else{
-                this.log.println("Mandatory field SApresentation missing. Skipping field.");
+
+        if ("1".equals(catchsample.getSampleproducttype())) {
+            if (catchsample.getLengthsampleweight() != null) {
+                sample.setSAsampleWeightLive(Math.round(1000 * catchsample.getLengthsampleweight().floatValue()));
+            } else {
+                missingField("SAsampleWeightLive", "Lengthsampleweight");
             }
         }
-        else{
+        try {
+            if (sample.getSAtotalWeightLive() == null && catchsample.getCatchproducttype() != null && catchsample.getCatchproducttype().equals(catchsample.getSampleproducttype())) {
+                double factor = this.dataconfigurations.getScalingFactor(catchsample.getAphia(), catchsample.getCatchproducttype(), "1");
+                sample.setSAconversionFactorMesLive(factor);
+                sample.setSAsampleWeightLive((int) Math.round(1000 * catchsample.getLengthsampleweight().floatValue() * factor));
+                sample.setSAtotalWeightLive((int) Math.round(1000 * catchsample.getCatchweight().floatValue() * factor));
+            } else {
+                throw new RDBESConversionException("");
+            }
+        } catch (RDBESConversionException e) {
+            if (this.strict) {
+                throw new RDBESConversionException("Could not set all weights.");
+            } else {
+                this.log.println("Could not set all weights. Skipping field.");
+            }
+        }
+
+        if (catchsample.getSampleproducttype() == null) {
+            missingMandatoryField("SApresentation", "Sampleproducttype");
+        } else {
             sample.setSApresentation(this.dataconfigurations.getPresentation(catchsample.getSampleproducttype()));
         }
-                
+
         sample.setSAstratification(false);
         sample.setSAspeciesCode(catchsample.getAphia());
 
@@ -427,29 +422,27 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
 
         sample.setSAselectionMethod(this.dataconfigurations.getMetaDataPb(year, "fishselectionmethod"));
         sample.setSAsampler(this.dataconfigurations.getMetaDataPb(year, "sampler"));
-        if (catchsample.getIndividual().size() > 0 && catchsample.getLengthsampleweight()!=null) {
+        if (catchsample.getIndividual().size() > 0 && catchsample.getLengthsampleweight() != null) {
             double totals = catchsample.getCatchweight().doubleValue() * catchsample.getLengthsampleweight().doubleValue() / catchsample.getIndividual().size();
             sample.setSAtotal(totals);
             sample.setSAsampled(catchsample.getLengthsamplecount().doubleValue());
 
         } else {
-            if (strict){
+            if (strict) {
                 throw new RDBESConversionException("Could not set design parameters for sample");
-            }
-            else{
+            } else {
                 this.log.println("Could not set design parameters for sample. Skipping SAtotal and SAsampled");
             }
         }
-        if (catchsample.getIndividual().size()==0){
+        if (catchsample.getIndividual().size() == 0) {
             sample.setSAreasonNotSampledBV("Access");
-        }
-        else{
+        } else {
             addBiologicalVariables(sample, catchsample);
         }
 
         sample.setSAlowerHierarchy("C");
 
-        speciesSelection.getSample().add(sample);
+        addChild(speciesSelection, sample);
     }
 
     private void addBiologicalVariables(SampleType sample, CatchsampleType cs) throws RDBESConversionException, IOException {
@@ -458,52 +451,40 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
 
             if (i.getLength() != null) {
                 BiologicalvariableType biovar = this.getBiologicalVariable();
-                biovar.setSAid(sample.getSAid());
-
                 biovar.setBVfishID(i.getSpecimenid().intValue());
                 biovar.setBVtotal(individuals.size());
                 addLength(biovar, i, cs);
-                sample.getBiologicalvariable().add(biovar);
-            }
-            else{
+                addChild(sample, biovar);
+            } else {
                 throw new RDBESConversionException("Individual without length");
             }
             if (i.getIndividualweight() != null) {
                 BiologicalvariableType biovar = this.getBiologicalVariable();
-                biovar.setSAid(sample.getSAid());
-
                 biovar.setBVfishID(i.getSpecimenid().intValue());
                 biovar.setBVtotal(individuals.size());
-
                 addWeight(biovar, i);
-                sample.getBiologicalvariable().add(biovar);
+                addChild(sample, biovar);
             }
             if (i.getMaturationstage() != null) {
                 BiologicalvariableType biovar = this.getBiologicalVariable();
-                biovar.setSAid(sample.getSAid());
-
                 biovar.setBVfishID(i.getSpecimenid().intValue());
                 biovar.setBVtotal(individuals.size());
                 addMaturation(biovar, i);
-                sample.getBiologicalvariable().add(biovar);
+                addChild(sample, biovar);
             }
             if (getPrefferedAgeReading(i) != null && getPrefferedAgeReading(i).getOtolithtype() != null) {
                 BiologicalvariableType biovar = this.getBiologicalVariable();
-                biovar.setSAid(sample.getSAid());
-
                 biovar.setBVfishID(i.getSpecimenid().intValue());
                 biovar.setBVtotal(individuals.size());
                 addOtolithType(biovar, i, sample.getSAspeciesCode());
-                sample.getBiologicalvariable().add(biovar);
+                addChild(sample, biovar);
             }
             if (getPrefferedAgeReading(i) != null && getPrefferedAgeReading(i).getAge() != null) {
                 BiologicalvariableType biovar = this.getBiologicalVariable();
-                biovar.setSAid(sample.getSAid());
-
                 biovar.setBVfishID(i.getSpecimenid().intValue());
                 biovar.setBVtotal(individuals.size());
                 addAge(biovar, i);
-                sample.getBiologicalvariable().add(biovar);
+                addChild(sample, biovar);
             }
 
         }
@@ -544,7 +525,19 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
         ft.setFTarrivalLocation(landing.getLElocation());
         ft.setFTarrivalDate(landing.getLEdate());
 
-        landing.setFishingtrip(ft);
-        landing.setFTid(landing.getFishingtrip().getFTid());
+        addChild(landing, ft);
     }
+
+    private void missingField(String rdbesfield, String sourcefield) throws RDBESConversionException {
+        this.log.println("Skippping field: " + rdbesfield + ", because " + sourcefield + "is missing.");
+    }
+
+    private void missingMandatoryField(String rdbesfield, String sourcefield) throws MandatoryFieldMissing {
+        if (this.strict) {
+            throw new MandatoryFieldMissing("Could not fill: " + rdbesfield + ", because " + sourcefield + " is missing or has incompatible value.");
+        } else {
+            this.log.println("Skipping: " + rdbesfield + ", because " + sourcefield + " is missing or has incompatible value.");
+        }
+    }
+
 }

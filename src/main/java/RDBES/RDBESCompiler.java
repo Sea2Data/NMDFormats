@@ -10,7 +10,6 @@ import BioticTypes.v3.CatchsampleType;
 import BioticTypes.v3.FishstationType;
 import BioticTypes.v3.IndividualType;
 import BioticTypes.v3.MissionsType;
-import HierarchicalData.HierarchicalData;
 import HierarchicalData.RelationalConversion.DelimitedOutputWriter;
 import HierarchicalData.RelationalConversion.NamingConventions.DoNothingNamingConvention;
 import HierarchicalData.RelationalConversion.NamingConventions.ITableMakerNamingConvention;
@@ -22,7 +21,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +32,7 @@ import partialRDBES.v1_16.FishingtripType;
 import partialRDBES.v1_16.LandingeventType;
 import partialRDBES.v1_16.ObjectFactory;
 import partialRDBES.v1_16.OnshoreeventType;
+import partialRDBES.v1_16.RdbesRecordsType;
 import partialRDBES.v1_16.SampleType;
 import partialRDBES.v1_16.SamplingdetailsType;
 import partialRDBES.v1_16.SpecieslistdetailsType;
@@ -48,7 +47,7 @@ import partialRDBES.v1_16.VesseldetailsType;
 public class RDBESCompiler {
 
     protected ObjectFactory rdbesFactory;
-    protected List<HierarchicalData> rdbes;
+    protected RdbesRecordsType rdbes;
     protected MissionsType biotic;
     protected LandingsdataType landings;
     protected DataConfigurations dataconfigurations;
@@ -70,7 +69,7 @@ public class RDBESCompiler {
      */
     public RDBESCompiler(MissionsType biotic, LandingsdataType landings, DataConfigurations conversions, int year, boolean strict) {
         this.rdbesFactory = new ObjectFactory();
-        this.rdbes = new ArrayList<>();
+        this.rdbes = this.rdbesFactory.createRdbesRecordsType();
         this.biotic = biotic;
         this.landings = landings;
         this.dataconfigurations = conversions;
@@ -125,8 +124,8 @@ public class RDBESCompiler {
         TableMaker tablemaker = new TableMaker(new SchemaReader(RDBESCompiler.class.getClassLoader().getResourceAsStream("partialRDBESv1_16.xsd")), new RDBESLeafNodeHandler());
         tablemaker.setNamingConvention(new DoNothingNamingConvention());
 
-        Map<String, List<List<String>>> tables = tablemaker.getAllTables(new HierarchicalDataList(this.rdbes));
-        tables.remove("HierarchicalDataList");
+        Map<String, List<List<String>>> tables = tablemaker.getAllTables(this.rdbes);
+        tables.remove("RdbesRecordsType");
         writer.writeDelimitedFiles(tables, outputpath, tablemaker.getNamingConvention().getDescription());
         //skip CL etc if landings is null
         // use generic XML to relational conversion
@@ -265,14 +264,13 @@ public class RDBESCompiler {
         vd.setVDid(this.getVEsselDetailsId());
         vd.setVDrecordType("VD");
         vd.setVDencryptedCode(this.scramble_vessel(catchplatform));
-        try{
+        try {
             vd.setVDflagCountry(this.dataconfigurations.getVesselFlag(catchplatform));
-        } catch (RDBESConversionException e){
-            if (this.strict){
+        } catch (RDBESConversionException e) {
+            if (this.strict) {
                 throw new MandatoryFieldMissing("Missing mandatory vessel parameter VDflagCountry.");
-            }
-            else{
-                this.log.println("Missing mandatory vessel parameter VDflagCountry. Skipping field."); 
+            } else {
+                this.log.println("Missing mandatory vessel parameter VDflagCountry. Skipping field.");
             }
         }
 
@@ -285,16 +283,15 @@ public class RDBESCompiler {
             this.log.println("Missing non-mandatory vessel parameters. Skipping fields.");
         }
 
-        if (vd.getVDlength()==null){
+        if (vd.getVDlength() == null) {
             if (strict) {
-                throw new MandatoryFieldMissing("Missing mandatory filed VDlengthCategory.");
+                throw new MandatoryFieldMissing("Missing mandatory field VDlengthCategory.");
             } else {
                 this.log.println("Missing mandatory vessel parameter VDlengthCategory. Skipping field.");
             }
-            
- 
+
         } else {
-                       vd.setVDlengthCategory(getLengthCategory(vd.getVDlength()));
+            vd.setVDlengthCategory(getLengthCategory(vd.getVDlength()));
         }
 
         this.log.println("Fix size parameters");
@@ -425,14 +422,73 @@ public class RDBESCompiler {
         }
         throw new UnsupportedOperationException("Length class not defined");
     }
-    
+
     /**
      * Returns code for target species for generating metier codes
+     *
      * @param fs
-     * @return 
+     * @return
      */
-    protected String getTargetSpecies(FishstationType fs) throws RDBESConversionException{
+    protected String getTargetSpecies(FishstationType fs) throws RDBESConversionException {
         throw new UnsupportedOperationException("Not supported. Override");
+    }
+
+    protected void addChild(LandingeventType landing, FishingtripType ft) {
+        landing.setFishingtrip(ft);
+        landing.setFTid(landing.getFishingtrip().getFTid());
+        ft.registerParent(landing);
+    }
+
+    protected void addChild(FishingtripType ft, LandingeventType landing) {
+        landing.setFishingtrip(ft);
+        landing.setFTid(landing.getFishingtrip().getFTid());
+        landing.registerParent(ft);
+    }
+
+    protected void addChild(SampleType sample, BiologicalvariableType biovar) {
+        biovar.setSAid(sample.getSAid());
+        sample.getBiologicalvariable().add(biovar);
+        biovar.registerParent(sample);
+    }
+
+    protected void addChild(SpeciesselectionType speciesSelection, SampleType sample) {
+        speciesSelection.getSample().add(sample);
+        sample.setSSid(speciesSelection.getSSid());
+        sample.registerParent(speciesSelection);
+    }
+
+    protected void addChild(LandingeventType landing, SpeciesselectionType speciesSelection) {
+        speciesSelection.setLEid(landing.getLEid());
+        landing.getSpeciesselection().add(speciesSelection);
+        speciesSelection.registerParent(landing);
+    }
+
+    protected void addChild(OnshoreeventType os, LandingeventType landing) {
+        os.getLandingevent().add(landing);
+        landing.setOSid(os.getOSid());
+        landing.registerParent(os);
+    }
+
+    protected void addChild(SamplingdetailsType samplingdetails, OnshoreeventType os) {
+        samplingdetails.getOnshoreevent().add(os);
+        os.setSDid(samplingdetails.getSDid());
+        os.registerParent(samplingdetails);
+    }
+
+    protected void addChild(DesignType d, SamplingdetailsType sd) {
+        sd.setDEid(d.getDEid());
+        d.setSamplingdetails(sd);
+        sd.registerParent(d);
+    }
+
+    protected void addChild(SamplingdetailsType samplingdetails, SpecieslistdetailsType speciesselectiondetails) {
+        samplingdetails.getSpecieslistdetails().add(speciesselectiondetails);
+        speciesselectiondetails.registerParent(samplingdetails);
+    }
+
+    protected void addChild(RdbesRecordsType rdbes, DesignType pb) {
+        rdbes.getRecord().add(pb);
+        pb.registerParent(rdbes);
     }
 
 }

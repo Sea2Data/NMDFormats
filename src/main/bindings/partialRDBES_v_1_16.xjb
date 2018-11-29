@@ -39,6 +39,11 @@
             <xjc:javaType name="java.lang.Integer" adapter="adapters.IntegerAdapter" />
             
         </jxb:bindings> 
+        <jxb:bindings multiple="true" node="//xs:element[@type='xs:boolean']">
+            
+            <xjc:javaType name="java.lang.Boolean" adapter="adapters.BooleanAdapter" />
+            
+        </jxb:bindings> 
 
         <jxb:bindings multiple="true" node="//xs:element[@type='IntCodeType']">
             
@@ -50,6 +55,13 @@
         <jxb:bindings multiple="true" node="//xs:element[@type='xs:decimal']">
             <xjc:javaType name="java.lang.Double" adapter="adapters.DoubleAdapter" />
         </jxb:bindings> 
+        
+        <jxb:bindings node="//xs:complexType[@name='RdbesRecordsType']">
+            <inheritance:extends> HierarchicalData.HierarchicalData </inheritance:extends>
+            <annox:annotate>
+                <annox:annotate annox:class="javax.xml.bind.annotation.XmlRootElement" name="record"/>
+            </annox:annotate>
+        </jxb:bindings>
         <jxb:bindings node="//xs:complexType[@name='DesignType']">
             <inheritance:extends> HierarchicalData.HierarchicalData </inheritance:extends>
             <annox:annotate>

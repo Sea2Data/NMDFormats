@@ -46,6 +46,7 @@
                                 <arg>-Xnamespace-prefix</arg>
                                 <arg>-Xjavadoc</arg>
                                 <arg>-Xinheritance</arg>
+                                <arg>-enableIntrospection</arg>
                             </args>
                         </configuration>
                     </execution>

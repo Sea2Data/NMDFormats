@@ -6,7 +6,6 @@
 package RDBES;
 
 import Biotic.Biotic3.Biotic3Handler;
-import BioticTypes.v3.CatchsampleType;
 import BioticTypes.v3.FishstationType;
 import BioticTypes.v3.MissionsType;
 import java.io.File;
@@ -182,8 +181,8 @@ public class RDBESprovebatCompilerTest {
         System.out.println("addProveBatAsH5");
         RDBESprovebatCompiler instance = mockWDummyConfig();
         instance.addProveBatAsH5();
-        assertTrue(instance.rdbes.size()==1);
-        DesignType d = (DesignType) instance.rdbes.get(0);
+        assertTrue(instance.rdbes.getRecord().size()==1);
+        DesignType d = (DesignType) instance.rdbes.getRecord().get(0);
         assertTrue(d.getDEhierarchy()!=null);
         assertTrue(d.getSamplingdetails().getOnshoreevent().size()>5);
         assertTrue(d.getSamplingdetails().getOnshoreevent().get(0).getLandingevent().size()>1);
@@ -228,8 +227,8 @@ public class RDBESprovebatCompilerTest {
         System.out.println("addProveBatAsH5");
         RDBESprovebatCompiler instance = mock();
         instance.addProveBatAsH5();
-        assertTrue(instance.rdbes.size()==1);
-                DesignType d = (DesignType) instance.rdbes.get(0);
+        assertTrue(instance.rdbes.getRecord().size()==1);
+         DesignType d = (DesignType) instance.rdbes.getRecord().get(0);
         assertTrue(d.getDEhierarchy()!=null);
         assertTrue(d.getSamplingdetails().getOnshoreevent().size()>5);
         assertTrue(d.getSamplingdetails().getOnshoreevent().get(0).getLandingevent().size()>1);

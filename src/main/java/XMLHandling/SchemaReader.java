@@ -27,10 +27,12 @@ import org.apache.ws.commons.schema.XmlSchema;
 import org.apache.ws.commons.schema.XmlSchemaAnnotated;
 import org.apache.ws.commons.schema.XmlSchemaAppInfo;
 import org.apache.ws.commons.schema.XmlSchemaAttribute;
+import org.apache.ws.commons.schema.XmlSchemaChoice;
 import org.apache.ws.commons.schema.XmlSchemaCollection;
 import org.apache.ws.commons.schema.XmlSchemaComplexType;
 import org.apache.ws.commons.schema.XmlSchemaDocumentation;
 import org.apache.ws.commons.schema.XmlSchemaElement;
+import org.apache.ws.commons.schema.XmlSchemaObject;
 import org.apache.ws.commons.schema.XmlSchemaObjectCollection;
 import org.apache.ws.commons.schema.XmlSchemaObjectTable;
 import org.apache.ws.commons.schema.XmlSchemaParticle;
@@ -42,7 +44,8 @@ import org.w3c.dom.NodeList;
 
 /**
  * Reads information from xsd schema. Current implementation is not properly
- * namespace-aware. Will extract data for first occurance  of each complex type.
+ * namespace-aware. Will extract key structure for first occurance of each
+ * complex type.
  *
  * @author Edvin Fuglebakk edvin.fuglebakk@imr.no
  */
@@ -72,6 +75,12 @@ public class SchemaReader {
         Iterator iterator = schemaObjectTable.getValues();
         while (iterator.hasNext()) {
             XmlSchemaElement element = (XmlSchemaElement) iterator.next();
+            processSchemaElement(element);
+        }
+    }
+    private void processSchemaElement(XmlSchemaObject object) throws JAXBException, ParserConfigurationException{
+        if (object instanceof XmlSchemaElement){
+            XmlSchemaElement element = (XmlSchemaElement) object;
             XmlSchemaType schemaType = element.getSchemaType();
             if (schemaType instanceof XmlSchemaComplexType) {
                 processComplexType(element);
@@ -81,8 +90,33 @@ public class SchemaReader {
                 assert false;
             }
         }
+        else if (object instanceof XmlSchemaChoice){
+            XmlSchemaChoice choiceElement = (XmlSchemaChoice) object;    
+            processChoice(choiceElement);
+        }
+        else{
+            assert false;
+        }
+
     }
 
+    private void processChoice(XmlSchemaChoice choiceElement) throws JAXBException, ParserConfigurationException {
+        
+        XmlSchemaObjectCollection choices = choiceElement.getItems();
+        Iterator iterator = choices.getIterator();
+        while (iterator.hasNext()) {
+            Object next = iterator.next();
+            if (next instanceof XmlSchemaElement){
+                XmlSchemaElement element = (XmlSchemaElement) next;
+                processSchemaElement(element);
+            }
+            else{
+                assert false;
+            }
+        }
+    }
+
+    
     private void processComplexType(XmlSchemaElement element) throws JAXBException, ParserConfigurationException {
         String elementName = element.getName();
         String typeName = element.getSchemaTypeName().getLocalPart();
@@ -107,23 +141,27 @@ public class SchemaReader {
 
             Iterator iterator = schemaSequence.getItems().getIterator();
             while (iterator.hasNext()) {
-                XmlSchemaElement subElement = (XmlSchemaElement) iterator.next();
-                XmlSchemaType subType = subElement.getSchemaType();
-                if (subType instanceof XmlSchemaComplexType) {
-                    processComplexType(subElement);
-                    nodes.add(new SchemaNode(subElement.getName(), subElement.getSchemaTypeName().getLocalPart()));
+                XmlSchemaObject subElementObj = (XmlSchemaObject) iterator.next();
+                if (subElementObj instanceof XmlSchemaChoice) {
+                    processChoice((XmlSchemaChoice) subElementObj);
+                } else {
+                    XmlSchemaElement subElement = (XmlSchemaElement) subElementObj;
+                    XmlSchemaType subType = subElement.getSchemaType();
+                    if (subType instanceof XmlSchemaComplexType) {
+                        processComplexType(subElement);
+                        nodes.add(new SchemaNode(subElement.getName(), subElement.getSchemaTypeName().getLocalPart()));
 
-                } else if (subType instanceof XmlSchemaSimpleType) {
-                    if (this.isKey(subElement)) {
-                        keys.add(subElement.getName());
+                    } else if (subType instanceof XmlSchemaSimpleType) {
+                        if (this.isKey(subElement)) {
+                            keys.add(subElement.getName());
+                        }
+                        nodes.add(new SchemaNode(subElement.getName(), subElement.getSchemaTypeName().getLocalPart()));
+
                     }
-                    nodes.add(new SchemaNode(subElement.getName(), subElement.getSchemaTypeName().getLocalPart()));
-
+                    if (subElement.getAnnotation() != null) {
+                        documentation.put(subElement.getName(), this.getDocumentation(subElement));
+                    }
                 }
-                if (subElement.getAnnotation() != null) {
-                    documentation.put(subElement.getName(), this.getDocumentation(subElement));
-                }
-
             }
         }
 
@@ -248,10 +286,10 @@ public class SchemaReader {
         return doctype;
     }
 
-    public String getTargetNameSpace(){
+    public String getTargetNameSpace() {
         return this.schema.getTargetNamespace();
     }
-    
+
     public static class SchemaNode {
 
         private String name;

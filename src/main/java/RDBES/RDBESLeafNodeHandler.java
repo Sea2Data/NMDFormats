@@ -6,6 +6,7 @@
 package RDBES;
 
 import HierarchicalData.RelationalConversion.ILeafNodeHandler;
+import com.sun.org.apache.xerces.internal.jaxp.datatype.XMLGregorianCalendarImpl;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.HashSet;
@@ -25,10 +26,16 @@ public class RDBESLeafNodeHandler implements ILeafNodeHandler{
         if (node instanceof String){
             return (String)node;
         }
-        if (node instanceof BigInteger){
+        if (node instanceof Integer){
             return node.toString();
         }
-        if (node instanceof BigDecimal){
+        if (node instanceof Double){
+            return node.toString();
+        }
+        if (node instanceof Boolean){
+            return node.toString();
+        }
+        if (node instanceof XMLGregorianCalendarImpl){
             return node.toString();
         }
 
