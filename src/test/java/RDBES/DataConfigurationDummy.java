@@ -55,6 +55,7 @@ public class DataConfigurationDummy extends DataConfigurations {
         super(resourcefiles);
     }
 
+    @Override
     public String getOtolithType(String aphia, String type) {
         return type;
     }
