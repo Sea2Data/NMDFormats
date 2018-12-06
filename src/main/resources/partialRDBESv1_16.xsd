@@ -33,7 +33,7 @@
         <xs:sequence>
             <xs:element name="SDcountry" type="CodeType" />
             <xs:element name="SDinstitution" type="CodeType" />
-            <xs:element name="specieslistdetails" type="SpecieslistdetailsType" minOccurs="1" maxOccurs="unbounded"/>
+            <xs:element name="specieslistdetails" type="SpecieslistdetailsType" minOccurs="1" maxOccurs="1"/>
             <xs:choice maxOccurs="unbounded">
                 <xs:element name="onshoreevent" type="OnshoreeventType"/>
                 <!-- other options should reflect PSUs in valid hierarchies, eg VesselSelection FishingTrip-->
@@ -206,6 +206,7 @@
             <xs:element name="SSclustersProb" type="xs:decimal"/>
             <xs:element name="SSreasonNotSampled" type="CodeType"/>
             <xs:element name="sample" type="SampleType" maxOccurs="unbounded" minOccurs="0"/>
+            <xs:element name="specieslistdetails" type="SpecieslistdetailsType" minOccurs="1" maxOccurs="1"/>
         </xs:sequence>
         <xs:attribute name="SSid" type="KeyType" use="required"/>
         <xs:attribute name="LEid" type="ForeignKeyType"/>

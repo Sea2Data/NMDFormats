@@ -29,7 +29,7 @@
                                     </fileset>
                                 </schema>
                                 <schema>
-                                    <url>http://www.imr.no/formats/nmdbiotic/v3/bioticv3.xsd</url>
+                                    <url>http://www.imr.no/formats/nmdbiotic/v3.0/nmdbioticv3.xsd</url>
                                 </schema>
                                 <schema>
                                     <url>https://git.imr.no/Formats/commons-biotic-jaxb/raw/1.1.4/src/main/resources/bioticv1_4.xsd</url>
