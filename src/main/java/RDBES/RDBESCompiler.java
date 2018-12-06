@@ -434,16 +434,33 @@ public class RDBESCompiler {
     /**
      * Returns each catch registration (species might be repeated and weight might be NA)
      *
+     * If not strict. NA will be treated as zero, and measure weight willbe used for liveweight when product type / presentation is not given.
+     * 
      * @param fs
      * @return
      */
-    protected List<FishWeight> getSpeciesComp(FishstationType fs) throws RDBESConversionException {
+    protected List<FishWeight> getSpeciesComp(FishstationType fs) throws RDBESConversionException, IOException {
         List<FishWeight> speccomp = new ArrayList<>();
         for (CatchsampleType cs: fs.getCatchsample()){
                 if (cs.getCatchweight()!=null){
-                    speccomp.add(new FishWeight(cs.getAphia(), cs.getCatchweight().doubleValue()));
+                    try{
+                        speccomp.add(new FishWeight(cs.getAphia(), getLiveWeightCatch(cs)));
+                    } catch(RDBESConversionException e){
+                        if (strict){
+                            throw e;
+                        }
+                        else{
+                            speccomp.add(new FishWeight(cs.getAphia(), cs.getCatchweight().doubleValue()));
+                        }
+                    }
                 } else{
-                    speccomp.add(new FishWeight(cs.getAphia(), Double.NaN));
+                    if (strict){
+                        speccomp.add(new FishWeight(cs.getAphia(), Double.NaN));
+                    }
+                    else{
+                        speccomp.add(new FishWeight(cs.getAphia(), 0.0));
+                    }
+
                 }            
         }
         return speccomp;
@@ -516,6 +533,13 @@ public class RDBESCompiler {
     protected void addChild(SamplingdetailsType samplingdetails, SpecieslistdetailsType speciesListDetails) {
         samplingdetails.setSpecieslistdetails(speciesListDetails);
         speciesListDetails.registerParent(samplingdetails);
+    }
+
+    protected double getLiveWeightCatch(CatchsampleType cs) throws IOException, RDBESConversionException {
+        System.out.println(cs.getAphia());
+        System.out.println(cs.getCommonname());
+        double factor = this.dataconfigurations.getScalingFactor(cs.getAphia(), cs.getCatchproducttype(), "1");
+        return cs.getCatchweight().floatValue() * factor;
     }
 
 

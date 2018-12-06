@@ -397,7 +397,7 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
                 if (catchsample.getCatchweight() != null) {
                     sample.setSAconversionFactorMesLive(factor);
                     sample.setSAtotalWeightMeasured((int) Math.round(1000 * catchsample.getCatchweight().floatValue()));
-                    sample.setSAtotalWeightLive((int) Math.round(1000 * catchsample.getCatchweight().floatValue() * factor));
+                    sample.setSAtotalWeightLive((int) Math.round(1000 * getLiveWeightCatch(catchsample)));
                 } else {
                     missingField("SAtotalWeightLive", "Catchweight");
                 }
