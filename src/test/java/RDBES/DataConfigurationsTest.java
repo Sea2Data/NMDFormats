@@ -6,6 +6,9 @@
 package RDBES;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -333,6 +336,28 @@ public class DataConfigurationsTest {
         int result = instance.getVesselPower(catchplatform);
         assertEquals(expResult, result);
     }
+    
+    @Test
+    public void testGetSpeciesAssemblage() throws Exception{
+        System.out.println("getSpeciesAssemblage");
+        List<FishWeight> comp = new ArrayList<>();
+        comp.add(new FishWeight("126437", 10.0));
+        comp.add(new FishWeight("12644X", 10.0));
+        comp.add(new FishWeight("126437", 1.0));
+        DataConfigurations instance = mock();
+        String expResult = "DEF";
+        String result = instance.getSpeciesAssemblage(comp);
+        assertEquals(expResult, result);
+        
+        comp.add(new FishWeight("SS", Double.NaN));
+        try{
+            instance.getSpeciesAssemblage(comp);
+            fail("Exception expected");
+        } catch (RDBESConversionException e){
+            assertTrue(true);
+        }
+    }
+
 
     /**
      * Test of getVesselSize method, of class DataConfigurations.
@@ -348,5 +373,6 @@ public class DataConfigurationsTest {
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
     }
+    
     
 }

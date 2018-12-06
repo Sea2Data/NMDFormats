@@ -8,6 +8,7 @@ package RDBES;
 import java.io.File;
 import java.io.IOException;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  *
@@ -15,6 +16,12 @@ import java.util.LinkedList;
  */
 public class DataConfigurationDummy extends DataConfigurations {
 
+    @Override
+    public String getSpeciesAssemblage(List<FishWeight> l) throws IOException, RDBESConversionException {
+        return "DEF";
+    }
+    
+    
     @Override
     public String getAgingstructureSampled(String agingstructure) throws IOException, RDBESConversionException {
         return "otolith";

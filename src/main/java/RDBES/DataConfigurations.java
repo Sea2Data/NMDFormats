@@ -50,6 +50,7 @@ class DataConfigurations {
     Map<String, String> lengthunit = null;
     Map<String, Map<String, String>> agingstructureread = null;
     Map<String, String> agingstructuresampled = null;
+    Map<String, String> speciesassemblage = null;
 
     /**
      * @param resourcefiles path to location for resource files
@@ -73,6 +74,7 @@ class DataConfigurations {
      * second column
      */
     protected Map<String, String> loadResourceFile(String filename) throws IOException {
+        System.out.print(this.resourcefilepath.toString() + File.separator + filename);
         File infile = new File(this.resourcefilepath.toString() + File.separator + filename);
         InputStream resourcefile = new FileInputStream(infile);
         BufferedReader br = new BufferedReader(new InputStreamReader(resourcefile));
@@ -471,5 +473,48 @@ class DataConfigurations {
         
             throw new RDBESConversionException("Not implemented");
         
+    }
+
+    /**
+     * Determines the largest assamblage in a speciesComp (e.g. a catch) (ties resolved by order of computation)
+     * @param speciesComp
+     * @return
+     * @throws IOException
+     * @throws RDBESConversionException 
+     */
+    public String getSpeciesAssemblage(List<FishWeight> speciesComp) throws IOException, RDBESConversionException {
+        if (this.speciesassemblage == null) {
+            this.speciesassemblage = loadResourceFile("speciesassemblages.csv");
+        }
+        
+        Map<String, Double> speciesassamblagecomp = new HashMap<>();
+        for (FishWeight fw : speciesComp){
+            String assamblage = this.speciesassemblage.get(fw.getAphia());
+            if (assamblage == null) {
+                throw new RDBESConversionException("No mapping found for code");
+            }
+            else{
+                if (!speciesassamblagecomp.containsKey(assamblage)){
+                    speciesassamblagecomp.put(assamblage, 0.0);
+                }
+                Double tot = fw.getWeight();
+                if (Double.isNaN(tot)){
+                    throw new RDBESConversionException("NaN component in speciesComp");
+                }
+                Double newtot = speciesassamblagecomp.get(assamblage)+tot;
+                System.out.println(tot);
+                System.out.println(newtot);
+                speciesassamblagecomp.put(assamblage, newtot);
+            }
+        }
+        String maxAssemblage = null;
+        Double maxTotal = 0.0;
+        for (String sa : speciesassamblagecomp.keySet()){
+            if (speciesassamblagecomp.get(sa) >= maxTotal){
+               maxAssemblage = sa;
+               maxTotal = speciesassamblagecomp.get(sa);
+            }
+        }
+        return maxAssemblage;
     }
 }

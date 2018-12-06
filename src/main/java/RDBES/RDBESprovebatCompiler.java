@@ -167,11 +167,6 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
         return biovar;
     }
 
-    @Override
-    protected String getTargetSpecies(FishstationType fs) throws RDBESConversionException {
-        return "DEM"; // move to config ?
-    }
-
     /**
      * Adds Port sampling program "Provebat" to RDBES
      */
@@ -315,7 +310,7 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
 
                 }
                 try {
-                    landing.setLEtargetSpecies(this.getTargetSpecies(fs));
+                    landing.setLEtargetSpecies(this.dataconfigurations.getSpeciesAssemblage(this.getSpeciesComp(fs)));
                 } catch (RDBESConversionException e) {
 
                 }

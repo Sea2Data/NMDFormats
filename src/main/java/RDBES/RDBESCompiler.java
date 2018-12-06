@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -431,13 +432,21 @@ public class RDBESCompiler {
     }
 
     /**
-     * Returns code for target species for generating metier codes
+     * Returns each catch registration (species might be repeated and weight might be NA)
      *
      * @param fs
      * @return
      */
-    protected String getTargetSpecies(FishstationType fs) throws RDBESConversionException {
-        throw new UnsupportedOperationException("Not supported. Override");
+    protected List<FishWeight> getSpeciesComp(FishstationType fs) throws RDBESConversionException {
+        List<FishWeight> speccomp = new ArrayList<>();
+        for (CatchsampleType cs: fs.getCatchsample()){
+                if (cs.getCatchweight()!=null){
+                    speccomp.add(new FishWeight(cs.getAphia(), cs.getCatchweight().doubleValue()));
+                } else{
+                    speccomp.add(new FishWeight(cs.getAphia(), Double.NaN));
+                }            
+        }
+        return speccomp;
     }
 
     protected void addChild(SamplingdetailsType samplingdetails, SpeciesselectionType speciesselection) {
