@@ -40,14 +40,15 @@ import partialRDBES.v1_16.SpecieslistdetailsType;
 import partialRDBES.v1_16.SpeciesselectionType;
 
 /**
- * 2d0:
- * - handle specieslist configured by trip (identify bl.kveite-turer)
- * - handle unkown-codes in platforms
+ * 2d0: - handle specieslist configured by trip (identify bl.kveite-turer) -
+ * handle unkown-codes in platforms
+ *
  * @author Edvin Fuglebakk edvin.fuglebakk@imr.no
  */
 public class RDBESprovebatCompiler extends RDBESCompiler {
 
-    protected SpecieslistdetailsType speciesselectiondetails;
+    protected SpecieslistdetailsType speciesListDetails;
+    protected HashSet<String> targetspecies;
 
     public static void main(String[] args) throws JAXBException, XMLStreamException, ParserConfigurationException, ParserConfigurationException, SAXException, SAXException, IOException, FileNotFoundException, RDBESConversionException, StrataException, ITableMakerNamingConvention.NamingException, NoSuchMethodException, NoSuchMethodException, IllegalAccessException, IllegalArgumentException, IllegalArgumentException, InvocationTargetException, RelationalConvertionException {
 
@@ -66,22 +67,31 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
 
     public RDBESprovebatCompiler(MissionsType biotic, LandingsdataType landings, DataConfigurations conversions, int year, boolean strict) throws IOException, RDBESConversionException {
         super(biotic, landings, conversions, year, strict);
-        this.speciesselectiondetails = getSpeciesSelectionDetails();
+        this.speciesListDetails = getSpeciesSelectionDetails();
+        setTargetSpecies();
     }
 
     public RDBESprovebatCompiler(RDBESCompiler compiler) throws IOException, RDBESConversionException {
         super(compiler);
-        if (this.speciesselectiondetails == null) {
-            this.speciesselectiondetails = getSpeciesSelectionDetails();
+        this.speciesListDetails = getSpeciesSelectionDetails();
+        setTargetSpecies();
+    }
+
+    private void setTargetSpecies() throws IOException, RDBESConversionException {
+        String [] species = this.dataconfigurations.getMetaDataPb(this.year, "species").split(",");
+        this.targetspecies = new HashSet<>();
+        for (String s : species){
+            targetspecies.add(s);
         }
     }
 
+    
     @Override
     protected SamplingdetailsType getSamplingDetails() throws RDBESConversionException, StrataException, IOException {
         SamplingdetailsType samplingdetails = super.getSamplingDetails();
         samplingdetails.setSDcountry(this.dataconfigurations.getMetaDataPb(this.year, "samplingFrame"));
         samplingdetails.setSDinstitution(this.dataconfigurations.getMetaDataPb(this.year, "samplingInstitution"));
-        addChild(samplingdetails, this.speciesselectiondetails);
+        addChild(samplingdetails, this.speciesListDetails);
         addProvebatOnshorevents(samplingdetails);
 
         return samplingdetails;
@@ -103,7 +113,7 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
     protected SpecieslistdetailsType getSpeciesSelectionDetails() throws IOException, RDBESConversionException {
         SpecieslistdetailsType specieslistdetails = super.getSpeciesSelectionDetails();
         specieslistdetails.setSLlistName("Port sampling species list (provebat)" + this.year);
-        specieslistdetails.setSLspeciesCode(this.dataconfigurations.getMetaDataPb(this.year, "species"));
+        specieslistdetails.setSLspeciesCode("all");
         specieslistdetails.setSLcatchFraction("Lan");
         return specieslistdetails;
     }
@@ -125,14 +135,14 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
     @Override
     protected SpeciesselectionType getSpeciesSelection() {
         SpeciesselectionType speciesSelection = super.getSpeciesSelection();
-        speciesSelection.setSLid(this.speciesselectiondetails.getSLid());
         speciesSelection.setSSstratification(false);
         speciesSelection.setSScatchCategory("Lan");
         speciesSelection.setSSclustering("No");
-        speciesSelection.setSSsampled(this.speciesselectiondetails.getSLspeciesCode().split(",").length);
-        speciesSelection.setSStotal(this.speciesselectiondetails.getSLspeciesCode().split(",").length);
+        speciesSelection.setSpecieslistdetails(this.speciesListDetails);
+        speciesSelection.setSLid(this.speciesListDetails.getSLid());
+        speciesSelection.setSSsampled(this.speciesListDetails.getSLspeciesCode().split(",").length);
+        speciesSelection.setSStotal(this.speciesListDetails.getSLspeciesCode().split(",").length);
         speciesSelection.setSSselectionMethod("census");
-
         return speciesSelection;
     }
 
@@ -344,7 +354,7 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
 
         //gather catchsamples by species, exclude those not in specieslist
         for (CatchsampleType cs : fs.getCatchsample()) {
-            if (this.speciesselectiondetails.getSLspeciesCode().contains(cs.getAphia())) {
+            if ("all".equals(speciesSelection.getSpecieslistdetails().getSLspeciesCode()) || speciesSelection.getSpecieslistdetails().getSLspeciesCode().contains(cs.getAphia())) {
                 if (!samples_by_species.containsKey(cs.getAphia())) {
                     samples_by_species.put(cs.getAphia(), new LinkedList<>());
                 }
@@ -358,7 +368,9 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
             addSample(speciesSelection, samples);
         }
 
-        addChild(landing, speciesSelection);
+        speciesSelection.setLEid(landing.getLEid());
+        landing.getSpeciesselection().add(speciesSelection);
+        speciesSelection.registerParent(landing);
 
     }
 
@@ -453,9 +465,13 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
                 this.log.println("Could not set design parameters for sample. Skipping SAtotal and SAsampled");
             }
         }
-        if (catchsample.getIndividual().size() == 0) {
+        if (catchsample.getIndividual().size() == 0 && this.targetspecies.contains(catchsample.getAphia())) {
             sample.setSAreasonNotSampledBV("Access");
-        } else {
+        } 
+        else if (catchsample.getIndividual().size() == 0 && !this.targetspecies.contains(catchsample.getAphia())){
+            sample.setSAreasonNotSampledBV("Out of frame");
+        }
+        else {
             addBiologicalVariables(sample, catchsample);
         }
         sample.setSAlowerHierarchy("C");

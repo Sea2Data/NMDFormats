@@ -440,6 +440,11 @@ public class RDBESCompiler {
         throw new UnsupportedOperationException("Not supported. Override");
     }
 
+    protected void addChild(SamplingdetailsType samplingdetails, SpeciesselectionType speciesselection) {
+        speciesselection.registerParent(samplingdetails);
+    }
+
+    
     protected void addChild(LandingeventType landing, FishingtripType ft) {
         landing.setFishingtrip(ft);
         landing.setFTid(landing.getFishingtrip().getFTid());
@@ -488,14 +493,21 @@ public class RDBESCompiler {
         sd.registerParent(d);
     }
 
-    protected void addChild(SamplingdetailsType samplingdetails, SpecieslistdetailsType speciesselectiondetails) {
-        samplingdetails.getSpecieslistdetails().add(speciesselectiondetails);
-        speciesselectiondetails.registerParent(samplingdetails);
-    }
-
     protected void addChild(RdbesRecordsType rdbes, DesignType pb) {
         rdbes.getRecord().add(pb);
         pb.registerParent(rdbes);
     }
+
+    protected void addChild(SpeciesselectionType speciesSelection, SpecieslistdetailsType sd) {
+        speciesSelection.setSLid(sd.getSLid());
+        speciesSelection.setSpecieslistdetails(sd);
+        sd.registerParent(speciesSelection);
+    }
+    
+    protected void addChild(SamplingdetailsType samplingdetails, SpecieslistdetailsType speciesListDetails) {
+        samplingdetails.setSpecieslistdetails(speciesListDetails);
+        speciesListDetails.registerParent(samplingdetails);
+    }
+
 
 }
