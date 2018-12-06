@@ -81,17 +81,17 @@ public class RDBESCompiler {
     }
 
     private void initids() {
-        this.ids.put("DE", 1);
-        this.ids.put("SD", 1);
-        this.ids.put("OS", 1);
-        this.ids.put("LE", 1);
-        this.ids.put("SE", 1);
-        this.ids.put("SS", 1);
-        this.ids.put("SL", 1);
-        this.ids.put("SA", 1);
-        this.ids.put("BV", 1);
-        this.ids.put("FS", 1);
-        this.ids.put("VD", 1);
+        this.ids.put("DE", 0);
+        this.ids.put("SD", 0);
+        this.ids.put("OS", 0);
+        this.ids.put("LE", 0);
+        this.ids.put("SE", 0);
+        this.ids.put("SS", 0);
+        this.ids.put("SL", 0);
+        this.ids.put("SA", 0);
+        this.ids.put("BV", 0);
+        this.ids.put("FS", 0);
+        this.ids.put("VD", 0);
     }
 
     /**

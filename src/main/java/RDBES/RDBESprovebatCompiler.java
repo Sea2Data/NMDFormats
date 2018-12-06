@@ -294,7 +294,7 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
                 try {
                     landing.setLEgear(this.dataconfigurations.getImrGearFAO(fs.getGear()));
                 } catch (RDBESConversionException e) {
-                    missingMandatoryField("LEgear", "Gear");
+                    missingMandatoryField("LEgear", "Gear: " + fs.getGear());
                 }
                 try {
                     landing.setLEmeshSize(this.dataconfigurations.getImrGearMeshSize(fs.getGear()));
@@ -323,7 +323,7 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
                 try {
                     landing.setLEmetier6(this.dataconfigurations.getImrGearMetier6(this.dataconfigurations.getImrGearFAO(fs.getGear()), landing.getLEtargetSpecies(), this.dataconfigurations.getImrGearMeshSize(fs.getGear()), this.dataconfigurations.getImrGearSelDev(fs.getGear()), this.dataconfigurations.getImrGearSelDevMeshSize(fs.getGear())));
                 } catch (RDBESConversionException e) {
-                    missingMandatoryField("LEgear", "gear parameters");
+                    missingMandatoryField("LEgear", "gear parameters" + "(" + fs.getGear() + ")");
                 }
                 addFishingTrip(landing, fs);
                 addSpeciesSelection(landing, fs);
