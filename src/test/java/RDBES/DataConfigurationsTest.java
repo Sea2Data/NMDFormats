@@ -348,12 +348,22 @@ public class DataConfigurationsTest {
         String expResult = "DEF";
         String result = instance.getSpeciesAssemblage(comp);
         assertEquals(expResult, result);
+
+        comp.add(new FishWeight("12644X", 100.0));
+        expResult = "BUL";
+        result = instance.getSpeciesAssemblage(comp);
+        assertEquals(expResult, result);
         
-        comp.add(new FishWeight("SS", Double.NaN));
+        comp.add(new FishWeight("SP", 0.1));
+        expResult = "BUL";
+        result = instance.getSpeciesAssemblage(comp);
+        assertEquals(expResult, result);
+        
+        comp.add(new FishWeight("SD", 110.0));
         try{
-            instance.getSpeciesAssemblage(comp);
+            System.out.println(instance.getSpeciesAssemblage(comp));
             fail("Exception expected");
-        } catch (RDBESConversionException e){
+        } catch (MappingNotFoundException e){
             assertTrue(true);
         }
     }

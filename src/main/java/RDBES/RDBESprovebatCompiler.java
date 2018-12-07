@@ -50,7 +50,7 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
     protected SpecieslistdetailsType speciesListDetails;
     protected HashSet<String> targetspecies;
 
-    public static void main(String[] args) throws JAXBException, XMLStreamException, ParserConfigurationException, ParserConfigurationException, SAXException, SAXException, IOException, FileNotFoundException, RDBESConversionException, StrataException, ITableMakerNamingConvention.NamingException, NoSuchMethodException, NoSuchMethodException, IllegalAccessException, IllegalArgumentException, IllegalArgumentException, InvocationTargetException, RelationalConvertionException {
+    public static void main(String[] args) throws JAXBException, XMLStreamException, ParserConfigurationException, ParserConfigurationException, SAXException, SAXException, IOException, FileNotFoundException, RDBESConversionException, StrataException, ITableMakerNamingConvention.NamingException, NoSuchMethodException, NoSuchMethodException, IllegalAccessException, IllegalArgumentException, IllegalArgumentException, InvocationTargetException, RelationalConvertionException, MappingNotFoundException {
 
         // make command line interface for conversion options for each source file so that e.g. CL can be created separately from samples and vice versa
         String pbpath = "/Users/a5362/bioticsets/filtered/pb_2016.xml";
@@ -87,7 +87,7 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
 
     
     @Override
-    protected SamplingdetailsType getSamplingDetails() throws RDBESConversionException, StrataException, IOException {
+    protected SamplingdetailsType getSamplingDetails() throws RDBESConversionException, StrataException, IOException, MappingNotFoundException {
         SamplingdetailsType samplingdetails = super.getSamplingDetails();
         samplingdetails.setSDcountry(this.dataconfigurations.getMetaDataPb(this.year, "samplingFrame"));
         samplingdetails.setSDinstitution(this.dataconfigurations.getMetaDataPb(this.year, "samplingInstitution"));
@@ -170,7 +170,7 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
     /**
      * Adds Port sampling program "Provebat" to RDBES
      */
-    protected void addProveBatAsH5() throws RDBESConversionException, StrataException, IOException {
+    protected void addProveBatAsH5() throws RDBESConversionException, StrataException, IOException, MappingNotFoundException {
 
         DesignType pb = super.getDesign();
 
@@ -185,7 +185,7 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
         addChild(this.rdbes, pb);
     }
 
-    private void addProvebatOnshorevents(SamplingdetailsType samplingdetails) throws RDBESConversionException, StrataException, IOException {
+    private void addProvebatOnshorevents(SamplingdetailsType samplingdetails) throws RDBESConversionException, StrataException, IOException, MappingNotFoundException {
         TemporalStrata strata = this.dataconfigurations.getPortStratificationPb(this.year);
         List<FishstationType> pbstations = getProveBatStations();
         Map<String, List<FishstationType>> stationsToAdd = new HashMap<>();
@@ -242,7 +242,7 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
         }
     }
 
-    private void addProveBatLandingEvents(OnshoreeventType os, List<FishstationType> stations) throws StrataException, IOException, RDBESConversionException {
+    private void addProveBatLandingEvents(OnshoreeventType os, List<FishstationType> stations) throws StrataException, IOException, RDBESConversionException, MappingNotFoundException {
         GearStrata gearstrata = this.dataconfigurations.getLandingStratificationPb(this.year);
         for (FishstationType fs : stations) {
 

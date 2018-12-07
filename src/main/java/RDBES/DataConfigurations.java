@@ -187,12 +187,13 @@ class DataConfigurations {
         }
         return ices3;
     }
-    
-        /**
+
+    /**
      * Looks up ICES level 3 rectangles from position
+     *
      * @param latitudestart
      * @param longitudestart
-     * @return 
+     * @return
      */
     String getICES3(BigDecimal latitudestart, BigDecimal longitudestart) throws RDBESConversionException {
         throw new RDBESConversionException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
@@ -217,8 +218,11 @@ class DataConfigurations {
     }
 
     /**
-     * Reads mesh size for gear
-     * return null if mesh size is not relevant, and throws exception if no mapping is found. This means  that all gears must be added to resource file, and left with a blank mesh-size if mesh-size is not relevant
+     * Reads mesh size for gear return null if mesh size is not relevant, and
+     * throws exception if no mapping is found. This means that all gears must
+     * be added to resource file, and left with a blank mesh-size if mesh-size
+     * is not relevant
+     *
      * @param imrGear
      * @return
      * @throws IOException
@@ -232,7 +236,7 @@ class DataConfigurations {
         if (ms == null) {
             throw new RDBESConversionException("No mapping found for code");
         }
-        if (ms.equals("")){
+        if (ms.equals("")) {
             return null;
         }
         return Integer.parseInt(ms);
@@ -240,11 +244,11 @@ class DataConfigurations {
 
     /**
      * Maps gear to selection device mounted.
-     * 
+     *
      * @param imrGear
      * @return
      * @throws IOException
-     * @throws RDBESConversionException 
+     * @throws RDBESConversionException
      */
     public int getImrGearSelDev(String imrGear) throws IOException, RDBESConversionException {
         if (this.gearSelDev == null) {
@@ -258,13 +262,13 @@ class DataConfigurations {
     }
 
     /**
-     * Returns Mesh size for selectivity device
-     * throws exception if mapping not found
-     * returns null if no selectivitydevice is mapped for this gear
+     * Returns Mesh size for selectivity device throws exception if mapping not
+     * found returns null if no selectivitydevice is mapped for this gear
+     *
      * @param imrGear
      * @return
      * @throws IOException
-     * @throws RDBESConversionException 
+     * @throws RDBESConversionException
      */
     public Integer getImrGearSelDevMeshSize(String imrGear) throws IOException, RDBESConversionException {
         if (this.gearSelDevMeshSize == null) {
@@ -274,41 +278,41 @@ class DataConfigurations {
         if (gsd == null) {
             throw new RDBESConversionException("No mapping found for code");
         }
-        if (gsd.equals("")){
+        if (gsd.equals("")) {
             return null;
         }
         return Integer.parseInt(gsd);
     }
 
     /**
-     * Constructs metier level 6 code. 
-     * Assumes information is complete. E.g. null for mesh size, implies that mesh size is not relevant for gear.
+     * Constructs metier level 6 code. Assumes information is complete. E.g.
+     * null for mesh size, implies that mesh size is not relevant for gear.
+     *
      * @param gear FAO code
-     * @param target 
-     * @param mesh_size 
+     * @param target
+     * @param mesh_size
      * @param seldev
      * @param seldelvmeshsize
-     * @return 
+     * @return
      */
-    public String getImrGearMetier6(String gear, String target, Integer mesh_size, Integer seldev, Integer seldelvmeshsize) throws RDBESConversionException{
-        
-        if (gear==null){
+    public String getImrGearMetier6(String gear, String target, Integer mesh_size, Integer seldev, Integer seldelvmeshsize) throws RDBESConversionException {
+
+        if (gear == null) {
             throw new RDBESConversionException("No gear provided");
         }
-        if (target==null){
+        if (target == null) {
             throw new RDBESConversionException("No target species provided");
         }
-        
-        if (seldev==null){
+
+        if (seldev == null) {
             seldev = 0;
         }
-        if (seldelvmeshsize==null){
-            seldelvmeshsize=0;
+        if (seldelvmeshsize == null) {
+            seldelvmeshsize = 0;
         }
-        if (mesh_size != null){
+        if (mesh_size != null) {
             return gear + "_" + target + "_>=" + mesh_size + "_" + seldev + "_" + seldelvmeshsize;
-        }
-        else{
+        } else {
             return gear + "_" + target + "_" + seldev + "_" + seldelvmeshsize;
         }
 
@@ -326,14 +330,14 @@ class DataConfigurations {
     }
 
     public double getScalingFactor(String aphia, String fromCode, String toCode) throws IOException, RDBESConversionException {
-        if (this.scalingfactor.get(aphia)==null){
-            this.scalingfactor.put(aphia, loadResourceFile("presentationfactors" + File.separator + aphia+ ".csv"));
+        if (this.scalingfactor.get(aphia) == null) {
+            this.scalingfactor.put(aphia, loadResourceFile("presentationfactors" + File.separator + aphia + ".csv"));
         }
-        String sf = this.scalingfactor.get(aphia).get(fromCode+"-"+toCode);
-        if (sf==null){
-            throw new RDBESConversionException("No mapping found for code: " + fromCode+"-"+toCode + ", and species:" + aphia);
+        String sf = this.scalingfactor.get(aphia).get(fromCode + "-" + toCode);
+        if (sf == null) {
+            throw new RDBESConversionException("No mapping found for code: " + fromCode + "-" + toCode + ", and species:" + aphia);
         }
-        
+
         return Double.parseDouble(sf);
     }
 
@@ -346,14 +350,12 @@ class DataConfigurations {
      */
     public double getLengthFactor(String lengthresolution) throws RDBESConversionException, IOException {
         String unit = getLengthUnit(lengthresolution);
-        
-        if (unit.equals("cm")){
+
+        if (unit.equals("cm")) {
             return 1e2;
-        }
-        else if (unit.equals("mm")){
+        } else if (unit.equals("mm")) {
             return 1e3;
-        }
-        else{
+        } else {
             throw new RDBESConversionException("No conversion factor defined for unit:" + unit);
         }
     }
@@ -368,7 +370,7 @@ class DataConfigurations {
         }
         return lm;
     }
-    
+
     public String getLengthMeasurement(String lengthmeasurement) throws IOException, RDBESConversionException {
         if (this.lengthmeasurement == null) {
             this.lengthmeasurement = loadResourceFile("lengthmeasurement.csv");
@@ -379,7 +381,6 @@ class DataConfigurations {
         }
         return lm;
     }
-
 
     public String getMaturity(String imrMaturity) throws IOException, RDBESConversionException {
         if (this.maturity == null) {
@@ -393,14 +394,14 @@ class DataConfigurations {
     }
 
     public String getOtolithType(String aphia, String type) throws IOException, RDBESConversionException {
-        if (this.otolithtype.get(aphia)==null){
-            this.otolithtype.put(aphia, loadResourceFile("otolithtypes" + File.separator + aphia+ ".csv"));
+        if (this.otolithtype.get(aphia) == null) {
+            this.otolithtype.put(aphia, loadResourceFile("otolithtypes" + File.separator + aphia + ".csv"));
         }
         String ot = this.otolithtype.get(aphia).get(type);
-        if (ot==null){
+        if (ot == null) {
             throw new RDBESConversionException("No mapping found for code: " + type + ", and species:" + aphia);
         }
-        
+
         return ot;
     }
 
@@ -415,7 +416,7 @@ class DataConfigurations {
 
         return ot;
     }
-    
+
     public String getAgingstructureSampled(String agingstructure) throws IOException, RDBESConversionException {
         if (this.agingstructuresampled == null) {
             this.agingstructuresampled = loadResourceFile("agingstructuresampled.csv");
@@ -427,8 +428,6 @@ class DataConfigurations {
         return as;
     }
 
-
-    
     public String getVesselFlag(String catchplatform) throws IOException, RDBESConversionException {
         if (this.vesselflag == null) {
             this.vesselflag = loadResourceFile("platform_flag.csv");
@@ -453,10 +452,11 @@ class DataConfigurations {
 
     /**
      * Get vessel power in kW
+     *
      * @param catchplatform
      * @return
      * @throws IOException
-     * @throws RDBESConversionException 
+     * @throws RDBESConversionException
      */
     public int getVesselPower(String catchplatform) throws IOException, RDBESConversionException {
         if (this.vesselpower == null) {
@@ -466,54 +466,61 @@ class DataConfigurations {
         if (power == null) {
             throw new RDBESConversionException("No mapping found for code");
         }
-        return (int)Math.round(Integer.parseInt(power)*0.7457);
+        return (int) Math.round(Integer.parseInt(power) * 0.7457);
     }
 
     public int getVesselSize(String catchplatform) throws IOException, RDBESConversionException {
-        
-            throw new RDBESConversionException("Not implemented");
-        
+
+        throw new RDBESConversionException("Not implemented");
+
     }
 
     /**
-     * Determines the largest assamblage in a speciesComp (e.g. a catch) (ties resolved by order of computation)
+     * Determines the largest assamblage in a speciesComp (e.g. a catch) (ties
+     * resolved by order of computation).
+     *
+     *
      * @param speciesComp
      * @return
      * @throws IOException
-     * @throws RDBESConversionException 
+     * @throws RDBESConversionException if any weighs are missing
+     * @throws MappingNotFoundException if the mapping to species assemblage is not found for the majority (weight) of the speciesComp.
      */
-    public String getSpeciesAssemblage(List<FishWeight> speciesComp) throws IOException, RDBESConversionException {
+    public String getSpeciesAssemblage(List<FishWeight> speciesComp) throws IOException, RDBESConversionException, MappingNotFoundException {
         if (this.speciesassemblage == null) {
             this.speciesassemblage = loadResourceFile("speciesassemblages.csv");
         }
-        
+
+        String unkowns = "";
         Map<String, Double> speciesassamblagecomp = new HashMap<>();
-        for (FishWeight fw : speciesComp){
+        for (FishWeight fw : speciesComp) {
             String assamblage = this.speciesassemblage.get(fw.getAphia());
             if (assamblage == null) {
-                throw new RDBESConversionException("No mapping found for code");
+                assamblage = "UNKNOWN";
+                unkowns += unkowns + fw.getAphia() + " ";
             }
-            else{
-                if (!speciesassamblagecomp.containsKey(assamblage)){
-                    speciesassamblagecomp.put(assamblage, 0.0);
-                }
-                Double tot = fw.getWeight();
-                if (Double.isNaN(tot)){
-                    throw new RDBESConversionException("NaN component in speciesComp");
-                }
-                Double newtot = speciesassamblagecomp.get(assamblage)+tot;
-                System.out.println(tot);
-                System.out.println(newtot);
-                speciesassamblagecomp.put(assamblage, newtot);
+            if (!speciesassamblagecomp.containsKey(assamblage)) {
+                speciesassamblagecomp.put(assamblage, 0.0);
             }
+            Double tot = fw.getWeight();
+            if (Double.isNaN(tot)) {
+                throw new RDBESConversionException("NaN component in speciesComp");
+            }
+            Double newtot = speciesassamblagecomp.get(assamblage) + tot;
+            System.out.println(tot);
+            System.out.println(newtot);
+            speciesassamblagecomp.put(assamblage, newtot);
         }
         String maxAssemblage = null;
         Double maxTotal = 0.0;
-        for (String sa : speciesassamblagecomp.keySet()){
-            if (speciesassamblagecomp.get(sa) >= maxTotal){
-               maxAssemblage = sa;
-               maxTotal = speciesassamblagecomp.get(sa);
+        for (String sa : speciesassamblagecomp.keySet()) {
+            if (speciesassamblagecomp.get(sa) >= maxTotal) {
+                maxAssemblage = sa;
+                maxTotal = speciesassamblagecomp.get(sa);
             }
+        }
+        if (maxAssemblage.equals("UNKNOWN")) {
+            throw new MappingNotFoundException("No mapping in speciesassemblages.csv, aphia-codes: " + unkowns);
         }
         return maxAssemblage;
     }

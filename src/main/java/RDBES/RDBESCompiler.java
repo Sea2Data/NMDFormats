@@ -194,7 +194,7 @@ public class RDBESCompiler {
         return getID("VD");
     }
 
-    protected SamplingdetailsType getSamplingDetails() throws RDBESConversionException, StrataException, IOException {
+    protected SamplingdetailsType getSamplingDetails() throws RDBESConversionException, StrataException, IOException, MappingNotFoundException {
         SamplingdetailsType samplingdetails = this.rdbesFactory.createSamplingdetailsType();
         samplingdetails.setSDid(getSamplingDetailsId());
         samplingdetails.setSDrecordType("SD");
