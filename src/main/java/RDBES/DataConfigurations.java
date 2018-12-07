@@ -74,7 +74,6 @@ class DataConfigurations {
      * second column
      */
     protected Map<String, String> loadResourceFile(String filename) throws IOException {
-        System.out.print(this.resourcefilepath.toString() + File.separator + filename);
         File infile = new File(this.resourcefilepath.toString() + File.separator + filename);
         InputStream resourcefile = new FileInputStream(infile);
         BufferedReader br = new BufferedReader(new InputStreamReader(resourcefile));
@@ -297,13 +296,8 @@ class DataConfigurations {
      */
     public String getImrGearMetier6(String gear, String target, Integer mesh_size, Integer seldev, Integer seldelvmeshsize) throws RDBESConversionException {
 
-        if (gear == null) {
-            throw new RDBESConversionException("No gear provided");
-        }
-        if (target == null) {
-            throw new RDBESConversionException("No target species provided");
-        }
-
+       String lv5 = getImrGearMetier5(gear, target);
+       
         if (seldev == null) {
             seldev = 0;
         }
@@ -311,12 +305,23 @@ class DataConfigurations {
             seldelvmeshsize = 0;
         }
         if (mesh_size != null) {
-            return gear + "_" + target + "_>=" + mesh_size + "_" + seldev + "_" + seldelvmeshsize;
+            return lv5 + "_>=" + mesh_size + "_" + seldev + "_" + seldelvmeshsize;
         } else {
-            return gear + "_" + target + "_" + seldev + "_" + seldelvmeshsize;
+            return lv5 + "_" + seldev + "_" + seldelvmeshsize;
         }
 
     }
+    
+    public String getImrGearMetier5(String gear, String target) throws RDBESConversionException {
+        if (gear == null) {
+            throw new RDBESConversionException("No gear provided");
+        }
+        if (target == null) {
+            throw new RDBESConversionException("No target species provided");
+        }
+        return gear + "_" + target;
+    }
+
 
     public String getPresentation(String sampleproducttype) throws IOException, RDBESConversionException {
         if (this.presentation == null) {
@@ -479,6 +484,7 @@ class DataConfigurations {
      * Determines the largest assamblage in a speciesComp (e.g. a catch) (ties
      * resolved by order of computation).
      *
+     * NOTE: This might need to be specified by area and geargroup.
      *
      * @param speciesComp
      * @return
@@ -507,8 +513,6 @@ class DataConfigurations {
                 throw new RDBESConversionException("NaN component in speciesComp");
             }
             Double newtot = speciesassamblagecomp.get(assamblage) + tot;
-            System.out.println(tot);
-            System.out.println(newtot);
             speciesassamblagecomp.put(assamblage, newtot);
         }
         String maxAssemblage = null;
@@ -524,4 +528,5 @@ class DataConfigurations {
         }
         return maxAssemblage;
     }
+
 }

@@ -320,6 +320,12 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
                 } catch (RDBESConversionException e) {
                     missingMandatoryField("LEgear", "gear parameters" + "(" + fs.getGear() + ")");
                 }
+                try {
+                    landing.setLEmetier5(this.dataconfigurations.getImrGearMetier5(this.dataconfigurations.getImrGearFAO(fs.getGear()), landing.getLEtargetSpecies()));
+                } catch (RDBESConversionException e) {
+                    missingMandatoryField("LEgear", "gear parameters" + "(" + fs.getGear() + ")");
+                }
+
                 addFishingTrip(landing, fs);
                 addSpeciesSelection(landing, fs);
 
