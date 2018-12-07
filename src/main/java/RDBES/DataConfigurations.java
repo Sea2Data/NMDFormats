@@ -484,7 +484,9 @@ class DataConfigurations {
      * Determines the largest assamblage in a speciesComp (e.g. a catch) (ties
      * resolved by order of computation).
      *
-     * NOTE: This might need to be specified by area and geargroup.
+     * NOTE: This needs to be specified by gear group, and by area
+     * resourcefile/area/FAO/speciesassemblages
+     * 
      *
      * @param speciesComp
      * @return
