@@ -51,6 +51,7 @@ class DataConfigurations {
     Map<String, Map<String, String>> agingstructureread = null;
     Map<String, String> agingstructuresampled = null;
     Map<String, String> speciesassemblage = null;
+    Map<Integer, Map<String, String>> targetspecies_pb = null;
 
     /**
      * @param resourcefiles path to location for resource files
@@ -58,6 +59,7 @@ class DataConfigurations {
     public DataConfigurations(File resourcefiles) {
         this.metaDataPb = new HashMap<>();
         this.landingsstratificationpb = new HashMap<>();
+        this.targetspecies_pb = new HashMap<>();
         this.otolithtype = new HashMap<>();
         this.agingstructureread = new HashMap<>();
         this.scalingfactor = new HashMap<>();
@@ -101,25 +103,25 @@ class DataConfigurations {
      *
      * @return
      */
-    public String getLandingsSiteLoCode(String imrCode) throws IOException, RDBESConversionException {
+    public String getLandingsSiteLoCode(String imrCode) throws IOException, MappingNotFoundException {
         if (this.landingssites == null) {
             this.landingssites = loadResourceFile("landingssite.csv");
         }
         String locode = this.landingssites.get(imrCode);
         if (locode == null) {
-            throw new RDBESConversionException("No mapping found for code");
+            throw new MappingNotFoundException("No mapping found for landingsite code:" + imrCode);
         }
         return locode;
     }
 
-    public String getMetaDataPb(int year, String field) throws IOException, RDBESConversionException {
+    public String getMetaDataPb(int year, String field) throws IOException, MappingNotFoundException {
         if (this.metaDataPb.get(year) == null) {
             this.metaDataPb.put(year, loadResourceFile(year + File.separator + "provebat_metadata.txt"));
         }
 
         String value = this.metaDataPb.get(year).get(field);
         if (value == null) {
-            throw new RDBESConversionException("No mapping found for code");
+            throw new MappingNotFoundException("No mapping found for port sampling metadata field: " + field);
         }
         return value;
     }
@@ -143,7 +145,7 @@ class DataConfigurations {
         return new TemporalStrata(s);
     }
 
-    public TemporalStrata getPortStratificationPb(int year) throws StrataException, IOException, RDBESConversionException {
+    public TemporalStrata getPortStratificationPb(int year) throws StrataException, IOException, MappingNotFoundException {
 
         if (this.getMetaDataPb(year, "portstrata").trim().equals("quarter")) {
             return getQstrat();
@@ -151,6 +153,29 @@ class DataConfigurations {
             throw new UnsupportedOperationException("Stratasystem " + this.getMetaDataPb(year, "portstrata") + "not supported.");
         }
 
+    }
+    
+    /**
+     * Returns target species for biological sampling in the port sampling program (provebat) for a given trip in a given year
+     * @param year
+     * @param missionnumber
+     * @return
+     * @throws IOException
+     * @throws MappingNotFoundException 
+     */
+    public List<String> getTargetSpeciesBioVarPb(int year, int missionnumber) throws IOException, MappingNotFoundException{
+        if (this.targetspecies_pb.get(year) == null) {
+            this.targetspecies_pb.put(year, this.loadResourceFile(year + File.separator + "targetspecies_pb.csv"));
+        }
+        if (this.targetspecies_pb.get(year).get(""+missionnumber)==null){
+            throw new MappingNotFoundException("No mapping found for trip (missionnumber): " + missionnumber +  " in: " + year );
+        }
+        String[] ts = this.targetspecies_pb.get(year).get(""+missionnumber).split(",");
+        List<String> tslist = new ArrayList(ts.length);
+        for (String s: ts){
+            tslist.add(s.trim());
+        }
+        return tslist;
     }
 
     public GearStrata getLandingStratificationPb(int year) throws IOException, StrataException {
@@ -176,13 +201,13 @@ class DataConfigurations {
         return new GearStrata(gss);
     }
 
-    public String getHomrICES3(String homr) throws IOException, RDBESConversionException {
+    public String getHomrICES3(String homr) throws IOException, MappingNotFoundException {
         if (this.homrices3 == null) {
             this.homrices3 = loadResourceFile("homr_ices3.csv");
         }
         String ices3 = this.homrices3.get(String.format("%02d", Integer.parseInt(homr)));
         if (ices3 == null) {
-            throw new RDBESConversionException("No mapping found for code");
+            throw new MappingNotFoundException("No mapping found for hovedomr:" + homr);
         }
         return ices3;
     }
@@ -205,13 +230,13 @@ class DataConfigurations {
      * @return
      * @throws IOException
      */
-    public String getImrGearFAO(String imrGear) throws IOException, RDBESConversionException {
+    public String getImrGearFAO(String imrGear) throws IOException, MappingNotFoundException {
         if (this.gearfao == null) {
             this.gearfao = loadResourceFile("imrgear_FAO.csv");
         }
         String fao = this.gearfao.get(imrGear);
         if (fao == null) {
-            throw new RDBESConversionException("No mapping found for code");
+            throw new MappingNotFoundException("No mapping found for imr gear code:" + imrGear);
         }
         return fao;
     }
@@ -227,13 +252,13 @@ class DataConfigurations {
      * @throws IOException
      * @throws RDBESConversionException if no mapping is found for gear
      */
-    public Integer getImrGearMeshSize(String imrGear) throws IOException, RDBESConversionException {
+    public Integer getImrGearMeshSize(String imrGear) throws IOException, MappingNotFoundException {
         if (this.gearMeshSize == null) {
             this.gearMeshSize = loadResourceFile("imrgear_meshsize.csv");
         }
         String ms = this.gearMeshSize.get(imrGear);
         if (ms == null) {
-            throw new RDBESConversionException("No mapping found for code");
+            throw new MappingNotFoundException("No mapping found for imr gear code: " + imrGear);
         }
         if (ms.equals("")) {
             return null;
@@ -249,13 +274,13 @@ class DataConfigurations {
      * @throws IOException
      * @throws RDBESConversionException
      */
-    public int getImrGearSelDev(String imrGear) throws IOException, RDBESConversionException {
+    public int getImrGearSelDev(String imrGear) throws IOException, MappingNotFoundException {
         if (this.gearSelDev == null) {
             this.gearSelDev = loadResourceFile("imrgear_seldev.csv");
         }
         String gsd = this.gearSelDev.get(imrGear);
         if (gsd == null) {
-            throw new RDBESConversionException("No mapping found for code");
+            throw new MappingNotFoundException("No mapping found for imr gear code: " + imrGear);
         }
         return Integer.parseInt(gsd);
     }
@@ -269,13 +294,13 @@ class DataConfigurations {
      * @throws IOException
      * @throws RDBESConversionException
      */
-    public Integer getImrGearSelDevMeshSize(String imrGear) throws IOException, RDBESConversionException {
+    public Integer getImrGearSelDevMeshSize(String imrGear) throws IOException, MappingNotFoundException {
         if (this.gearSelDevMeshSize == null) {
             this.gearSelDevMeshSize = loadResourceFile("imrgear_seldevmeshsize.csv");
         }
         String gsd = this.gearSelDevMeshSize.get(imrGear);
         if (gsd == null) {
-            throw new RDBESConversionException("No mapping found for code");
+            throw new MappingNotFoundException("No mapping found for imr gear code: " + imrGear);
         }
         if (gsd.equals("")) {
             return null;
@@ -323,24 +348,24 @@ class DataConfigurations {
     }
 
 
-    public String getPresentation(String sampleproducttype) throws IOException, RDBESConversionException {
+    public String getPresentation(String sampleproducttype) throws IOException, MappingNotFoundException {
         if (this.presentation == null) {
             this.presentation = loadResourceFile("imrProductype_presentation.csv");
         }
         String pres = this.presentation.get(sampleproducttype);
         if (pres == null) {
-            throw new RDBESConversionException("No mapping found for code: " + sampleproducttype);
+            throw new MappingNotFoundException("No mapping found for product type (presentation code): " + sampleproducttype);
         }
         return pres;
     }
 
-    public double getScalingFactor(String aphia, String fromCode, String toCode) throws IOException, RDBESConversionException {
+    public double getScalingFactor(String aphia, String fromCode, String toCode) throws IOException,  MappingNotFoundException {
         if (this.scalingfactor.get(aphia) == null) {
             this.scalingfactor.put(aphia, loadResourceFile("presentationfactors" + File.separator + aphia + ".csv"));
         }
         String sf = this.scalingfactor.get(aphia).get(fromCode + "-" + toCode);
         if (sf == null) {
-            throw new RDBESConversionException("No mapping found for code: " + fromCode + "-" + toCode + ", and species:" + aphia);
+            throw new MappingNotFoundException("No mapping found for code: " + fromCode + "-" + toCode + ", and species:" + aphia);
         }
 
         return Double.parseDouble(sf);
@@ -353,7 +378,7 @@ class DataConfigurations {
      * @param lengthresolution
      * @return
      */
-    public double getLengthFactor(String lengthresolution) throws RDBESConversionException, IOException {
+    public double getLengthFactor(String lengthresolution) throws RDBESConversionException, IOException, MappingNotFoundException {
         String unit = getLengthUnit(lengthresolution);
 
         if (unit.equals("cm")) {
@@ -365,92 +390,92 @@ class DataConfigurations {
         }
     }
 
-    public String getLengthUnit(String lengthresolution) throws IOException, RDBESConversionException {
+    public String getLengthUnit(String lengthresolution) throws IOException, MappingNotFoundException {
         if (this.lengthunit == null) {
             this.lengthunit = loadResourceFile("lengthunit.csv");
         }
         String lm = this.lengthunit.get(lengthresolution);
         if (lm == null) {
-            throw new RDBESConversionException("No mapping found for code: " + lengthresolution);
+            throw new MappingNotFoundException("No mapping found for length resolution code: " + lengthresolution);
         }
         return lm;
     }
 
-    public String getLengthMeasurement(String lengthmeasurement) throws IOException, RDBESConversionException {
+    public String getLengthMeasurement(String lengthmeasurement) throws IOException, MappingNotFoundException {
         if (this.lengthmeasurement == null) {
             this.lengthmeasurement = loadResourceFile("lengthmeasurement.csv");
         }
         String lm = this.lengthmeasurement.get(lengthmeasurement);
         if (lm == null) {
-            throw new RDBESConversionException("No mapping found for code: " + lengthmeasurement);
+            throw new MappingNotFoundException("No mapping found for measurment code: " + lengthmeasurement);
         }
         return lm;
     }
 
-    public String getMaturity(String imrMaturity) throws IOException, RDBESConversionException {
+    public String getMaturity(String imrMaturity) throws IOException, MappingNotFoundException {
         if (this.maturity == null) {
             this.maturity = loadResourceFile("maturity.csv");
         }
         String mat = this.maturity.get(imrMaturity);
         if (mat == null) {
-            throw new RDBESConversionException("No mapping found for code");
+            throw new MappingNotFoundException("No mapping found for maturity code: " + imrMaturity);
         }
         return mat;
     }
 
-    public String getOtolithType(String aphia, String type) throws IOException, RDBESConversionException {
+    public String getOtolithType(String aphia, String type) throws IOException, MappingNotFoundException {
         if (this.otolithtype.get(aphia) == null) {
             this.otolithtype.put(aphia, loadResourceFile("otolithtypes" + File.separator + aphia + ".csv"));
         }
         String ot = this.otolithtype.get(aphia).get(type);
         if (ot == null) {
-            throw new RDBESConversionException("No mapping found for code: " + type + ", and species:" + aphia);
+            throw new MappingNotFoundException("No mapping found for code: " + type + ", and species:" + aphia);
         }
 
         return ot;
     }
 
-    public String getAgingstructureRead(String aphia, String agingstructure) throws IOException, RDBESConversionException {
+    public String getAgingstructureRead(String aphia, String agingstructure) throws IOException, MappingNotFoundException {
         if (this.agingstructureread.get(aphia) == null) {
             this.agingstructureread.put(aphia, loadResourceFile("agingstructures" + File.separator + aphia + ".csv"));
         }
         String ot = this.agingstructureread.get(aphia).get(agingstructure);
         if (ot == null) {
-            throw new RDBESConversionException("No mapping found for code: " + agingstructure + ", and species:" + aphia);
+            throw new MappingNotFoundException("No mapping found for code: " + agingstructure + ", and species:" + aphia);
         }
 
         return ot;
     }
 
-    public String getAgingstructureSampled(String agingstructure) throws IOException, RDBESConversionException {
+    public String getAgingstructureSampled(String agingstructure) throws IOException, MappingNotFoundException {
         if (this.agingstructuresampled == null) {
             this.agingstructuresampled = loadResourceFile("agingstructuresampled.csv");
         }
         String as = this.agingstructuresampled.get(agingstructure);
         if (as == null) {
-            throw new RDBESConversionException("No mapping found for code");
+            throw new MappingNotFoundException("No mapping found for agingstructure code:" + agingstructure);
         }
         return as;
     }
 
-    public String getVesselFlag(String catchplatform) throws IOException, RDBESConversionException {
+    public String getVesselFlag(String catchplatform) throws IOException, MappingNotFoundException {
         if (this.vesselflag == null) {
             this.vesselflag = loadResourceFile("platform_flag.csv");
         }
         String flag = this.vesselflag.get(catchplatform);
         if (flag == null) {
-            throw new RDBESConversionException("No mapping found for code");
+            throw new MappingNotFoundException("No mapping found for falg code: " + catchplatform);
         }
         return flag;
     }
 
-    public int getVesselLength(String catchplatform) throws IOException, RDBESConversionException {
+    public int getVesselLength(String catchplatform) throws IOException, MappingNotFoundException {
         if (this.vessellength == null) {
             this.vessellength = loadResourceFile("platform_length.csv");
         }
         String length = this.vessellength.get(catchplatform);
         if (length == null) {
-            throw new RDBESConversionException("No mapping found for code");
+            throw new MappingNotFoundException("No mapping found for vessel code: " + catchplatform);
         }
         return (int) Math.round(Double.parseDouble(length));
     }
@@ -463,20 +488,20 @@ class DataConfigurations {
      * @throws IOException
      * @throws RDBESConversionException
      */
-    public int getVesselPower(String catchplatform) throws IOException, RDBESConversionException {
+    public int getVesselPower(String catchplatform) throws IOException, MappingNotFoundException {
         if (this.vesselpower == null) {
             this.vesselpower = loadResourceFile("platform_power.csv");
         }
         String power = this.vesselpower.get(catchplatform);
         if (power == null) {
-            throw new RDBESConversionException("No mapping found for code");
+            throw new MappingNotFoundException("No mapping found for vessel code: " + catchplatform);
         }
         return (int) Math.round(Integer.parseInt(power) * 0.7457);
     }
 
-    public int getVesselSize(String catchplatform) throws IOException, RDBESConversionException {
+    public int getVesselSize(String catchplatform) throws IOException, MappingNotFoundException {
 
-        throw new RDBESConversionException("Not implemented");
+        throw new MappingNotFoundException("Not implemented");
 
     }
 

@@ -338,6 +338,22 @@ public class DataConfigurationsTest {
     }
     
     @Test
+    public void testGetTargetSpeciesPb() throws Exception {
+        System.out.println("getTargetSpeciesBioVarPb");
+        DataConfigurations instance = mock();
+        List<String> result = instance.getTargetSpeciesBioVarPb(2016, 1);
+        assertTrue(result.contains("126436"));
+        assertTrue(result.contains("126441"));
+        assertTrue(result.contains("126437"));
+        assertTrue(!result.contains("127144"));
+        result = instance.getTargetSpeciesBioVarPb(2016, 3);
+        assertTrue(result.contains("127144"));
+        assertTrue(!result.contains("126436"));
+        assertTrue(!result.contains("126441"));
+        assertTrue(!result.contains("126437"));
+    }
+    
+    @Test
     public void testGetSpeciesAssemblage() throws Exception{
         System.out.println("getSpeciesAssemblage");
         List<FishWeight> comp = new ArrayList<>();

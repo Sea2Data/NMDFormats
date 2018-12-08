@@ -7,6 +7,7 @@ package RDBES;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -17,24 +18,35 @@ import java.util.List;
 public class DataConfigurationDummy extends DataConfigurations {
 
     @Override
-    public String getSpeciesAssemblage(List<FishWeight> l, String gear) throws IOException, RDBESConversionException {
+    public List<String> getTargetSpeciesBioVarPb(int year, int missionnumber){
+        List<String> l = new ArrayList<>();
+        l.add("126436");
+        l.add("126441");
+        l.add("126437");
+        return l;
+    }
+
+    
+    
+    @Override
+    public String getSpeciesAssemblage(List<FishWeight> l, String gear){
         return "DEF";
     }
     
     
     @Override
-    public String getAgingstructureSampled(String agingstructure) throws IOException, RDBESConversionException {
+    public String getAgingstructureSampled(String agingstructure){
         return "otolith";
     }
 
     @Override
-    public String getAgingstructureRead(String aphia, String agingstructure) throws IOException, RDBESConversionException {
+    public String getAgingstructureRead(String aphia, String agingstructure){
         return "otolith";
     }
 
 
     @Override
-    public String getLengthMeasurement(String lengthmeasurement) throws IOException, RDBESConversionException {
+    public String getLengthMeasurement(String lengthmeasurement){
         return "ForkLength";
     }
 
@@ -69,7 +81,7 @@ public class DataConfigurationDummy extends DataConfigurations {
 
 
     @Override
-    public String getMaturity(String imrMaturity) throws IOException, RDBESConversionException {
+    public String getMaturity(String imrMaturity){
         return imrMaturity;
     }
 
@@ -84,38 +96,38 @@ public class DataConfigurationDummy extends DataConfigurations {
     }
 
     @Override
-    public double getScalingFactor(String aphia, String fromCode, String toCode) throws IOException, RDBESConversionException {
+    public double getScalingFactor(String aphia, String fromCode, String toCode){
         return 1.0;
     }
 
     @Override
-    public String getPresentation(String sampleproducttype) throws IOException, RDBESConversionException {
+    public String getPresentation(String sampleproducttype){
         return sampleproducttype;
     }
 
     @Override
-    public Integer getImrGearSelDevMeshSize(String imrGear) throws IOException, RDBESConversionException {
+    public Integer getImrGearSelDevMeshSize(String imrGear){
         return 10;
     }
 
     @Override
-    public int getImrGearSelDev(String imrGear) throws IOException, RDBESConversionException {
+    public int getImrGearSelDev(String imrGear){
         return 2;
     }
 
     @Override
-    public Integer getImrGearMeshSize(String imrGear) throws IOException, RDBESConversionException {
+    public Integer getImrGearMeshSize(String imrGear){
         return 10;
     }
 
 
     @Override
-    public String getImrGearFAO(String imrGear) throws IOException, RDBESConversionException {
+    public String getImrGearFAO(String imrGear){
         return imrGear;
     }
 
     @Override
-    public String getHomrICES3(String homr) throws IOException, RDBESConversionException {
+    public String getHomrICES3(String homr){
         return homr;
     }
 
@@ -127,12 +139,12 @@ public class DataConfigurationDummy extends DataConfigurations {
     }
 
     @Override
-    public TemporalStrata getPortStratificationPb(int year) throws StrataException, IOException, RDBESConversionException {
+    public TemporalStrata getPortStratificationPb(int year) throws StrataException {
         return getQstrat();
     }
 
     @Override
-    public String getMetaDataPb(int year, String field) throws IOException, RDBESConversionException {
+    public String getMetaDataPb(int year, String field) {
         if (field.equals("species")){
             return "126436";
         }else{
@@ -142,7 +154,7 @@ public class DataConfigurationDummy extends DataConfigurations {
     }
 
     @Override
-    public String getLandingsSiteLoCode(String imrCode) throws IOException, RDBESConversionException {
+    public String getLandingsSiteLoCode(String imrCode){
         return imrCode;
     }
     

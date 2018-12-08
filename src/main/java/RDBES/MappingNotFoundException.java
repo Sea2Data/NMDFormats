@@ -6,7 +6,7 @@
 package RDBES;
 
 /**
- *
+ * Use for conversion errors that can be fixed in config files.
  * @author Edvin Fuglebakk edvin.fuglebakk@imr.no
  */
 public class MappingNotFoundException extends Exception {

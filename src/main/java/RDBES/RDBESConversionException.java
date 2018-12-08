@@ -6,7 +6,7 @@
 package RDBES;
 
 /**
- *
+ * Use for conversion issues not related to config files (missing source data. Undefined hard coded converisions etc).
  * @author Edvin Fuglebakk edvin.fuglebakk@imr.no
  */
 public class RDBESConversionException extends Exception {

@@ -208,14 +208,14 @@ public class RDBESCompiler {
         return design;
     }
 
-    protected OnshoreeventType getOnshoreEvent() throws IOException, RDBESConversionException {
+    protected OnshoreeventType getOnshoreEvent() throws IOException, RDBESConversionException, MappingNotFoundException {
         OnshoreeventType os = this.rdbesFactory.createOnshoreeventType();
         os.setOSid(getOnshoreEventId());
         os.setOSrecordType("OS");
         return os;
     }
 
-    protected LandingeventType getLandingEvent() throws IOException, RDBESConversionException {
+    protected LandingeventType getLandingEvent() throws IOException, RDBESConversionException, MappingNotFoundException {
         LandingeventType le = this.rdbesFactory.createLandingeventType();
         le.setLEid(getLandingEventId());
         le.setLErecordType("LE");
@@ -229,7 +229,7 @@ public class RDBESCompiler {
         return speciesSelection;
     }
 
-    protected SpecieslistdetailsType getSpeciesSelectionDetails() throws IOException, RDBESConversionException {
+    protected SpecieslistdetailsType getSpeciesSelectionDetails() throws IOException, MappingNotFoundException {
         SpecieslistdetailsType specieslistdetails = this.rdbesFactory.createSpecieslistdetailsType();
         specieslistdetails.setSLid(getSpeciesListDetailsId());
         specieslistdetails.setSLrecordType("SL");
@@ -246,7 +246,7 @@ public class RDBESCompiler {
         return sample;
     }
 
-    protected BiologicalvariableType getBiologicalVariable() throws RDBESConversionException, IOException {
+    protected BiologicalvariableType getBiologicalVariable() throws RDBESConversionException, IOException, MappingNotFoundException {
         BiologicalvariableType biovar = this.rdbesFactory.createBiologicalvariableType();
         biovar.setBVid(getBiologicalVariableId());
         biovar.setBVrecordType("BV");
@@ -260,14 +260,14 @@ public class RDBESCompiler {
         return ft;
     }
 
-    protected VesseldetailsType getVesselDetails(String catchplatform) throws IOException, RDBESConversionException {
+    protected VesseldetailsType getVesselDetails(String catchplatform) throws IOException, MappingNotFoundException, MandatoryFieldMissing {
         VesseldetailsType vd = this.rdbesFactory.createVesseldetailsType();
         vd.setVDid(this.getVEsselDetailsId());
         vd.setVDrecordType("VD");
         vd.setVDencryptedCode(this.scramble_vessel(catchplatform));
         try {
             vd.setVDflagCountry(this.dataconfigurations.getVesselFlag(catchplatform));
-        } catch (RDBESConversionException e) {
+        } catch (MappingNotFoundException e) {
             if (this.strict) {
                 throw new MandatoryFieldMissing("Missing mandatory vessel parameter VDflagCountry.");
             } else {
@@ -280,7 +280,7 @@ public class RDBESCompiler {
             vd.setVDpower(this.dataconfigurations.getVesselPower(catchplatform));
             //vd.setVDsize(this.dataconfigurations.getVesselSize(catchplatform));
             //vd.setVDsizeUnit();
-        } catch (RDBESConversionException e) {
+        } catch (MappingNotFoundException e) {
             this.log.println("Missing non-mandatory vessel parameters. Skipping fields.");
         }
 
@@ -299,7 +299,7 @@ public class RDBESCompiler {
         return vd;
     }
 
-    protected void addLength(BiologicalvariableType biovar, IndividualType i, CatchsampleType cs) throws IOException, RDBESConversionException {
+    protected void addLength(BiologicalvariableType biovar, IndividualType i, CatchsampleType cs) throws IOException, RDBESConversionException, MappingNotFoundException {
         biovar.setBVtype(dataconfigurations.getLengthMeasurement(cs.getLengthmeasurement()));
         double factor = dataconfigurations.getLengthFactor(i.getLengthresolution());
         biovar.setBVvalue("" + Math.round(i.getLength().doubleValue() * factor));
@@ -323,7 +323,7 @@ public class RDBESCompiler {
         biovar.setBVsampled(countMaturity((CatchsampleType) i.getParent()));
     }
 
-    protected void addOtolithType(BiologicalvariableType biovar, IndividualType i, String sAspeciesCode) throws IOException, RDBESConversionException {
+    protected void addOtolithType(BiologicalvariableType biovar, IndividualType i, String sAspeciesCode) throws IOException, RDBESConversionException, MappingNotFoundException {
         AgedeterminationType age = getPrefferedAgeReading(i);
         biovar.setBVtype("Stock");
         biovar.setBVvalue(this.dataconfigurations.getOtolithType(sAspeciesCode, age.getOtolithtype()));
@@ -439,13 +439,13 @@ public class RDBESCompiler {
      * @param fs
      * @return
      */
-    protected List<FishWeight> getSpeciesComp(FishstationType fs) throws RDBESConversionException, IOException {
+    protected List<FishWeight> getSpeciesComp(FishstationType fs) throws RDBESConversionException, IOException, MappingNotFoundException {
         List<FishWeight> speccomp = new ArrayList<>();
         for (CatchsampleType cs: fs.getCatchsample()){
                 if (cs.getCatchweight()!=null){
                     try{
                         speccomp.add(new FishWeight(cs.getAphia(), getLiveWeightCatch(cs)));
-                    } catch(RDBESConversionException e){
+                    } catch(MappingNotFoundException e){
                         if (strict){
                             throw e;
                         }
@@ -535,7 +535,7 @@ public class RDBESCompiler {
         speciesListDetails.registerParent(samplingdetails);
     }
 
-    protected double getLiveWeightCatch(CatchsampleType cs) throws IOException, RDBESConversionException {
+    protected double getLiveWeightCatch(CatchsampleType cs) throws IOException, RDBESConversionException, MappingNotFoundException {
         System.out.println(cs.getAphia());
         System.out.println(cs.getCommonname());
         double factor = this.dataconfigurations.getScalingFactor(cs.getAphia(), cs.getCatchproducttype(), "1");

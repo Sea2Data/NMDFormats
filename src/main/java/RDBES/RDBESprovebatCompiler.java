@@ -48,7 +48,6 @@ import partialRDBES.v1_16.SpeciesselectionType;
 public class RDBESprovebatCompiler extends RDBESCompiler {
 
     protected SpecieslistdetailsType speciesListDetails;
-    protected HashSet<String> targetspecies;
 
     public static void main(String[] args) throws JAXBException, XMLStreamException, ParserConfigurationException, ParserConfigurationException, SAXException, SAXException, IOException, FileNotFoundException, RDBESConversionException, StrataException, ITableMakerNamingConvention.NamingException, NoSuchMethodException, NoSuchMethodException, IllegalAccessException, IllegalArgumentException, IllegalArgumentException, InvocationTargetException, RelationalConvertionException, MappingNotFoundException {
 
@@ -65,24 +64,14 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
         compiler.writeTables(new File(outpath));
     }
 
-    public RDBESprovebatCompiler(MissionsType biotic, LandingsdataType landings, DataConfigurations conversions, int year, boolean strict) throws IOException, RDBESConversionException {
+    public RDBESprovebatCompiler(MissionsType biotic, LandingsdataType landings, DataConfigurations conversions, int year, boolean strict) throws IOException, RDBESConversionException, MappingNotFoundException {
         super(biotic, landings, conversions, year, strict);
         this.speciesListDetails = getSpeciesSelectionDetails();
-        setTargetSpecies();
     }
 
-    public RDBESprovebatCompiler(RDBESCompiler compiler) throws IOException, RDBESConversionException {
+    public RDBESprovebatCompiler(RDBESCompiler compiler) throws IOException, RDBESConversionException, MappingNotFoundException {
         super(compiler);
         this.speciesListDetails = getSpeciesSelectionDetails();
-        setTargetSpecies();
-    }
-
-    private void setTargetSpecies() throws IOException, RDBESConversionException {
-        String [] species = this.dataconfigurations.getMetaDataPb(this.year, "species").split(",");
-        this.targetspecies = new HashSet<>();
-        for (String s : species){
-            targetspecies.add(s);
-        }
     }
 
     
@@ -99,7 +88,7 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
     }
 
     @Override
-    protected OnshoreeventType getOnshoreEvent() throws IOException, RDBESConversionException {
+    protected OnshoreeventType getOnshoreEvent() throws IOException, RDBESConversionException, MappingNotFoundException{
         OnshoreeventType os = super.getOnshoreEvent();
 
         os.setOSclustering("No");
@@ -110,7 +99,7 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
     }
 
     @Override
-    protected SpecieslistdetailsType getSpeciesSelectionDetails() throws IOException, RDBESConversionException {
+    protected SpecieslistdetailsType getSpeciesSelectionDetails() throws IOException, MappingNotFoundException {
         SpecieslistdetailsType specieslistdetails = super.getSpeciesSelectionDetails();
         specieslistdetails.setSLlistName("Port sampling species list (provebat)" + this.year);
         specieslistdetails.setSLspeciesCode("all");
@@ -119,7 +108,7 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
     }
 
     @Override
-    protected LandingeventType getLandingEvent() throws IOException, RDBESConversionException {
+    protected LandingeventType getLandingEvent() throws IOException, RDBESConversionException, MappingNotFoundException {
         LandingeventType landing = super.getLandingEvent();
         landing.setLEclustering("No");
         landing.setLEsampler(this.dataconfigurations.getMetaDataPb(year, "sampler"));
@@ -159,7 +148,7 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
     }
 
     @Override
-    protected BiologicalvariableType getBiologicalVariable() throws RDBESConversionException, IOException {
+    protected BiologicalvariableType getBiologicalVariable() throws RDBESConversionException, IOException, MappingNotFoundException {
         BiologicalvariableType biovar = super.getBiologicalVariable();
         biovar.setBVsampler(this.dataconfigurations.getMetaDataPb(year, "sampler"));
         biovar.setBVstratification(false);
@@ -207,7 +196,7 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
                     os.setOSnationalLocationName(f.getLandingsite());
                     try {
                         os.setOSlocation(this.dataconfigurations.getLandingsSiteLoCode(f.getLandingsite()));
-                    } catch (RDBESConversionException e) {
+                    } catch (MappingNotFoundException e) {
                         if (this.strict) {
                             throw new MandatoryFieldMissing("No to locode found for landingssite: " + f.getLandingsite());
                         } else {
@@ -254,7 +243,7 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
                 LandingeventType landing = getLandingEvent();
                 try {
                     landing.setLElocation(this.dataconfigurations.getLandingsSiteLoCode(fs.getLandingsite()));
-                } catch (RDBESConversionException e) {
+                } catch (MappingNotFoundException e) {
                     this.log.println("Missing field LElocation (landingsite: " + fs.getLandingsite() + "). Skipping field.");
                 }
 
@@ -284,7 +273,7 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
                             String ices3 = this.dataconfigurations.getHomrICES3(fs.getArea());
                             landing.setLEarea(ices3);
                         }
-                    } catch (RDBESConversionException e2) {
+                    } catch (MappingNotFoundException e2) {
                         if (this.strict) {
                             throw new MandatoryFieldMissing("Missing mandatory field LEarea.");
                         } else {
@@ -297,17 +286,17 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
                 
                 try {
                     landing.setLEgear(this.dataconfigurations.getImrGearFAO(fs.getGear()));
-                } catch (RDBESConversionException e) {
+                } catch (MappingNotFoundException e) {
                     missingMandatoryField("LEgear", "Gear: " + fs.getGear());
                 }
                 try {
                     landing.setLEmeshSize(this.dataconfigurations.getImrGearMeshSize(fs.getGear()));
-                } catch (RDBESConversionException e) {
+                } catch (MappingNotFoundException e) {
 
                 }
                 try {
                     landing.setLEselectionDevice(this.dataconfigurations.getImrGearSelDev(fs.getGear()));
-                } catch (RDBESConversionException e) {
+                } catch (MappingNotFoundException e) {
 
                 }
                 try {
@@ -315,23 +304,23 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
                         landing.setLEselectionDeviceMeshSize(this.dataconfigurations.getImrGearSelDevMeshSize(fs.getGear()));
                     }
 
-                } catch (RDBESConversionException | NullPointerException e) {
+                } catch (MappingNotFoundException | NullPointerException e) {
 
                 }
                 try {
                     landing.setLEtargetSpecies(this.dataconfigurations.getSpeciesAssemblage(this.getSpeciesComp(fs), fs.getGear()));
-                } catch (RDBESConversionException e) {
+                } catch (MappingNotFoundException e) {
 
                 }
 
                 try {
                     landing.setLEmetier6(this.dataconfigurations.getImrGearMetier6(this.dataconfigurations.getImrGearFAO(fs.getGear()), landing.getLEtargetSpecies(), this.dataconfigurations.getImrGearMeshSize(fs.getGear()), this.dataconfigurations.getImrGearSelDev(fs.getGear()), this.dataconfigurations.getImrGearSelDevMeshSize(fs.getGear())));
-                } catch (RDBESConversionException e) {
+                } catch (RDBESConversionException | MappingNotFoundException e) {
                     missingMandatoryField("LEgear", "gear parameters" + "(" + fs.getGear() + ")");
                 }
                 try {
                     landing.setLEmetier5(this.dataconfigurations.getImrGearMetier5(this.dataconfigurations.getImrGearFAO(fs.getGear()), landing.getLEtargetSpecies()));
-                } catch (RDBESConversionException e) {
+                } catch (RDBESConversionException | MappingNotFoundException e) {
                     missingMandatoryField("LEgear", "gear parameters" + "(" + fs.getGear() + ")");
                 }
 
@@ -357,7 +346,7 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
         // add total in strata from landings ?
     }
 
-    private void addSpeciesSelection(LandingeventType landing, FishstationType fs) throws IOException, RDBESConversionException {
+    private void addSpeciesSelection(LandingeventType landing, FishstationType fs) throws IOException, RDBESConversionException, MappingNotFoundException {
         SpeciesselectionType speciesSelection = getSpeciesSelection();
 
         Map<String, List<CatchsampleType>> samples_by_species = new HashMap<>();
@@ -383,7 +372,7 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
 
     }
 
-    private void addSample(SpeciesselectionType speciesSelection, List<CatchsampleType> samples) throws IOException, RDBESConversionException {
+    private void addSample(SpeciesselectionType speciesSelection, List<CatchsampleType> samples) throws IOException, RDBESConversionException, MappingNotFoundException {
 
         if (samples.size() == 1) {
             addLeafSample(speciesSelection, samples.get(0));
@@ -393,7 +382,7 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
 
     }
 
-    private void addLeafSample(SpeciesselectionType speciesSelection, CatchsampleType catchsample) throws IOException, RDBESConversionException {
+    private void addLeafSample(SpeciesselectionType speciesSelection, CatchsampleType catchsample) throws IOException, RDBESConversionException, MappingNotFoundException {
         SampleType sample = this.getSample();
         if (((catchsample.getLengthsamplecount() == null || catchsample.getLengthsamplecount().intValue() == 0) && !catchsample.getIndividual().isEmpty()) || (catchsample.getLengthsamplecount() != null && catchsample.getLengthsamplecount().intValue() != catchsample.getIndividual().size())) {
             error("Mismatch between registered individuals and noted sample size (" + ((FishstationType) catchsample.getParent()).getSerialnumber() + "/" + catchsample.getCatchsampleid() + ").");
@@ -416,7 +405,7 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
                     missingField("SAtotalWeightLive", "Catchweight");
                 }
 
-            } catch (RDBESConversionException e) {
+            } catch (MappingNotFoundException e) {
                 missingField("SAtotalWeightLive", "Catchproducttype");
             }
         }
@@ -439,7 +428,7 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
                         missingField("SAsampledWeightLive", "Lengthsampleweight");
                     }
 
-                } catch (RDBESConversionException e) {
+                } catch (MappingNotFoundException e) {
                     missingField("SAsampledWeightLive", "Sampleproducttype");
                 }
             }
@@ -474,13 +463,23 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
                 this.log.println("Could not set design parameters for sample. Skipping SAtotal and SAsampled");
             }
         }
-        if (catchsample.getIndividual().size() == 0 && this.targetspecies.contains(catchsample.getAphia())) {
+        int missionnumber = ((MissionType)catchsample.getParent().getParent()).getMissionnumber().intValue();
+        List<String> targetSpecies = this.dataconfigurations.getTargetSpeciesBioVarPb(this.year, missionnumber);
+        if (catchsample.getIndividual().size() == 0 && targetSpecies.contains(catchsample.getAphia())) {
             sample.setSAreasonNotSampledBV("Access");
         } 
-        else if (catchsample.getIndividual().size() == 0 && !this.targetspecies.contains(catchsample.getAphia())){
+        else if (catchsample.getIndividual().size() == 0 && !targetSpecies.contains(catchsample.getAphia())){
             sample.setSAreasonNotSampledBV("Out of frame");
         }
         else {
+            if (!targetSpecies.contains(catchsample.getAphia())){
+                if (strict){
+                    throw new RDBESConversionException("Attempting to register biological variables for non-target species (aphiaid: " + catchsample.getAphia() +", missionnumber: " + missionnumber);
+                }
+                else{
+                    this.log.println("Registering biological vairables for non-target species (aphiaid: " + catchsample.getAphia() +", missionnumber: " + missionnumber);
+                }
+            }
             addBiologicalVariables(sample, catchsample);
         }
         sample.setSAlowerHierarchy("C");
@@ -488,7 +487,7 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
         addChild(speciesSelection, sample);
     }
 
-    private void addBiologicalVariables(SampleType sample, CatchsampleType cs) throws RDBESConversionException, IOException {
+    private void addBiologicalVariables(SampleType sample, CatchsampleType cs) throws RDBESConversionException, IOException, MappingNotFoundException {
         List<IndividualType> individuals = cs.getIndividual();
         for (IndividualType i : individuals) {
 

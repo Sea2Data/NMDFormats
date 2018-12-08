@@ -11,4 +11,3 @@ landingselectionmethod	random
 fishselectionmethod	random
 portlocationtype	processor
 portstrata	quarter
-species	126436, 126437, 126441, 127144
