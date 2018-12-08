@@ -261,11 +261,18 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
                 landing.setVesseldetails(getVesselDetails(fs.getCatchplatform()));
                 landing.setVDid(landing.getVesseldetails().getVDid());
                 landing.setLEstratification(true);
-                landing.setLEsequenceNumber(fs.getSerialnumber().intValue());
+                landing.setLEsequenceNumber(landing.getLEid());
+                // not needed, in place for 
+                landing.setLEhaulNumber(fs.getSerialnumber().intValue());
                 landing.setLEstratum(gearstrata.getStratum(fs.getGear()).getName());
                 landing.setLElocation(os.getOSlocation());
                 landing.setLElocationType(os.getOSlocationType());
                 landing.setLEdate(os.getOSsamplingDate());
+                
+                if ("2".equals(fs.getSystem()) && fs.getLocation()!=null && fs.getArea()!=null){
+                    landing.setLEsubpolygon(fs.getArea()+"/"+ fs.getLocation());
+                }
+
                 try {
                     String ices3 = this.dataconfigurations.getICES3(fs.getLatitudestart(), fs.getLongitudestart());
                     landing.setLEarea(ices3);
@@ -286,6 +293,8 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
                     }
                 }
 
+                landing.setLEnationalCategory(fs.getGear());
+                
                 try {
                     landing.setLEgear(this.dataconfigurations.getImrGearFAO(fs.getGear()));
                 } catch (RDBESConversionException e) {
@@ -310,7 +319,7 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
 
                 }
                 try {
-                    landing.setLEtargetSpecies(this.dataconfigurations.getSpeciesAssemblage(this.getSpeciesComp(fs)));
+                    landing.setLEtargetSpecies(this.dataconfigurations.getSpeciesAssemblage(this.getSpeciesComp(fs), fs.getGear()));
                 } catch (RDBESConversionException e) {
 
                 }
@@ -360,7 +369,6 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
                     samples_by_species.put(cs.getAphia(), new LinkedList<>());
                 }
                 samples_by_species.get(cs.getAphia()).add(cs);
-
             }
         }
 

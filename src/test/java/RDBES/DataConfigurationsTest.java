@@ -346,22 +346,27 @@ public class DataConfigurationsTest {
         comp.add(new FishWeight("126437", 1.0));
         DataConfigurations instance = mock();
         String expResult = "DEF";
-        String result = instance.getSpeciesAssemblage(comp);
+        String result = instance.getSpeciesAssemblage(comp, "4200");
         assertEquals(expResult, result);
 
+        expResult = "FIF";
+        result = instance.getSpeciesAssemblage(comp, "5211");
+        assertEquals(expResult, result);
+
+        
         comp.add(new FishWeight("12644X", 100.0));
         expResult = "BUL";
-        result = instance.getSpeciesAssemblage(comp);
+        result = instance.getSpeciesAssemblage(comp, "4200");
         assertEquals(expResult, result);
         
         comp.add(new FishWeight("SP", 0.1));
         expResult = "BUL";
-        result = instance.getSpeciesAssemblage(comp);
+        result = instance.getSpeciesAssemblage(comp, "4200");
         assertEquals(expResult, result);
         
         comp.add(new FishWeight("SD", 110.0));
         try{
-            System.out.println(instance.getSpeciesAssemblage(comp));
+            System.out.println(instance.getSpeciesAssemblage(comp, "4200"));
             fail("Exception expected");
         } catch (MappingNotFoundException e){
             assertTrue(true);

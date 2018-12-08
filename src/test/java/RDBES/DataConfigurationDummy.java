@@ -17,7 +17,7 @@ import java.util.List;
 public class DataConfigurationDummy extends DataConfigurations {
 
     @Override
-    public String getSpeciesAssemblage(List<FishWeight> l) throws IOException, RDBESConversionException {
+    public String getSpeciesAssemblage(List<FishWeight> l, String gear) throws IOException, RDBESConversionException {
         return "DEF";
     }
     

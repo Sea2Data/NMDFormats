@@ -482,19 +482,23 @@ class DataConfigurations {
 
     /**
      * Determines the largest assamblage in a speciesComp (e.g. a catch) (ties
-     * resolved by order of computation).
-     *
-     * NOTE: This needs to be specified by gear group, and by area
-     * resourcefile/area/FAO/speciesassemblages
+     * resolved by order of computation). Assemblge is intended for filling in metiérs in EU/ICES system
      * 
-     *
+     * Still under development. Will need facilities to discriminate on area and gear.
+     * Refer: https://eur-lex.europa.eu/LexUriServ/LexUriServ.do?uri=OJ:L:2010:041:0008:0071:EN:PDF
+     * It seems that gear and area dependent coding (mixed groups of different kinds (MCD, Finfish) can be implemented after aggregation to assemblages.
+     * 
+     * The area dependens is two fold:
+     * - e.g. some area lists both Finfish and Cephalopods for LHP and LHM, probably because the latter is not found in araeas. If it shows up it indicates that metiér should be added. So no explicit area coding is needed, but tests to show if illegal metiérs show up
+     * - different granularity in encoding, e.g. MCD will be assigned CRU or DEF if not handled explicitly.
+     * 
      * @param speciesComp
      * @return
      * @throws IOException
      * @throws RDBESConversionException if any weighs are missing
      * @throws MappingNotFoundException if the mapping to species assemblage is not found for the majority (weight) of the speciesComp.
      */
-    public String getSpeciesAssemblage(List<FishWeight> speciesComp) throws IOException, RDBESConversionException, MappingNotFoundException {
+    public String getSpeciesAssemblage(List<FishWeight> speciesComp, String imrGear) throws IOException, RDBESConversionException, MappingNotFoundException {
         if (this.speciesassemblage == null) {
             this.speciesassemblage = loadResourceFile("speciesassemblages.csv");
         }
@@ -528,6 +532,20 @@ class DataConfigurations {
         if (maxAssemblage.equals("UNKNOWN")) {
             throw new MappingNotFoundException("No mapping in speciesassemblages.csv, aphia-codes: " + unkowns);
         }
+        
+        //
+        // Gear specific stuff. May need to make area specific as well.
+        //
+        //special case for LHP/LHM. Treat the same for all areas, even if CEP is not defined as legal metiér for all (it has no other mapping)
+        if ("LHP".equals(this.getImrGearFAO(imrGear)) || "LHM".equals(this.getImrGearFAO(imrGear))){
+            if ("CEP".equals(maxAssemblage)){
+                return "CEP";
+            }
+            else{
+                return "FIF";
+            }
+        }
+        
         return maxAssemblage;
     }
 

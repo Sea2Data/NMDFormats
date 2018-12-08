@@ -14,15 +14,17 @@ LEmixedtrip: integer ?
 SLspeciesCode: this is noted as code list, but in my mind it should support more than one aphia code.
 SSspeciesListName: redundant? same as SLlistName
 BVvalue: String
+LEsequenceNumber: Definition not clear. OK to juts use PK ?
+LEhaulNumber: Definition not clear.
 
 SAsampledWeightMeasured vs SAsampledWeight: documentation wrong wrp live weight?
 SAconversionFactorMesLive: need for both live and sampled ?
 
-support for registeering total catch of unsampled species (ratio estimation discards?)
+support for registering total catch of unsampled species (ratio estimation discards?)
 
 FM vs BV:
 - accuracyType vs unitVal
 - FMtype vs BVtype (FMtype subset of BVtype?)
 
 Questions on metier:
-- OK to let gear define target ?
+- SP_DEF ? (saithe)
