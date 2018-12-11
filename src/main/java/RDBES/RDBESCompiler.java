@@ -128,7 +128,7 @@ public class RDBESCompiler {
         Map<String, List<List<String>>> tables = tablemaker.getAllTables(this.rdbes);
         tables.remove("RdbesRecordsType");
         writer.writeDelimitedFiles(tables, outputpath, tablemaker.getNamingConvention().getDescription());
-        //skip CL etc if landings is null
+        //skip CL CE etc if landings is null
         // use generic XML to relational conversion
         if (this.landings != null) {
             throw new UnsupportedOperationException("writing of CL not supported yet");
