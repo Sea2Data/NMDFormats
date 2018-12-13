@@ -13,7 +13,7 @@ import BioticTypes.v3.MissionType;
 import BioticTypes.v3.MissionsType;
 import HierarchicalData.RelationalConversion.NamingConventions.ITableMakerNamingConvention;
 import HierarchicalData.RelationalConversion.RelationalConvertionException;
-import LandingsTypes.v1.LandingsdataType;
+import LandingsTypes.v2.LandingsdataType;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -64,7 +64,7 @@ public class RDBESprovebatCompiler extends RDBESCompiler {
         compiler.writeTables(new File(outpath));
     }
 
-    public RDBESprovebatCompiler(MissionsType biotic, LandingsdataType landings, DataConfigurations conversions, int year, boolean strict) throws IOException, RDBESConversionException, MappingNotFoundException {
+    public RDBESprovebatCompiler(MissionsType biotic, LandingsCompiler landings, DataConfigurations conversions, int year, boolean strict) throws IOException, RDBESConversionException, MappingNotFoundException {
         super(biotic, landings, conversions, year, strict);
         this.speciesListDetails = getSpeciesSelectionDetails();
     }

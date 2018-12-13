@@ -40,7 +40,7 @@ public class LandingsHandler extends NamespaceVersionHandler<LandingsdataType> {
         this.latestBioticClass = LandingsdataType.class;
         this.compatibleNamespaces = null;
     }
-
+    
     public Iterator<SeddellinjeType> getPSViterator(BufferedReader reader) throws IOException {
         return new PSVierator(reader);
     }

@@ -15,7 +15,7 @@ import HierarchicalData.RelationalConversion.NamingConventions.DoNothingNamingCo
 import HierarchicalData.RelationalConversion.NamingConventions.ITableMakerNamingConvention;
 import HierarchicalData.RelationalConversion.RelationalConvertionException;
 import HierarchicalData.RelationalConversion.TableMaker;
-import LandingsTypes.v1.LandingsdataType;
+import LandingsTypes.v2.LandingsdataType;
 import XMLHandling.SchemaReader;
 import java.io.File;
 import java.io.IOException;
@@ -50,7 +50,7 @@ public class RDBESCompiler {
     protected ObjectFactory rdbesFactory;
     protected RdbesRecordsType rdbes;
     protected MissionsType biotic;
-    protected LandingsdataType landings;
+    protected LandingsCompiler landings;
     protected DataConfigurations dataconfigurations;
     protected int year;
     protected boolean strict;
@@ -68,7 +68,7 @@ public class RDBESCompiler {
      * @param strict if Exceptions will be thrown for inconvertable data.
      * Otherwise inconvertable sampling units will be skipped with a warning.
      */
-    public RDBESCompiler(MissionsType biotic, LandingsdataType landings, DataConfigurations conversions, int year, boolean strict) {
+    public RDBESCompiler(MissionsType biotic, LandingsCompiler landings, DataConfigurations conversions, int year, boolean strict) {
         this.rdbesFactory = new ObjectFactory();
         this.rdbes = this.rdbesFactory.createRdbesRecordsType();
         this.biotic = biotic;

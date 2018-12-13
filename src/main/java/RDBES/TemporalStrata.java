@@ -6,8 +6,12 @@
 package RDBES;
 
 
+import com.sun.org.apache.xerces.internal.jaxp.datatype.XMLGregorianCalendarImpl;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -42,7 +46,12 @@ class TemporalStrata {
     }
     
     public TemporalStratum getStratum(XMLGregorianCalendar date) throws StrataException{
-        Calendar cday = date.toGregorianCalendar();
+        LocalDate ldate = date.toGregorianCalendar().toZonedDateTime().toLocalDate();
+        return getStratum(ldate);
+    }
+    
+    public TemporalStratum getStratum(LocalDate date)  throws StrataException{
+        Calendar cday = GregorianCalendar.from(date.atStartOfDay(ZoneId.systemDefault()));
         Calendar fday = new GregorianCalendar();
         fday.set(date.getYear(), 0, 0);
         int day;
