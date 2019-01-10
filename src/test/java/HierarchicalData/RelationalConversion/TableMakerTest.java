@@ -51,7 +51,7 @@ public class TableMakerTest {
     @Before
     public void setUp() throws JAXBException, ParserConfigurationException {
         ILeafNodeHandler dummyLeafNodeHandler = new DummyLeafNodeHandler();
-        this.tablemaker = new TableMaker(new SchemaReader(TableMakerTest.class.getClassLoader().getResourceAsStream("bioticv1_4.xsd")), dummyLeafNodeHandler);
+        this.tablemaker = new TableMaker(new SchemaReader(TableMakerTest.class.getClassLoader().getResourceAsStream("nmdbioticv1_4.xsd")), dummyLeafNodeHandler);
     }
 
     @After
@@ -85,8 +85,8 @@ public class TableMakerTest {
      */
     @Test
     public void testGetTypes() throws JAXBException, ParserConfigurationException {
-        TableMaker makerWSDT = new TableMaker(new SchemaReader(TableMakerTest.class.getClassLoader().getResourceAsStream("bioticv1_4.xsd")), new DummyLeafNodeHandler("StringDescriptionType"));
-        TableMaker makerWoSDT = new TableMaker(new SchemaReader(TableMakerTest.class.getClassLoader().getResourceAsStream("bioticv1_4.xsd")), new DummyLeafNodeHandler());
+        TableMaker makerWSDT = new TableMaker(new SchemaReader(TableMakerTest.class.getClassLoader().getResourceAsStream("nmdbioticv1_4.xsd")), new DummyLeafNodeHandler("StringDescriptionType"));
+        TableMaker makerWoSDT = new TableMaker(new SchemaReader(TableMakerTest.class.getClassLoader().getResourceAsStream("nmdbioticv1_4.xsd")), new DummyLeafNodeHandler());
 
         assertTrue(makerWSDT.getTypes().size() > 0);
         assertTrue(makerWoSDT.getTypes().size() > 0);
@@ -103,8 +103,8 @@ public class TableMakerTest {
         MissionsType missions = IO.parse(TableMakerTest.class.getClassLoader().getResourceAsStream("test.xml"), MissionsType.class);
         FishstationType st = missions.getMission().get(0).getFishstation().get(0);
 
-        TableMaker makerWSDT = new TableMaker(new SchemaReader(TableMakerTest.class.getClassLoader().getResourceAsStream("bioticv1_4.xsd")), new DummyLeafNodeHandler("StringDescriptionType"));
-        TableMaker makerWoSDT = new TableMaker(new SchemaReader(TableMakerTest.class.getClassLoader().getResourceAsStream("bioticv1_4.xsd")), new DummyLeafNodeHandler());
+        TableMaker makerWSDT = new TableMaker(new SchemaReader(TableMakerTest.class.getClassLoader().getResourceAsStream("nmdbioticv1_4.xsd")), new DummyLeafNodeHandler("StringDescriptionType"));
+        TableMaker makerWoSDT = new TableMaker(new SchemaReader(TableMakerTest.class.getClassLoader().getResourceAsStream("nmdbioticv1_4.xsd")), new DummyLeafNodeHandler());
 
         List<String> result = makerWSDT.getHeaders(st);
         assertTrue(result.contains("platform"));
@@ -126,10 +126,10 @@ public class TableMakerTest {
         MissionsType missions = IO.parse(TableMakerTest.class.getClassLoader().getResourceAsStream("test.xml"), MissionsType.class);
         FishstationType st = missions.getMission().get(0).getFishstation().get(0);
 
-        TableMaker makerWSDT = new TableMaker(new SchemaReader(TableMakerTest.class.getClassLoader().getResourceAsStream("bioticv1_4.xsd")), new DummyLeafNodeHandler("StringDescriptionType"));
+        TableMaker makerWSDT = new TableMaker(new SchemaReader(TableMakerTest.class.getClassLoader().getResourceAsStream("nmdbioticv1_4.xsd")), new DummyLeafNodeHandler("StringDescriptionType"));
         makerWSDT.setNamingConvention(new DummyNamingConvention());
 
-        TableMaker makerWoSDT = new TableMaker(new SchemaReader(TableMakerTest.class.getClassLoader().getResourceAsStream("bioticv1_4.xsd")), new DummyLeafNodeHandler());
+        TableMaker makerWoSDT = new TableMaker(new SchemaReader(TableMakerTest.class.getClassLoader().getResourceAsStream("nmdbioticv1_4.xsd")), new DummyLeafNodeHandler());
         makerWoSDT.setNamingConvention(new DummyNamingConvention());
 
         List<String> result = makerWSDT.getHeaders(st);
@@ -156,7 +156,7 @@ public class TableMakerTest {
         FishstationType st = missions.getMission().get(0).getFishstation().get(0);
 
         ILeafNodeHandler bioticHandler = new BioticHandler();
-        TableMaker bioticTableMaker = new TableMaker(new SchemaReader(TableMakerTest.class.getClassLoader().getResourceAsStream("bioticv1_4.xsd")), bioticHandler);
+        TableMaker bioticTableMaker = new TableMaker(new SchemaReader(TableMakerTest.class.getClassLoader().getResourceAsStream("nmdbioticv1_4.xsd")), bioticHandler);
         bioticTableMaker.setNamingConvention(new DummyNamingConvention());
 
         List<String> result = bioticTableMaker.getRow(st);
@@ -175,7 +175,7 @@ public class TableMakerTest {
         FishstationType st = missions.getMission().get(0).getFishstation().get(0);
 
         ILeafNodeHandler bioticHandler = new BioticHandler();
-        TableMaker bioticTableMaker = new TableMaker(new SchemaReader(TableMakerTest.class.getClassLoader().getResourceAsStream("bioticv1_4.xsd")), bioticHandler);
+        TableMaker bioticTableMaker = new TableMaker(new SchemaReader(TableMakerTest.class.getClassLoader().getResourceAsStream("nmdbioticv1_4.xsd")), bioticHandler);
         bioticTableMaker.setNamingConvention(new DummyNamingConvention());
 
         Map<String, String> correctValues = new HashMap<>();//hardcoded
@@ -199,7 +199,7 @@ public class TableMakerTest {
         List<FishstationType> st = missions.getMission().get(0).getFishstation();
 
         ILeafNodeHandler bioticHandler = new BioticHandler();
-        TableMaker bioticTableMaker = new TableMaker(new SchemaReader(TableMakerTest.class.getClassLoader().getResourceAsStream("bioticv1_4.xsd")), bioticHandler);
+        TableMaker bioticTableMaker = new TableMaker(new SchemaReader(TableMakerTest.class.getClassLoader().getResourceAsStream("nmdbioticv1_4.xsd")), bioticHandler);
         bioticTableMaker.setNamingConvention(new DummyNamingConvention());
 
         List<List<String>> result = bioticTableMaker.getTableContent(st);
@@ -214,7 +214,7 @@ public class TableMakerTest {
         List<FishstationType> st = missions.getMission().get(0).getFishstation(); //this file contain only one mission
 
         ILeafNodeHandler<String> bioticHandler = new BioticHandler();
-        TableMaker bioticTableMaker = new TableMaker(new SchemaReader(TableMakerTest.class.getClassLoader().getResourceAsStream("bioticv1_4.xsd")), bioticHandler);
+        TableMaker bioticTableMaker = new TableMaker(new SchemaReader(TableMakerTest.class.getClassLoader().getResourceAsStream("nmdbioticv1_4.xsd")), bioticHandler);
         bioticTableMaker.setNamingConvention(new DummyNamingConvention());
 
         Map<String, List<List<String>>> tables = bioticTableMaker.getAllTables(missions);
@@ -234,7 +234,7 @@ public class TableMakerTest {
         List<FishstationType> st = missions.getMission().get(0).getFishstation(); //this file contain only one mission
 
         ILeafNodeHandler<String> bioticHandler = new BioticHandler();
-        TableMaker bioticTableMaker = new TableMaker(new SchemaReader(TableMakerTest.class.getClassLoader().getResourceAsStream("bioticv1_4.xsd")), bioticHandler);
+        TableMaker bioticTableMaker = new TableMaker(new SchemaReader(TableMakerTest.class.getClassLoader().getResourceAsStream("nmdbioticv1_4.xsd")), bioticHandler);
         bioticTableMaker.setNamingConvention(new DummyNamingConvention());
 
         Map<String, List<List<String>>> tables = bioticTableMaker.getAllTables(missions.getMission().get(0));
@@ -254,7 +254,7 @@ public class TableMakerTest {
         FishstationType st = missions.getMission().get(0).getFishstation().get(0);
 
         ILeafNodeHandler bioticHandler = new BioticHandler();
-        TableMaker bioticTableMaker = new TableMaker(new SchemaReader(TableMakerTest.class.getClassLoader().getResourceAsStream("bioticv1_4.xsd")), bioticHandler);
+        TableMaker bioticTableMaker = new TableMaker(new SchemaReader(TableMakerTest.class.getClassLoader().getResourceAsStream("nmdbioticv1_4.xsd")), bioticHandler);
         bioticTableMaker.setNamingConvention(new DummyNamingConvention());
 
         List<String> result = bioticTableMaker.getRow(st);
@@ -277,7 +277,7 @@ public class TableMakerTest {
         FishstationType st = missions.getMission().get(0).getFishstation().get(0);
 
         ILeafNodeHandler bioticHandler = new BioticHandler();
-        TableMaker bioticTableMaker = new TableMaker(new SchemaReader(TableMakerTest.class.getClassLoader().getResourceAsStream("bioticv1_4.xsd")), bioticHandler);
+        TableMaker bioticTableMaker = new TableMaker(new SchemaReader(TableMakerTest.class.getClassLoader().getResourceAsStream("nmdbioticv1_4.xsd")), bioticHandler);
         bioticTableMaker.setNamingConvention(new DummyNamingConvention());
 
         Map<String, List<List<String>>> result = bioticTableMaker.getAllTables(missions);
@@ -293,7 +293,7 @@ public class TableMakerTest {
         FishstationType st = missions.getMission().get(0).getFishstation().get(0);
 
         ILeafNodeHandler bioticHandler = new BioticHandler();
-        TableMaker bioticTableMaker = new TableMaker(new SchemaReader(TableMakerTest.class.getClassLoader().getResourceAsStream("bioticv1_4.xsd")), bioticHandler);
+        TableMaker bioticTableMaker = new TableMaker(new SchemaReader(TableMakerTest.class.getClassLoader().getResourceAsStream("nmdbioticv1_4.xsd")), bioticHandler);
         bioticTableMaker.setNamingConvention(new DummyNamingConvention());
 
         try {

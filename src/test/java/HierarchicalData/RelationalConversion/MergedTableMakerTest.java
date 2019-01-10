@@ -53,7 +53,7 @@ public class MergedTableMakerTest {
         FishstationType st = missions.getMission().get(0).getFishstation().get(0);
 
         ILeafNodeHandler bioticHandler = new TableMakerTest.BioticHandler();
-        MergedTableMaker flatBioticTableMaker = new MergedTableMaker(new SchemaReader(MergedTableMakerTest.class.getClassLoader().getResourceAsStream("bioticv1_4.xsd")), bioticHandler);
+        MergedTableMaker flatBioticTableMaker = new MergedTableMaker(new SchemaReader(MergedTableMakerTest.class.getClassLoader().getResourceAsStream("nmdbioticv1_4.xsd")), bioticHandler);
         flatBioticTableMaker.setNamingConvention(new TableMakerTest.DummyNamingConvention());
 
         List<String> result = flatBioticTableMaker.getParentColumnNames(st.getParent());
@@ -71,7 +71,7 @@ public class MergedTableMakerTest {
         FishstationType st = missions.getMission().get(0).getFishstation().get(0);
 
         ILeafNodeHandler bioticHandler = new TableMakerTest.BioticHandler();
-        MergedTableMaker flatBioticTableMaker = new MergedTableMaker(new SchemaReader(MergedTableMakerTest.class.getClassLoader().getResourceAsStream("bioticv1_4.xsd")), bioticHandler);
+        MergedTableMaker flatBioticTableMaker = new MergedTableMaker(new SchemaReader(MergedTableMakerTest.class.getClassLoader().getResourceAsStream("nmdbioticv1_4.xsd")), bioticHandler);
         flatBioticTableMaker.setNamingConvention(new TableMakerTest.DummyNamingConvention());
 
         List<String> result = flatBioticTableMaker.getParentColumnValues(st.getParent());
@@ -89,7 +89,7 @@ public class MergedTableMakerTest {
         FishstationType st = missions.getMission().get(0).getFishstation().get(0);
 
         ILeafNodeHandler bioticHandler = new TableMakerTest.BioticHandler();
-        TableMaker flatBioticTableMaker = new MergedTableMaker(new SchemaReader(MergedTableMakerTest.class.getClassLoader().getResourceAsStream("bioticv1_4.xsd")), bioticHandler);
+        TableMaker flatBioticTableMaker = new MergedTableMaker(new SchemaReader(MergedTableMakerTest.class.getClassLoader().getResourceAsStream("nmdbioticv1_4.xsd")), bioticHandler);
         flatBioticTableMaker.setNamingConvention(new TableMakerTest.DummyNamingConvention());
 
         List<String> result = flatBioticTableMaker.getRow(st);
@@ -107,10 +107,10 @@ public class MergedTableMakerTest {
         FishstationType st = missions.getMission().get(0).getFishstation().get(0);
 
         ILeafNodeHandler bioticHandler = new TableMakerTest.BioticHandler();
-        TableMaker flatBioticTableMaker = new MergedTableMaker(new SchemaReader(MergedTableMakerTest.class.getClassLoader().getResourceAsStream("bioticv1_4.xsd")), bioticHandler);
+        TableMaker flatBioticTableMaker = new MergedTableMaker(new SchemaReader(MergedTableMakerTest.class.getClassLoader().getResourceAsStream("nmdbioticv1_4.xsd")), bioticHandler);
         flatBioticTableMaker.setNamingConvention(new TableMakerTest.DummyNamingConvention());
 
-        TableMaker bioticTableMaker = new TableMaker(new SchemaReader(MergedTableMakerTest.class.getClassLoader().getResourceAsStream("bioticv1_4.xsd")), bioticHandler);
+        TableMaker bioticTableMaker = new TableMaker(new SchemaReader(MergedTableMakerTest.class.getClassLoader().getResourceAsStream("nmdbioticv1_4.xsd")), bioticHandler);
         bioticTableMaker.setNamingConvention(new TableMakerTest.DummyNamingConvention());
 
         List<String> result = flatBioticTableMaker.getRow(st);
@@ -134,10 +134,10 @@ public class MergedTableMakerTest {
         MissionsType root = IO.parse(MergedTableMakerTest.class.getClassLoader().getResourceAsStream("test.xml"), MissionsType.class);
 
         ILeafNodeHandler bioticHandler = new TableMakerTest.BioticHandler();
-        MergedTableMaker flatBioticTableMaker = new MergedTableMaker(new SchemaReader(MergedTableMakerTest.class.getClassLoader().getResourceAsStream("bioticv1_4.xsd")), bioticHandler);
+        MergedTableMaker flatBioticTableMaker = new MergedTableMaker(new SchemaReader(MergedTableMakerTest.class.getClassLoader().getResourceAsStream("nmdbioticv1_4.xsd")), bioticHandler);
         flatBioticTableMaker.setNamingConvention(new TableMakerTest.DummyNamingConvention());
 
-        TableMaker bioticTableMaker = new TableMaker(new SchemaReader(MergedTableMakerTest.class.getClassLoader().getResourceAsStream("bioticv1_4.xsd")), bioticHandler);
+        TableMaker bioticTableMaker = new TableMaker(new SchemaReader(MergedTableMakerTest.class.getClassLoader().getResourceAsStream("nmdbioticv1_4.xsd")), bioticHandler);
         bioticTableMaker.setNamingConvention(new TableMakerTest.DummyNamingConvention());
 
         Map<String, List<List<String>>> resultFlat = flatBioticTableMaker.getAllTables(root);

@@ -43,8 +43,8 @@ public class ConvertXMLToCSV {
 
         DelimitedOutputWriter writer = new DelimitedOutputWriter("\t", "\\", "#", ".csv", "");
 
-        TableMaker tablemaker = new TableMaker(new SchemaReader(ConvertXMLToCSV.class.getClassLoader().getResourceAsStream("bioticv1_4.xsd")), new Biotic1LeafNodeHandler());
-        tablemaker.setNamingConvention(new Biotic1NamingConvention(ConvertXMLToCSV.class.getClassLoader().getResourceAsStream("bioticv1_4.xsd")));
+        TableMaker tablemaker = new TableMaker(new SchemaReader(ConvertXMLToCSV.class.getClassLoader().getResourceAsStream("nmdbioticv1_4.xsd")), new Biotic1LeafNodeHandler());
+        tablemaker.setNamingConvention(new Biotic1NamingConvention(ConvertXMLToCSV.class.getClassLoader().getResourceAsStream("nmdbioticv1_4.xsd")));
 
         Biotic1Handler handler = new Biotic1Handler();
         HierarchicalData missions = handler.read(new FileInputStream(filename));

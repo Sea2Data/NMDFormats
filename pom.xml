@@ -13,6 +13,27 @@
     <build>
         <plugins>
             <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.8</version>
+                <executions>
+                  <execution>
+                    <phase>generate-sources</phase>
+                    <configuration>
+                      <target>
+                         <get dest="src/main/resources">
+                            <url url="https://www.imr.no/formats/nmdbiotic/v1.4/nmdbioticv1_4.xsd"/>
+                            <url url="https://www.imr.no/formats/nmdbiotic/v3/nmdbioticv3.xsd"/>
+                            <url url="https://www.imr.no/formats/nmdechosounder/v1/nmdechosounderv1.xsd"/>
+                         </get>
+                      </target>
+                    </configuration>
+                    <goals>
+                      <goal>run</goal>
+                    </goals>
+                  </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.jvnet.jaxb2.maven2</groupId>
                 <artifactId>maven-jaxb22-plugin</artifactId>
                 <version>0.13.0</version>
@@ -28,14 +49,8 @@
                                         <directory>${basedir}/src/main/resources</directory>
                                     </fileset>
                                 </schema>
-                                <schema>
-                                    <url>https://git.imr.no/Formats/commons-biotic-jaxb/raw/3363f194415a106120efa2584f583e52d515a0ba/src/main/resources/bioticv3.xsd</url>
-                                </schema>
-                                <schema>
-                                    <url>https://git.imr.no/Formats/commons-biotic-jaxb/raw/1.1.4/src/main/resources/bioticv1_4.xsd</url>
-                                </schema>
                             </schemas>
-                            <forceRegenerate>false</forceRegenerate>
+                            <forceRegenerate>true</forceRegenerate>
                             <generateDirectory>${project.build.directory}/generated-sources/xjc</generateDirectory>
                             <verbose>true</verbose>
                             <bindingDirectory>${basedir}/src/main/bindings</bindingDirectory>

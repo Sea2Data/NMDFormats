@@ -132,7 +132,7 @@ public class NamespaceFilterTest {
                 .getUnmarshallerHandler();
         filter.setContentHandler(unmarshallerHandler);
 
-        InputSource xml = new InputSource(NamespaceFilterTest.class.getClassLoader().getResourceAsStream("bioticv1_4.xsd"));
+        InputSource xml = new InputSource(NamespaceFilterTest.class.getClassLoader().getResourceAsStream("nmdbioticv1_4.xsd"));
         try {
             filter.parse(xml);
             MissionsType toplevel = (MissionsType) unmarshallerHandler.getResult();
