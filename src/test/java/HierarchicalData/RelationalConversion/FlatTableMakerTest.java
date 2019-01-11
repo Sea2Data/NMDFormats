@@ -51,7 +51,7 @@ public class FlatTableMakerTest {
         MissionsType missions = IO.parse(FlatTableMakerTest.class.getClassLoader().getResourceAsStream("test.xml"), MissionsType.class);
         this.individuals = missions.getMission().get(0).getFishstation().get(0).getCatchsample().get(0).getIndividual();
         assert this.individuals.size() > 3;
-        this.flattablemaker = new FlatTableMaker(new SchemaReader(FlatTableMakerTest.class.getClassLoader().getResourceAsStream("bioticv1_4.xsd")), new TableMakerTest.BioticHandler());
+        this.flattablemaker = new FlatTableMaker(new SchemaReader(FlatTableMakerTest.class.getClassLoader().getResourceAsStream("nmdbioticv1_4.xsd")), new TableMakerTest.BioticHandler());
         this.flattablemaker.setNamingConvention(new TableMakerTest.DummyNamingConvention());
     }
 

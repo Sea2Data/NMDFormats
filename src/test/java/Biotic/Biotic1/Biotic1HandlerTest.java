@@ -63,7 +63,7 @@ public class Biotic1HandlerTest {
     public void testReadGarbage() {
         try {
             Biotic1Handler r = new Biotic1Handler();
-            MissionsType m = r.read(Biotic1HandlerTest.class.getClassLoader().getResourceAsStream("biotic1_4.xsd.xml"));
+            MissionsType m = r.read(Biotic1HandlerTest.class.getClassLoader().getResourceAsStream("nmdbioticv1_4.xsd"));
             fail("Exception expected!");
         } catch (Exception e) {
 

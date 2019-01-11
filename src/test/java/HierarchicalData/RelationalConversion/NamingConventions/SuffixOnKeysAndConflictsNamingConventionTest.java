@@ -57,7 +57,7 @@ public class SuffixOnKeysAndConflictsNamingConventionTest {
         typemap.put(typeName, tableName);
         Map<String, String> columnmap = new HashMap<>();
         columnmap.put(typeName, tableNameColumns);
-        SuffixOnKeysAndConflictsNamingConvention instance = new SuffixOnKeysAndConflictsNamingConvention(new SchemaReader(SuffixOnKeysAndConflictsNamingConventionTest.class.getClassLoader().getResourceAsStream("bioticv1_4.xsd")), columnmap, typemap);
+        SuffixOnKeysAndConflictsNamingConvention instance = new SuffixOnKeysAndConflictsNamingConvention(new SchemaReader(SuffixOnKeysAndConflictsNamingConventionTest.class.getClassLoader().getResourceAsStream("nmdbioticv1_4.xsd")), columnmap, typemap);
         String result = instance.getTableName(typeName);
         assertEquals(tableName, result);
     }
@@ -77,7 +77,7 @@ public class SuffixOnKeysAndConflictsNamingConventionTest {
         Map<String, String> columnmap = new HashMap<>();
         columnmap.put(typeName, tableNameColumns);
         try {
-            SuffixOnKeysAndConflictsNamingConvention instance = new SuffixOnKeysAndConflictsNamingConvention(new SchemaReader(SuffixOnKeysAndConflictsNamingConventionTest.class.getClassLoader().getResourceAsStream("bioticv1_4.xsd")), columnmap, typemap);
+            SuffixOnKeysAndConflictsNamingConvention instance = new SuffixOnKeysAndConflictsNamingConvention(new SchemaReader(SuffixOnKeysAndConflictsNamingConventionTest.class.getClassLoader().getResourceAsStream("nmdbioticv1_4.xsd")), columnmap, typemap);
             fail("Exception expected");
         } catch (RelationalConvertionException e) {
 
@@ -100,7 +100,7 @@ public class SuffixOnKeysAndConflictsNamingConventionTest {
         Map<String, String> columnmap = new HashMap<>();
         columnmap.put("FishStation", tableNameColumns);
         try {
-            SuffixOnKeysAndConflictsNamingConvention instance = new SuffixOnKeysAndConflictsNamingConvention(new SchemaReader(SuffixOnKeysAndConflictsNamingConventionTest.class.getClassLoader().getResourceAsStream("bioticv1_4.xsd")), columnmap, typemap);
+            SuffixOnKeysAndConflictsNamingConvention instance = new SuffixOnKeysAndConflictsNamingConvention(new SchemaReader(SuffixOnKeysAndConflictsNamingConventionTest.class.getClassLoader().getResourceAsStream("nmdbioticv1_4.xsd")), columnmap, typemap);
             fail("Exception expected");
         } catch (RelationalConvertionException e) {
 
@@ -121,7 +121,7 @@ public class SuffixOnKeysAndConflictsNamingConventionTest {
         typemap.put(typeName, tableName);
         Map<String, String> columnmap = new HashMap<>();
         columnmap.put(typeName, tableNameColumns);
-        SuffixOnKeysAndConflictsNamingConvention instance = new SuffixOnKeysAndConflictsNamingConvention(new SchemaReader(SuffixOnKeysAndConflictsNamingConventionTest.class.getClassLoader().getResourceAsStream("bioticv1_4.xsd")), columnmap, typemap);
+        SuffixOnKeysAndConflictsNamingConvention instance = new SuffixOnKeysAndConflictsNamingConvention(new SchemaReader(SuffixOnKeysAndConflictsNamingConventionTest.class.getClassLoader().getResourceAsStream("nmdbioticv1_4.xsd")), columnmap, typemap);
         String result = instance.getTypeName(tableName);
         assertEquals(typeName, result);
     }
@@ -140,7 +140,7 @@ public class SuffixOnKeysAndConflictsNamingConventionTest {
         typemap.put(typeName, tableName);
         Map<String, String> columnmap = new HashMap<>();
         columnmap.put(typeName, tableNameColumns);
-        SuffixOnKeysAndConflictsNamingConvention instance = new SuffixOnKeysAndConflictsNamingConvention(new SchemaReader(SuffixOnKeysAndConflictsNamingConventionTest.class.getClassLoader().getResourceAsStream("bioticv1_4.xsd")), columnmap, typemap);
+        SuffixOnKeysAndConflictsNamingConvention instance = new SuffixOnKeysAndConflictsNamingConvention(new SchemaReader(SuffixOnKeysAndConflictsNamingConventionTest.class.getClassLoader().getResourceAsStream("nmdbioticv1_4.xsd")), columnmap, typemap);
         String result = instance.getColumnName(typeName, "serialno");
         assertEquals("serialno" + instance.getSeparator() + tableNameColumns, result);
         result = instance.getColumnName(typeName, "trawquality");
@@ -161,7 +161,7 @@ public class SuffixOnKeysAndConflictsNamingConventionTest {
         typemap.put(typeName, tableName);
         Map<String, String> columnmap = new HashMap<>();
         columnmap.put(typeName, tableNameColumns);
-        SuffixOnKeysAndConflictsNamingConvention instance = new SuffixOnKeysAndConflictsNamingConvention(new SchemaReader(SuffixOnKeysAndConflictsNamingConventionTest.class.getClassLoader().getResourceAsStream("bioticv1_4.xsd")), columnmap, typemap);
+        SuffixOnKeysAndConflictsNamingConvention instance = new SuffixOnKeysAndConflictsNamingConvention(new SchemaReader(SuffixOnKeysAndConflictsNamingConventionTest.class.getClassLoader().getResourceAsStream("nmdbioticv1_4.xsd")), columnmap, typemap);
         String result = instance.getColumnName(typeName, "platform");
         assertEquals("platform" + instance.getSeparator() + tableNameColumns, result);
         result = instance.getColumnName(typeName, "trawquality");
@@ -182,7 +182,7 @@ public class SuffixOnKeysAndConflictsNamingConventionTest {
         typemap.put(typeName, tableName);
         Map<String, String> columnmap = new HashMap<>();
         columnmap.put(typeName, tableNameColumns);
-        SuffixOnKeysAndConflictsNamingConvention instance = new SuffixOnKeysAndConflictsNamingConvention(new SchemaReader(SuffixOnKeysAndConflictsNamingConventionTest.class.getClassLoader().getResourceAsStream("bioticv1_4.xsd")));
+        SuffixOnKeysAndConflictsNamingConvention instance = new SuffixOnKeysAndConflictsNamingConvention(new SchemaReader(SuffixOnKeysAndConflictsNamingConventionTest.class.getClassLoader().getResourceAsStream("nmdbioticv1_4.xsd")));
         String result = instance.getColumnName(typeName, "platform");
         assertEquals("platform" + instance.getSeparator() + tableNameColumns, result);
         result = instance.getColumnName(typeName, "trawquality");
@@ -203,7 +203,7 @@ public class SuffixOnKeysAndConflictsNamingConventionTest {
         typemap.put(typeName, tableName);
         Map<String, String> columnmap = new HashMap<>();
         columnmap.put(typeName, tableNameColumns);
-        SuffixOnKeysAndConflictsNamingConvention instance = new SuffixOnKeysAndConflictsNamingConvention(new SchemaReader(SuffixOnKeysAndConflictsNamingConventionTest.class.getClassLoader().getResourceAsStream("bioticv1_4.xsd")), columnmap, typemap);
+        SuffixOnKeysAndConflictsNamingConvention instance = new SuffixOnKeysAndConflictsNamingConvention(new SchemaReader(SuffixOnKeysAndConflictsNamingConventionTest.class.getClassLoader().getResourceAsStream("nmdbioticv1_4.xsd")), columnmap, typemap);
         String result = instance.getNodeName(tableName, "platform" + instance.getSeparator() + tableNameColumns);
         assertEquals("platform", result);
         result = instance.getNodeName(tableName, "trawquality");
@@ -217,7 +217,7 @@ public class SuffixOnKeysAndConflictsNamingConventionTest {
     @Test
     public void testGetDescription() throws RelationalConvertionException, JAXBException, ParserConfigurationException {
         System.out.println("getDescription");
-        SuffixOnKeysAndConflictsNamingConvention instance = new SuffixOnKeysAndConflictsNamingConvention(new SchemaReader(SuffixOnKeysAndConflictsNamingConventionTest.class.getClassLoader().getResourceAsStream("bioticv1_4.xsd")), new HashMap<>(), new HashMap<>());
+        SuffixOnKeysAndConflictsNamingConvention instance = new SuffixOnKeysAndConflictsNamingConvention(new SchemaReader(SuffixOnKeysAndConflictsNamingConventionTest.class.getClassLoader().getResourceAsStream("nmdbioticv1_4.xsd")), new HashMap<>(), new HashMap<>());
         String result = instance.getDescription();
         assertTrue(result.length() > 0);
     }

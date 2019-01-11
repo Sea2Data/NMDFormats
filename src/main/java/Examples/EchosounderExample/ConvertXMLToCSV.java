@@ -55,8 +55,8 @@ public class ConvertXMLToCSV {
         naming.put("frequencyType", "Frequency");
         naming.put("saByAcocatType", "SaByAcocat");
         
-        TableMaker tablemaker = new TableMaker(new SchemaReader(ConvertXMLToCSV.class.getClassLoader().getResourceAsStream("echov1.xsd")), new Echosounder1LeafNodeHandler());
-        tablemaker.setNamingConvention(new SuffixOnKeysAndConflictsNamingConvention(new SchemaReader(ConvertXMLToCSV.class.getClassLoader().getResourceAsStream("echov1.xsd")), naming, naming));
+        TableMaker tablemaker = new TableMaker(new SchemaReader(ConvertXMLToCSV.class.getClassLoader().getResourceAsStream("nmdechosounderv1.xsd")), new Echosounder1LeafNodeHandler());
+        tablemaker.setNamingConvention(new SuffixOnKeysAndConflictsNamingConvention(new SchemaReader(ConvertXMLToCSV.class.getClassLoader().getResourceAsStream("nmdechosounderv1.xsd")), naming, naming));
 
         Echosounder1Handler handler = new Echosounder1Handler();
         HierarchicalData data = handler.read(new FileInputStream(filename));

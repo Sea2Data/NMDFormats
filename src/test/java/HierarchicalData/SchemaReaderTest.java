@@ -51,7 +51,7 @@ public class SchemaReaderTest {
     @Test
     public void testGetComplextypes() throws JAXBException, ParserConfigurationException {
         System.out.println("getComplextypes");
-        SchemaReader instance = new SchemaReader(SchemaReaderTest.class.getClassLoader().getResourceAsStream("bioticv1_4.xsd"));
+        SchemaReader instance = new SchemaReader(SchemaReaderTest.class.getClassLoader().getResourceAsStream("nmdbioticv1_4.xsd"));
         List<String> result = instance.getComplextypes();
         assertTrue(result.contains("MissionType"));
         assertTrue(result.contains("FishstationType"));
@@ -64,10 +64,10 @@ public class SchemaReaderTest {
     @Test
     public void testGetNodes() throws JAXBException, ParserConfigurationException {
         System.out.println("getNodes");
-        SchemaReader instance = new SchemaReader(SchemaReaderTest.class.getClassLoader().getResourceAsStream("bioticv1_4.xsd"));
+        SchemaReader instance = new SchemaReader(SchemaReaderTest.class.getClassLoader().getResourceAsStream("nmdbioticv1_4.xsd"));
         List<SchemaReader.SchemaNode> resultFs = instance.getNodes("FishstationType");
         assertTrue(resultFs.contains(new SchemaReader.SchemaNode("platform", "StringDescriptionType")));
-        assertTrue(resultFs.contains(new SchemaReader.SchemaNode("catchsample", "catchsampleType")));
+        assertTrue(resultFs.contains(new SchemaReader.SchemaNode("catchsample", "CatchsampleType")));
         assertTrue(resultFs.contains(new SchemaReader.SchemaNode("serialno", "integer")));
         assertTrue(resultFs.contains(new SchemaReader.SchemaNode("fishingdepthmin", "decimal")));
         
@@ -83,7 +83,7 @@ public class SchemaReaderTest {
     public void testGetKeys() throws JAXBException, ParserConfigurationException {
         System.out.println("getKeys");
         String complexType = "FishstationType";
-        SchemaReader instance = new SchemaReader(SchemaReaderTest.class.getClassLoader().getResourceAsStream("bioticv1_4.xsd"));
+        SchemaReader instance = new SchemaReader(SchemaReaderTest.class.getClassLoader().getResourceAsStream("nmdbioticv1_4.xsd"));
         Set<String> expResult = new HashSet<>();
         expResult.add("serialno");
         Set<String> result = instance.getKeys(complexType);
@@ -96,7 +96,7 @@ public class SchemaReaderTest {
     @Test
     public void testGetDocumentation() throws JAXBException, ParserConfigurationException {
         System.out.println("getDocumentation");
-        SchemaReader instance = new SchemaReader(SchemaReaderTest.class.getClassLoader().getResourceAsStream("bioticv1_4.xsd"));
+        SchemaReader instance = new SchemaReader(SchemaReaderTest.class.getClassLoader().getResourceAsStream("nmdbioticv1_4.xsd"));
         Map<String, ImrDocType> result = instance.getDocumentation("FishstationType");
         assertTrue(result.get("serialno").getDescription().size()>0);
         assertTrue(result.get("platform").getDescription().size()>0);
@@ -106,7 +106,7 @@ public class SchemaReaderTest {
         @Test
     public void testTargetNameSpace() throws JAXBException, ParserConfigurationException {
         System.out.println("getTargetNameSpace");
-        SchemaReader instance = new SchemaReader(SchemaReaderTest.class.getClassLoader().getResourceAsStream("bioticv1_4.xsd"));
+        SchemaReader instance = new SchemaReader(SchemaReaderTest.class.getClassLoader().getResourceAsStream("nmdbioticv1_4.xsd"));
         String result = instance.getTargetNameSpace();
         assertEquals(result, "http://www.imr.no/formats/nmdbiotic/v1.4");
     }
